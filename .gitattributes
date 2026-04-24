@@ -1,0 +1,30 @@
+# 모든 텍스트 파일을 LF로 통일
+* text=auto eol=lf
+
+# Java/웹 소스 명시적으로 LF 강제
+*.java text eol=lf
+*.xml text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.properties text eol=lf
+*.gradle text eol=lf
+*.html text eol=lf
+*.css text eol=lf
+*.js text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.sh text eol=lf
+
+# Windows 배치 파일은 CRLF 유지 (gradlew.bat)
+*.bat text eol=crlf
+
+# 바이너리 파일은 변환 안 함
+*.jar binary
+*.class binary
+*.png binary
+*.jpg binary
+*.gif binary
+
+/gradlew text eol=lf
+*.bat text eol=crlf
+*.jar binary
