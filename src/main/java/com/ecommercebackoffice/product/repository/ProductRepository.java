@@ -1,4 +1,4 @@
 package com.ecommercebackoffice.product.repository;
 
-public class ProductRepository {
+public interface ProductRepository {
 }
