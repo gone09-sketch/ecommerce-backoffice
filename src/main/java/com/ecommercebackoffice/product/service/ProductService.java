@@ -1,7 +1,7 @@
 package com.ecommercebackoffice.product.service;
 
-import com.ecommercebackoffice.exception.handler.DuplicateProductException;
-import com.ecommercebackoffice.exception.handler.UnauthorizedException;
+import com.ecommercebackoffice.exception.DuplicateProductException;
+import com.ecommercebackoffice.exception.UnauthorizedException;
 import com.ecommercebackoffice.product.dto.ProductCreateRequest;
 import com.ecommercebackoffice.product.dto.ProductCreateResponse;
 import com.ecommercebackoffice.product.entity.Product;

@@ -24,4 +24,5 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.CREATED).body(productService.create(sessionUser, request));
     }
 
+
 }

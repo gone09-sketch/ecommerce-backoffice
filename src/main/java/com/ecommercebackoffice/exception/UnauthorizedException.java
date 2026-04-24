@@ -1,6 +1,5 @@
-package com.ecommercebackoffice.exception.handler;
+package com.ecommercebackoffice.exception;
 
-import com.ecommercebackoffice.exception.ServiceException;
 import org.springframework.http.HttpStatus;
 
 public class UnauthorizedException extends ServiceException {
