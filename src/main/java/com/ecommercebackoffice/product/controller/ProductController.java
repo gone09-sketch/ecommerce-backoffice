@@ -1,8 +1,6 @@
 package com.ecommercebackoffice.product.controller;
 
-import com.ecommercebackoffice.product.dto.ProductCreateRequest;
-import com.ecommercebackoffice.product.dto.ProductCreateResponse;
-import com.ecommercebackoffice.product.dto.ProductGetOneResponse;
+import com.ecommercebackoffice.product.dto.*;
 import com.ecommercebackoffice.product.service.ProductService;
 import com.ecommercebackoffice.session.SessionUser;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +28,15 @@ public class ProductController {
             @SessionAttribute(name = "loginAdmin", required = false) SessionUser sessionUser,
             @PathVariable Long productId) {
         return ResponseEntity.status(HttpStatus.OK).body(productService.findOne(sessionUser, productId));
+    }
+
+    @PatchMapping("/{productId}")
+    public ResponseEntity<ProductUpdateResponse> productUpdate(
+            @SessionAttribute(name = "loginAdmin", required = false) SessionUser sessionUser,
+            @PathVariable Long productId,
+            @RequestBody ProductUpdateRequest request
+    ) {
+        return ResponseEntity.status(HttpStatus.OK).body(productService.update(sessionUser, productId, request));
     }
 
 }

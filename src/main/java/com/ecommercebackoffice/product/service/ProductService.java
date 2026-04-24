@@ -3,9 +3,7 @@ package com.ecommercebackoffice.product.service;
 import com.ecommercebackoffice.exception.ProductDuplicateException;
 import com.ecommercebackoffice.exception.ProductNotFoundException;
 import com.ecommercebackoffice.exception.UnauthorizedException;
-import com.ecommercebackoffice.product.dto.ProductCreateRequest;
-import com.ecommercebackoffice.product.dto.ProductCreateResponse;
-import com.ecommercebackoffice.product.dto.ProductGetOneResponse;
+import com.ecommercebackoffice.product.dto.*;
 import com.ecommercebackoffice.product.entity.Product;
 import com.ecommercebackoffice.product.repository.ProductRepository;
 import com.ecommercebackoffice.session.SessionUser;
@@ -68,6 +66,27 @@ public class ProductService {
                 product.getCreatedAt(),
                 product.getAdmin().getName(),
                 product.getAdmin().getEmail()
+        );
+    }
+
+    @Transactional
+    public ProductUpdateResponse update(SessionUser sessionUser, Long productId, ProductUpdateRequest request) {
+        if(sessionUser == null) {
+            throw new UnauthorizedException("로그인이 필요한 기능입니다.");
+        }
+
+        Product product = productRepository.findById(productId).orElseThrow(
+                () -> new ProductNotFoundException("해당하는 상품이 존재하지 않습니다.")
+        );
+
+        product.updateInfo(request.getName(), request.getCategory(), request.getPrice());
+
+        return new ProductUpdateResponse(
+                product.getId(),
+                product.getName(),
+                product.getCategory(),
+                product.getPrice(),
+                product.getUpdatedAt()
         );
     }
 }
