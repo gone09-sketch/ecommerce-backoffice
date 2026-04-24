@@ -61,7 +61,7 @@ public class Admin extends BaseEntity {
         this.approvedAt = LocalDateTime.now();
     }
 
-    // 등록 거부 시점에 거부일 및 거부 사유 기록
+    // 등록 거부 시점에 거부일 및 거부 사유
     public void reject(String reason) {
         this.status = AdminStatus.REJECTED;
         this.rejectedAt = LocalDateTime.now();
