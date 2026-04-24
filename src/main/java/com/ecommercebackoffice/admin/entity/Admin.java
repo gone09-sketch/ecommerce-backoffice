@@ -42,14 +42,16 @@ public class Admin extends BaseEntity {
     private String rejectedReason; // 거부 사유
 
 
+
+
     // 생성자
-    public Admin(String name, String email, String password, String phoneNumber, AdminRole role, AdminStatus status) {
+    public Admin(String name, String email, String password, String phoneNumber, AdminRole role) {
         this.name = name;
         this.email = email;
         this.password = password;
         this.phoneNumber = phoneNumber;
         this.role = role;
-        this.status = status;
+        this.status = AdminStatus.PENDING;
     }
 
     // 기능
