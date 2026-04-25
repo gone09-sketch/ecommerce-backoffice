@@ -75,32 +75,60 @@ public class AdminService {
         Admin foundAdmin = adminRepository.findById(adminId).orElseThrow(
                 () -> new AdminNotFoundException("해당 관리자를 찾을 수 없습니다."));
 
-        // 2. 이메일 변경 시 중복 체크
+        // 2. 데이터 준비
         String newEmail = adminPatchRequest.getEmail();
 
-        // newEmail이 공백일 경우 예외처리
+        // 3. 이메일 변경 시 중복 체크 newEmail이 null이 아닐 경우,
         if (newEmail != null) {
+            // 3-1. newEmail이 공백일 경우 예외처리
             if (newEmail.isBlank()) {
                 throw new InvalidInputException("이메일은 공백일 수 없습니다.");
             }
-        }
 
-        // 이메일을 변경한 경우, 기존 이메일과 다르고 DB에 이미 존재하면 예외처리
-        if (newEmail != null) {
+            // 3-2. 이메일을 변경한 경우, 기존 이메일과 다르고 DB에 이미 존재하면 예외처리
             if (!newEmail.equals(foundAdmin.getEmail()) &&
             adminRepository.existsByEmail(newEmail)) {
                 throw new DuplicateEmailException("이미 사용 중인 이메일입니다.");
             }
         }
 
-        // 3. 수정 내용 업데이트 + 데이터 담아주기
-        foundAdmin.update(adminPatchRequest);
+        // 4. 수정 내용 업데이트 + 데이터 담아주기
+        foundAdmin.adminUpdate(adminPatchRequest);
 
-        // 4. 반환
+        // 5. 반환
         return AdminPatchResponse.from(foundAdmin);
     }
 
     // 내 프로필 수정
+    @Transactional
+    public AdminProfilePatchResponse patchProfile(Long adminId, AdminProfilePatchRequest profilePatchRequest) {
+        // 1. 관리자 조회
+        Admin foundProfile = adminRepository.findById(adminId).orElseThrow(
+                () -> new AdminNotFoundException("해당 관리자를 찾을 수 없습니다."));
+
+        // 2. 데이터 준비
+        String newEmail = profilePatchRequest.getEmail();
+
+        // 3. 이메일 변경 시 중복 체크 newEmail이 null이 아닐 경우,
+        if (newEmail != null) {
+            // 3-1. newEmail이 공백일 경우 예외처리
+            if (newEmail.isBlank()) {
+                throw new InvalidInputException("이메일은 공백일 수 없습니다.");
+            }
+
+            // 3-2. 이메일을 변경한 경우, 기존 이메일과 다르고 DB에 이미 존재하면 예외처리
+            if (!newEmail.equals(foundProfile.getEmail()) &&
+                    adminRepository.existsByEmail(newEmail)) {
+                throw new DuplicateEmailException("이미 사용 중인 이메일입니다.");
+            }
+        }
+
+        // 3. 수정 내용 업데이트 + 데이터 담아주기
+        foundProfile.profileUpdate(profilePatchRequest);
+
+        // 4. 반환
+        return AdminProfilePatchResponse.from(foundProfile);
+    }
 
     // 내 비밀번호 변경
 

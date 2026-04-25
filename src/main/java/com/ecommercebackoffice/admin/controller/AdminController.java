@@ -62,8 +62,9 @@ public class AdminController {
             @PathVariable Long adminId,
             @Valid
             @RequestBody AdminPatchRequest adminPatchRequest) {
-        AdminPatchResponse adminPatchResponse= adminService.patchAdmin(adminId, adminPatchRequest);
-        return ResponseEntity.status(HttpStatus.OK).body(adminPatchResponse);
+
+        AdminPatchResponse adminPatchResponseAPI = adminService.patchAdmin(adminId, adminPatchRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(adminPatchResponseAPI);
     }
 
     // 내 프로필 수정
@@ -72,6 +73,9 @@ public class AdminController {
             @PathVariable Long adminId,
             @Valid
             @RequestBody AdminProfilePatchRequest adminProfilePatchRequest) {
+
+        AdminProfilePatchResponse profilePatchResponseAPI = adminService.patchProfile(adminId, adminProfilePatchRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(profilePatchResponseAPI);
     }
 
     // 내 비밀번호 변경
