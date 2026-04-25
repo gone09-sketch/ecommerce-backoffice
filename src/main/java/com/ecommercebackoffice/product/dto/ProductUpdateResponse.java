@@ -5,9 +5,9 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class ProductGetOneResponse {
+public class ProductUpdateResponse {
 
     private final int httpStatus;
     private final String message;
-    private final ProductGetOneResult data;
+    private final ProductUpdateResult data;
 }

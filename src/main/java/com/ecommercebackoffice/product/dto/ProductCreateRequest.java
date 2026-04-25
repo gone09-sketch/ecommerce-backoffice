@@ -1,5 +1,6 @@
 package com.ecommercebackoffice.product.dto;
 
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 
@@ -12,6 +13,6 @@ public class ProductCreateRequest {
     private String category;
     @NotBlank
     private Long price;
-    @NotBlank
+    @Min(1)
     private int stock;
 }
