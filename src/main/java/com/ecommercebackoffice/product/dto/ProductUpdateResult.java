@@ -13,5 +13,7 @@ public class ProductUpdateResult {
     private final String name;
     private final String category;
     private final Long price;
+    private final int stock;
+    private final String status;
     private final LocalDateTime updatedAt;
 }
