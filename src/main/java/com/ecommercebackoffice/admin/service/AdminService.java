@@ -51,7 +51,4 @@ public class AdminService {
         );
         return createResponse;
     }
-
-    // 관리자
-
 }

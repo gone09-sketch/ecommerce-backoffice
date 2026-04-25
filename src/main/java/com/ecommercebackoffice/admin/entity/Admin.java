@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "admins")
 @NoArgsConstructor
-@SoftDelete(columnName = "is_deleted")
 
 public class Admin extends BaseEntity {
     // 속성
