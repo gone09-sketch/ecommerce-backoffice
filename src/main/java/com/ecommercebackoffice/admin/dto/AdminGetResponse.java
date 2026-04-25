@@ -17,11 +17,14 @@ public class AdminGetResponse {
     private final String status;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
+    private final LocalDateTime approvedAt; // null 허용
+    private final LocalDateTime rejectedAt; // null 허용
+    private final String rejectedReason; // null 허용
 
     // 생성자
-    public AdminGetResponse(Long id, String name, String email, String phoneNumber,
-                            String role, String status, LocalDateTime createdAt, LocalDateTime updatedAt) {
-
+    public AdminGetResponse(Long id, String name, String email, String phoneNumber, String role, String status,
+                               LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime approvedAt,
+                               LocalDateTime rejectedAt, String rejectedReason) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -30,20 +33,26 @@ public class AdminGetResponse {
         this.status = status;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.approvedAt = approvedAt;
+        this.rejectedAt = rejectedAt;
+        this.rejectedReason = rejectedReason;
     }
 
     // 기능
-    // from에서 변환 처리
     public static AdminGetResponse from(Admin admin) {
         return new AdminGetResponse(
                 admin.getId(),
                 admin.getName(),
                 admin.getEmail(),
                 admin.getPhoneNumber(),
-                admin.getRole().name(),
-                admin.getStatus().name(),
+                admin.getRole().getDescription(),
+                admin.getStatus().getDescription(),
                 admin.getCreatedAt(),
-                admin.getUpdatedAt()
+                admin.getUpdatedAt(),
+                admin.getApprovedAt(),
+                admin.getRejectedAt(),
+                admin.getRejectedReason()
         );
     }
 }
+
