@@ -2,8 +2,9 @@ package com.ecommercebackoffice.exception;
 
 import org.springframework.http.HttpStatus;
 
-public class DuplicateProductException extends ServiceException {
-    public DuplicateProductException(String message) {
+public class DuplicateEmailException extends ServiceException {
+    // 생성자
+    public DuplicateEmailException(String message) {
         super(HttpStatus.CONFLICT, message);
     }
 }
