@@ -10,10 +10,11 @@ import java.util.List;
 @Getter
 public class CustomerGetListResponse {
     
-    private List<CustomerGetDto> CustomerGetDtos;
+    private List<CustomerGetDto> customerGetDtos;
 
-    public CustomerGetListResponse(List<CustomerGetDto> CustomerGetDtos) {
-        this.CustomerGetDtos = CustomerGetDtos;
+    public CustomerGetListResponse(List<CustomerGetDto> customerGetDtos) {
+
+        this.customerGetDtos = customerGetDtos;
     }
 
 

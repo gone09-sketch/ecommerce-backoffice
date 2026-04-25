@@ -25,7 +25,7 @@ public class CustomerController {
     }
 
     //고객 단 건 조회
-    @GetMapping("/{customers}")
+    @GetMapping("/{customerId}")
     public ResponseEntity<CustomerGetListResponse.CustomerGetDto> getOneCustomer(@PathVariable Long customerId) {
 
         CustomerGetListResponse.CustomerGetDto result = customerService.getByCustomerId(customerId);
@@ -34,7 +34,7 @@ public class CustomerController {
     }
 
     //고객 수정
-    @PatchMapping("/{customers}")
+    @PatchMapping("/{customerId}")
     public ResponseEntity<CustomerUpdateResponse> update(
             @PathVariable Long customerId, @RequestBody @Valid CustomerUpdateRequest request
     ) {
@@ -42,18 +42,19 @@ public class CustomerController {
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
-//    // 고객 상태 수정
-//    @PatchMapping("/{customers}")
-//    public ResponseEntity<CustomerStatusUpdateRequest> statusUpdate(
-//            @PathVariable Long customerId, @RequestBody CustomerStatusUpdateRequest request) {
-//
-//        CustomerStatusUpdateResponse reult =customerService.statusUpdate(customerId,request);
-//
-//    }
+    // 고객 상태 수정
+    @PatchMapping("/{customerId}/status")
+    public ResponseEntity<CustomerStatusUpdateResponse> statusUpdate(
+            @PathVariable Long customerId,
+            @RequestBody CustomerStatusUpdateRequest request) {
+
+        CustomerStatusUpdateResponse result = customerService.statusUpdate(customerId, request);
+        return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
 
 //    //고객 삭제
 //    @DeleteMapping("/{customers}")
-//    public
+//    public ResponseEntity<Void>
 
 
 }

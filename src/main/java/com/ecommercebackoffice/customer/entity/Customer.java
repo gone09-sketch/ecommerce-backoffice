@@ -16,7 +16,6 @@ import java.time.LocalDateTime;
 @Table(name = "customers")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SoftDelete
 public class Customer extends BaseEntity {
 
     @Id
