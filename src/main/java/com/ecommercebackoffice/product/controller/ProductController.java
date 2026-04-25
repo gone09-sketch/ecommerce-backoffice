@@ -47,5 +47,4 @@ public class ProductController {
     ) {
         return ResponseEntity.status(HttpStatus.OK).body(productService.updateStock(sessionUser, productId, request));
     }
-
 }

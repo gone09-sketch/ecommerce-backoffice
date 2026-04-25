@@ -42,7 +42,6 @@ public class ProductService {
                 savedProduct.getCategory(),
                 savedProduct.getPrice(),
                 savedProduct.getStock(),
-                savedProduct.getStatus(),
                 savedProduct.getCreatedAt()
         );
     }
