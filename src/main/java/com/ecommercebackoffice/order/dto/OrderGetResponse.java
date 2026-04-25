@@ -1,13 +1,11 @@
 package com.ecommercebackoffice.order.dto;
 
-import jakarta.persistence.Column;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
 
 @Getter
 public class OrderGetResponse {
-
 
     private final String orderNumber;
     private final String customerName;

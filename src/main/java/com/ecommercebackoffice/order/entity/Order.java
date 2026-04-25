@@ -60,14 +60,6 @@ public class Order {
 
     private String cancelReason;
 
-    private String createOrderNumber(Long customerId){
-        return customerId
-                + "-"
-                + LocalDateTime.now()
-                .format(DateTimeFormatter
-                        .ofPattern("yyyyMMdd"));
-    }
-
     public Order(Long adminId
             ,Long customerId
             ,Integer quantity
@@ -86,6 +78,15 @@ public class Order {
         this.receiverName = receiverName;
         this.receiverPhone = receiverPhone;
         this.deliveryAddress = deliveryAddress;
+    }
+
+    // 주문 번호 만들기 로직
+    private String createOrderNumber(Long customerId){
+        return customerId
+                + "-"
+                + LocalDateTime.now()
+                .format(DateTimeFormatter
+                        .ofPattern("yyyyMMdd"));
     }
 
 }
