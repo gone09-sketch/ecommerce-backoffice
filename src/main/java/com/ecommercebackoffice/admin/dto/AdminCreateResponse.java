@@ -27,9 +27,5 @@ public class AdminCreateResponse {
         this.role = role;
         this.status = AdminStatus.PENDING;
         this.createdAt = createdAt;
-
-
-
-
     }
 }

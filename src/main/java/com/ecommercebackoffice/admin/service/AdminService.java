@@ -47,10 +47,11 @@ public class AdminService {
                 newAdmin.getEmail(),
                 newAdmin.getPhoneNumber(),
                 newAdmin.getRole(),
-                newAdmin.getStatus(),
                 newAdmin.getCreatedAt()
         );
         return createResponse;
     }
+
+    // 관리자
 
 }
