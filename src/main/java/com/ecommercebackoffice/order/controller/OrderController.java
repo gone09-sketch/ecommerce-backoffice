@@ -2,6 +2,7 @@ package com.ecommercebackoffice.order.controller;
 
 import com.ecommercebackoffice.order.dto.OrderCreateRequest;
 import com.ecommercebackoffice.order.dto.OrderCreateResponse;
+import com.ecommercebackoffice.order.dto.OrderGetResponse;
 import com.ecommercebackoffice.order.service.OrderService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -32,6 +33,8 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.CREATED).body(orderService.save(request,adminId));
     }
 
-    @GetMapping("/orders")
-    public ResponseEntity<OrderGetResponse> getOne(){}
+//    @GetMapping("/orders")
+//    public ResponseEntity<OrderGetResponse> getOne(){
+//        return
+//    }
 }

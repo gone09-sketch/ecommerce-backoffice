@@ -55,7 +55,7 @@ public class OrderService {
                 request.getReceiverPhone(),
                 request.getDeliveryAddress()
         );
-//        product.decreaseStock(request.getQuantity());  상품쪽에서 재고차감 메서드 부탁해야함
+//        product.updateStock(request.getQuantity());  상품쪽에서 재고차감 메서드 부탁해야함
         Order savedOrder = orderRepository.save(order);
         return new OrderCreateResponse(
                 savedOrder.getId(),
