@@ -1,9 +1,6 @@
 package com.ecommercebackoffice.admin.controller;
 
-import com.ecommercebackoffice.admin.dto.AdminCreateRequest;
-import com.ecommercebackoffice.admin.dto.AdminCreateResponse;
-import com.ecommercebackoffice.admin.dto.AdminGetResponse;
-import com.ecommercebackoffice.admin.dto.AdminProfileGetResponse;
+import com.ecommercebackoffice.admin.dto.*;
 import com.ecommercebackoffice.admin.service.AdminService;
 import com.ecommercebackoffice.session.SessionAdminDto;
 import jakarta.servlet.http.HttpServletRequest;
@@ -65,19 +62,21 @@ public class AdminController {
             @PathVariable Long adminId,
             @Valid
             @RequestBody AdminPatchRequest adminPatchRequest) {
+        AdminPatchResponse adminPatchResponse= adminService.patchAdmin(adminId, adminPatchRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(adminPatchResponse);
     }
 
     // 내 프로필 수정
     @PatchMapping("/profile")
-    public ResponseEntity<AdminPatchResponse> patchAPI(
+    public ResponseEntity<AdminProfilePatchResponse> patchProfileAPI(
             @PathVariable Long adminId,
             @Valid
-            @RequestBody AdminPatchRequest adminPatchRequest) {
+            @RequestBody AdminProfilePatchRequest adminProfilePatchRequest) {
     }
 
     // 내 비밀번호 변경
     @PatchMapping("/profile/password")
-    public ResponseEntity<AdminPatchResponse> patchAPI(
+    public ResponseEntity<AdminPasswordPatchResponse> patchPasswordAPI(
             @PathVariable Long adminId,
             @Valid
             @RequestBody AdminPatchRequest adminPatchRequest) {
@@ -85,13 +84,13 @@ public class AdminController {
 
     // 관리자 역할 변경
     @PatchMapping("/{adminId}/role")
-    public ResponseEntity<AdminPatchRoleResponse> patchRoleAPI(@PathVariable Long adminId) {
+    public ResponseEntity<AdminRolePatchResponse> patchRoleAPI(@PathVariable Long adminId) {
 
     }
 
     // 관리자 상태 변경
     @PatchMapping("/{adminId}/status")
-    public ResponseEntity<AdminPatchStatusResponse> patchStatusAPI(@PathVariable Long adminId) {
+    public ResponseEntity<AdminStatusPatchResponse> patchStatusAPI(@PathVariable Long adminId) {
 
     }
 
