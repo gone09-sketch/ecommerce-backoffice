@@ -1,6 +1,5 @@
 package com.ecommercebackoffice.order.service;
 
-<<<<<<< HEAD
 import com.ecommercebackoffice.admin.entity.Admin;
 import com.ecommercebackoffice.admin.repository.AdminRepository;
 import com.ecommercebackoffice.customer.entity.Customer;
@@ -11,12 +10,6 @@ import com.ecommercebackoffice.order.entity.Order;
 import com.ecommercebackoffice.order.repository.OrderRepository;
 import com.ecommercebackoffice.product.entity.Product;
 import com.ecommercebackoffice.product.repository.ProductRepository;
-=======
-import com.ecommercebackoffice.customer.repository.CustomerRepository;
-import com.ecommercebackoffice.order.dto.OrderCreateRequest;
-import com.ecommercebackoffice.order.dto.OrderCreateResponse;
-import com.ecommercebackoffice.order.repository.OrderRepository;
->>>>>>> dev
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,16 +21,12 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final CustomerRepository customerRepository;
-<<<<<<< HEAD
     private final AdminRepository adminRepository;
     private final ProductRepository productRepository;
-=======
->>>>>>> dev
 
     @Transactional
     public OrderCreateResponse save(@Valid OrderCreateRequest request, Long adminId) {
-        if (request.getQuantity()<1){
-<<<<<<< HEAD
+        if (request.getQuantity() < 1) {
             throw new IllegalStateException("수량은 1 이상이어야 합니다.");
         }
         Admin admin = adminRepository.findById(adminId).orElseThrow(
@@ -53,7 +42,7 @@ public class OrderService {
             throw new IllegalStateException("단종 상품은 주문할 수 없습니다.");
         if (product.getStatus().equals("품절"))
             throw new IllegalStateException("품절 상품은 주문할 수 없습니다.");
-        if (product.getStock()<request.getQuantity()){
+        if (product.getStock() < request.getQuantity()) {
             throw new IllegalStateException("재고가 부족합니다");
         }
         Long orderPrice = product.getPrice();
@@ -78,10 +67,6 @@ public class OrderService {
                 savedOrder.getTotalPrice(),
                 savedOrder.getAdminId()
         );
-=======
-            throw new IllegalStateException("재고가 부족합니다.");
-        }
-
->>>>>>> dev
     }
 }
+

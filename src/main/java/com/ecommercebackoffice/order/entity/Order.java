@@ -1,9 +1,6 @@
 package com.ecommercebackoffice.order.entity;
 
-<<<<<<< HEAD
 import com.ecommercebackoffice.order.enums.OrderStatus;
-=======
->>>>>>> dev
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
@@ -24,7 +21,6 @@ public class Order {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-<<<<<<< HEAD
 
     private Long adminId;
 
@@ -62,42 +58,7 @@ public class Order {
 
     private LocalDateTime canceledAt;
 
-=======
-    private Long adminId;
-    @NotNull
-    private Long customerId;
-    @Column(nullable = false)
-    private String orderNumber;
-    @Column(nullable = false)
-    private Integer quantity;
-    @Column(nullable = false)
-    private Long orderPrice;
-    @Column(nullable = false)
-    private Long totalPrice;
-    @Column(nullable = false)
-    private String status;
-    @Column(nullable = false)
-    private String receiverName;
-    @Column(nullable = false)
-    private String receiverPhone;
-    @Column(nullable = false)
-    private String deliveryAddress;
-    @CreatedDate
-    @Column(nullable = false ,updatable = false)
-    private LocalDateTime createdAt;
-    private LocalDateTime canceledAt;
->>>>>>> dev
     private String cancelReason;
-
-
-    /*
-<<<<<<< HEAD
-     * 주문번호 생성 메서드
-     */
-=======
-    * 주문번호 생성 메서드
-    */
->>>>>>> dev
 
     private String createOrderNumber(Long customerId){
         return customerId
@@ -121,11 +82,7 @@ public class Order {
         this.quantity = quantity;
         this.orderPrice = orderPrice;
         this.totalPrice = orderPrice * quantity;
-<<<<<<< HEAD
         this.status = OrderStatus.READY;
-=======
-        this.status = "준비중";
->>>>>>> dev
         this.receiverName = receiverName;
         this.receiverPhone = receiverPhone;
         this.deliveryAddress = deliveryAddress;
