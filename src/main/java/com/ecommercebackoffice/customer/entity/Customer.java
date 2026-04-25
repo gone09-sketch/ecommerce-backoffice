@@ -1,13 +1,14 @@
 package com.ecommercebackoffice.customer.entity;
 
 import com.ecommercebackoffice.config.BaseEntity;
+import com.ecommercebackoffice.customer.dto.CustomerUpdateRequest;
+import com.ecommercebackoffice.customer.dto.CustomerUpdateResponse;
 import com.ecommercebackoffice.customer.enums.CustomerStatus;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
+import org.hibernate.annotations.SoftDelete;
 
 import java.time.LocalDateTime;
 
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 @Table(name = "customers")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SoftDelete
 public class Customer extends BaseEntity {
 
     @Id
@@ -32,14 +34,12 @@ public class Customer extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private CustomerStatus status;
+    private CustomerStatus customerStatus;
 
     private LocalDateTime removedAt;
 
     private String removedReason;
 
-
-    @SQLRestriction("is_deleted = false")// 참일때만 보임
     @Column(name = "isdeleted", nullable = false)
     private Boolean isDeleted;
 
@@ -49,25 +49,19 @@ public class Customer extends BaseEntity {
         this.name = name;
         this.email = email;
         this.phoneNumber = phoneNumber;
-        this.status = CustomerStatus.ACTIVE;
+        this.customerStatus = CustomerStatus.ACTIVE;
         this.isDeleted = false;
     }
 
-    public void update(String name, String email, String phoneNumber) {
-        this.name = name;
-        this.email = email;
-        this.phoneNumber = phoneNumber;
-    }
 
+    public CustomerUpdateResponse update(CustomerUpdateRequest request) {
+        this.name = request.getName();
+        this.email = request.getEmail();
+        this.phoneNumber = request.getPhoneNumber();
+        return null;
+    }
 
     public void updateStatus(CustomerStatus status) {
-        this.status = status;
-    }
-
-    @SQLDelete(sql = "UPDATE users SET is_deleted = true WHERE id = ?")
-    public void delete(String removedReason) {
-        this.isDeleted = true;
-        this.removedAt = LocalDateTime.now();
-        this.removedReason = removedReason;
+        this.customerStatus = status;
     }
 }
