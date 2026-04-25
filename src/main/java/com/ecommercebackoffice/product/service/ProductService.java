@@ -42,6 +42,7 @@ public class ProductService {
                 savedProduct.getCategory(),
                 savedProduct.getPrice(),
                 savedProduct.getStock(),
+                savedProduct.getStatus(),
                 savedProduct.getCreatedAt()
         );
     }
@@ -114,6 +115,33 @@ public class ProductService {
         return new ProductUpdateResponse(
                 200,
                 "상품 재고 변경 성공",
+                new ProductUpdateResult(
+                        product.getId(),
+                        product.getName(),
+                        product.getCategory(),
+                        product.getPrice(),
+                        product.getStock(),
+                        product.getStatus(),
+                        product.getUpdatedAt()
+                )
+        );
+    }
+
+    @Transactional
+    public ProductUpdateResponse updateStatus(SessionUser sessionUser, Long productId, ProductStatusUpdateRequest request) {
+        if(sessionUser == null) {
+            throw new UnauthorizedException("로그인이 필요한 기능입니다.");
+        }
+
+        Product product = productRepository.findById(productId).orElseThrow(
+                () -> new ProductNotFoundException("해당하는 상품이 존재하지 않습니다.")
+        );
+
+        product.updateStatus(request.getStatus());
+
+        return new ProductUpdateResponse(
+                200,
+                "상품 상태 변경 성공",
                 new ProductUpdateResult(
                         product.getId(),
                         product.getName(),

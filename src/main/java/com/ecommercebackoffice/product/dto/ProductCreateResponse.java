@@ -6,8 +6,6 @@ import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
 
-import static com.ecommercebackoffice.product.enums.ProductEnum.ON_SALE;
-
 @Getter
 @RequiredArgsConstructor
 public class ProductCreateResponse {
@@ -17,6 +15,6 @@ public class ProductCreateResponse {
     private final String category;
     private final Long price;
     private final int stock;
-    private final ProductEnum status = ON_SALE;
+    private final ProductEnum status;
     private final LocalDateTime createdAt;
 }

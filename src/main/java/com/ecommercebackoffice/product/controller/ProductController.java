@@ -47,4 +47,13 @@ public class ProductController {
     ) {
         return ResponseEntity.status(HttpStatus.OK).body(productService.updateStock(sessionUser, productId, request));
     }
+
+    @PatchMapping("/{productId}/status")
+    public ResponseEntity<ProductUpdateResponse> productStatusUpdate(
+            @SessionAttribute(name = "loginAdmin", required = false) SessionUser sessionUser,
+            @PathVariable Long productId,
+            @RequestBody ProductStatusUpdateRequest request
+    ) {
+        return ResponseEntity.status(HttpStatus.OK).body(productService.updateStatus(sessionUser, productId, request));
+    }
 }

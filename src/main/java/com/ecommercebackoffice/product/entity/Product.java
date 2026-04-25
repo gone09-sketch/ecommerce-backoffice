@@ -36,9 +36,6 @@ public class Product extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ProductEnum status = ON_SALE;
 
-    @Column(nullable = false)
-    private boolean isDeleted = false;
-
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "admin_id", nullable = false)
     private Admin admin;
@@ -72,5 +69,9 @@ public class Product extends BaseEntity {
                 this.status = SOLD_OUT;
             }
         }
+    }
+
+    public void updateStatus(ProductEnum status) {
+        this.status = status;
     }
 }
