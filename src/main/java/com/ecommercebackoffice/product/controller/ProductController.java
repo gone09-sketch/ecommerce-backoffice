@@ -31,12 +31,21 @@ public class ProductController {
     }
 
     @PatchMapping("/{productId}")
-    public ResponseEntity<ProductUpdateResponse> productUpdate(
+    public ResponseEntity<ProductUpdateResponse> productInfoUpdate(
             @SessionAttribute(name = "loginAdmin", required = false) SessionUser sessionUser,
             @PathVariable Long productId,
-            @RequestBody ProductUpdateRequest request
+            @RequestBody ProductInfoUpdateRequest request
     ) {
-        return ResponseEntity.status(HttpStatus.OK).body(productService.update(sessionUser, productId, request));
+        return ResponseEntity.status(HttpStatus.OK).body(productService.updateInfo(sessionUser, productId, request));
+    }
+
+    @PatchMapping("/{productId}/stock")
+    public ResponseEntity<ProductUpdateResponse> productStockUpdate(
+        @SessionAttribute(name = "loginAdmin", required = false) SessionUser sessionUser,
+        @PathVariable Long productId,
+        @RequestBody ProductStockUpdateRequest request
+    ) {
+        return ResponseEntity.status(HttpStatus.OK).body(productService.updateStock(sessionUser, productId, request));
     }
 
 }

@@ -57,4 +57,16 @@ public class Product extends BaseEntity {
             this.price = price;
         }
     }
+
+    public void updateStock(int stock) {
+        this.stock = stock;
+
+        if(!this.status.equals("단종")) {
+            if(this.stock >= 1) {
+                this.status = "판매중";
+            } else {
+                this.status = "품절";
+            }
+        }
+    }
 }

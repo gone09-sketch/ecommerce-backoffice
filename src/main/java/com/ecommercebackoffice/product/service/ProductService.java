@@ -74,7 +74,7 @@ public class ProductService {
     }
 
     @Transactional
-    public ProductUpdateResponse update(SessionUser sessionUser, Long productId, ProductUpdateRequest request) {
+    public ProductUpdateResponse updateInfo(SessionUser sessionUser, Long productId, ProductInfoUpdateRequest request) {
         if(sessionUser == null) {
             throw new UnauthorizedException("로그인이 필요한 기능입니다.");
         }
@@ -93,6 +93,35 @@ public class ProductService {
                         product.getName(),
                         product.getCategory(),
                         product.getPrice(),
+                        product.getStock(),
+                        product.getStatus(),
+                        product.getUpdatedAt()
+                )
+        );
+    }
+
+    @Transactional
+    public ProductUpdateResponse updateStock(SessionUser sessionUser, Long productId, ProductStockUpdateRequest request) {
+        if(sessionUser == null) {
+            throw new UnauthorizedException("로그인이 필요한 기능입니다.");
+        }
+
+        Product product = productRepository.findById(productId).orElseThrow(
+                () -> new ProductNotFoundException("해당하는 상품이 존재하지 않습니다.")
+        );
+
+        product.updateStock(request.getStock());
+
+        return new ProductUpdateResponse(
+                200,
+                "상품 재고 변경 성공",
+                new ProductUpdateResult(
+                        product.getId(),
+                        product.getName(),
+                        product.getCategory(),
+                        product.getPrice(),
+                        product.getStock(),
+                        product.getStatus(),
                         product.getUpdatedAt()
                 )
         );
