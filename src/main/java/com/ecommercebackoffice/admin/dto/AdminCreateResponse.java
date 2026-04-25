@@ -18,10 +18,11 @@ public class AdminCreateResponse {
     private final String status;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
+    private final LocalDateTime approvedAt; // null 허용
 
     // 생성자
-    public AdminCreateResponse(Long id, String name, String email, String phoneNumber,
-                               String role, String status, LocalDateTime createdAt, LocalDateTime updatedAt ) {
+    public AdminCreateResponse(Long id, String name, String email, String phoneNumber, String role, String status,
+                               LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime approvedAt) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -30,6 +31,7 @@ public class AdminCreateResponse {
         this.status = status;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.approvedAt = approvedAt;
     }
 
     // 기능
@@ -39,10 +41,11 @@ public class AdminCreateResponse {
                 admin.getName(),
                 admin.getEmail(),
                 admin.getPhoneNumber(),
-                admin.getRole().name(),
-                admin.getStatus().name(),
+                admin.getRole().getDescription(),
+                admin.getStatus().getDescription(),
                 admin.getCreatedAt(),
-                admin.getUpdatedAt()
+                admin.getUpdatedAt(),
+                admin.getApprovedAt()
         );
     }
 }
