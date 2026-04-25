@@ -2,8 +2,10 @@ package com.ecommercebackoffice.admin.service;
 
 import com.ecommercebackoffice.admin.dto.AdminCreateRequest;
 import com.ecommercebackoffice.admin.dto.AdminCreateResponse;
+import com.ecommercebackoffice.admin.dto.AdminGetResponse;
 import com.ecommercebackoffice.admin.entity.Admin;
 import com.ecommercebackoffice.admin.repository.AdminRepository;
+import com.ecommercebackoffice.exception.AdminNotFoundException;
 import com.ecommercebackoffice.exception.DuplicateEmailException;
 import lombok.Getter;
 import org.springframework.stereotype.Service;
@@ -40,15 +42,25 @@ public class AdminService {
                 adminCreateRequest.getRole()
         );
 
-        // 3. dto 반환
-        AdminCreateResponse createResponse = new AdminCreateResponse(
-                newAdmin.getId(),
-                newAdmin.getName(),
-                newAdmin.getEmail(),
-                newAdmin.getPhoneNumber(),
-                newAdmin.getRole(),
-                newAdmin.getCreatedAt()
-        );
-        return createResponse;
+        // 3. 반환
+        return AdminCreateResponse.from(newAdmin);
     }
+
+
+    // 관리자 상세 조회
+    @Transactional(readOnly = true)
+    public AdminGetResponse getOne(Long adminId) {
+        // 1. 해당 관리자 Id 존재 유무 확인 (검증) + 데이터 가져와서 넣기
+        Admin admin = adminRepository.findById(adminId).orElseThrow(
+                () -> new AdminNotFoundException("해당 관리자를 찾지 않았습니다."));
+
+        // 2. 반환
+        return AdminGetResponse.from(admin);
+    }
+
+
+
+
+
+
 }
