@@ -82,11 +82,15 @@ public class ProductService {
         product.updateInfo(request.getName(), request.getCategory(), request.getPrice());
 
         return new ProductUpdateResponse(
-                product.getId(),
-                product.getName(),
-                product.getCategory(),
-                product.getPrice(),
-                product.getUpdatedAt()
+                200,
+                "상품 정보 수정 성공",
+                new ProductUpdateResult(
+                        product.getId(),
+                        product.getName(),
+                        product.getCategory(),
+                        product.getPrice(),
+                        product.getUpdatedAt()
+                )
         );
     }
 }
