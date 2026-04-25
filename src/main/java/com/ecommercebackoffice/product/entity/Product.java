@@ -30,7 +30,7 @@ public class Product extends BaseEntity {
     private int stock;
 
     @Enumerated(EnumType.STRING)
-    private String status = "판매중";
+    private Enum status = "판매중";
 
     @Column(nullable = false)
     private boolean isDeleted = false;
@@ -46,4 +46,27 @@ public class Product extends BaseEntity {
         this.stock = stock;
     }
 
+    public void updateInfo(String name, String category, Long price) {
+        if(name != null) {
+            this.name = name;
+        }
+        if(category != null) {
+            this.category = category;
+        }
+        if(price != null) {
+            this.price = price;
+        }
+    }
+
+    public void updateStock(int stock) {
+        this.stock = stock;
+
+        if(!this.status.equals("단종")) {
+            if(this.stock >= 1) {
+                this.status = "판매중";
+            } else {
+                this.status = "품절";
+            }
+        }
+    }
 }

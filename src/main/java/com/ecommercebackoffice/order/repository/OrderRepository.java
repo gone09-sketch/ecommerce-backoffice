@@ -1,4 +1,4 @@
 package com.ecommercebackoffice.order.repository;
 
-public class OrderRepository {
+public interface OrderRepository {
 }
