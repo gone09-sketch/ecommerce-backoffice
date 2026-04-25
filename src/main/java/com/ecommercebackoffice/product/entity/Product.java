@@ -30,7 +30,7 @@ public class Product extends BaseEntity {
     private int stock;
 
     @Enumerated(EnumType.STRING)
-    private String status = "판매중";
+    private Enum status = "판매중";
 
     @Column(nullable = false)
     private boolean isDeleted = false;
