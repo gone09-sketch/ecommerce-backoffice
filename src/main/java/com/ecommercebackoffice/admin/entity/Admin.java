@@ -3,6 +3,7 @@ package com.ecommercebackoffice.admin.entity;
 import com.ecommercebackoffice.admin.enums.AdminRole;
 import com.ecommercebackoffice.admin.enums.AdminStatus;
 import com.ecommercebackoffice.config.BaseEntity;
+import com.ecommercebackoffice.exception.InvalidAdminStatusException;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -56,12 +57,22 @@ public class Admin extends BaseEntity {
     // 기능
     // 등록 승인 시점에 승인일 자동 기록
     public void approve() {
+        // 승인(PENDING) 상태가 아닐 시 승인 불가
+        if (this.status != AdminStatus.PENDING) {
+            throw new InvalidAdminStatusException("승인 가능한 상태가 아닙니다.");
+        }
+
         this.status = AdminStatus.ACTIVE;
         this.approvedAt = LocalDateTime.now();
     }
 
     // 등록 거부 시점에 거부일 및 거부 사유
     public void reject(String reason) {
+        // 승인(PENDING) 상태가 아닐 시 거부 불가
+        if (this.status != AdminStatus.PENDING) {
+            throw new InvalidAdminStatusException("거부 가능한 상태가 아닙니다.");
+        }
+
         this.status = AdminStatus.REJECTED;
         this.rejectedAt = LocalDateTime.now();
         this.rejectedReason = reason;
