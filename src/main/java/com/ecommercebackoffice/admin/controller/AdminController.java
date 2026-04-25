@@ -3,9 +3,10 @@ package com.ecommercebackoffice.admin.controller;
 import com.ecommercebackoffice.admin.dto.AdminCreateRequest;
 import com.ecommercebackoffice.admin.dto.AdminCreateResponse;
 import com.ecommercebackoffice.admin.dto.AdminGetResponse;
+import com.ecommercebackoffice.admin.dto.AdminProfileGetResponse;
 import com.ecommercebackoffice.admin.service.AdminService;
-import com.ecommercebackoffice.exception.UnauthorizedException;
-import com.ecommercebackoffice.session.SessionUser;
+import com.ecommercebackoffice.session.SessionAdminDto;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
@@ -41,8 +42,21 @@ public class AdminController {
     @GetMapping("/{adminId}")
     public ResponseEntity<AdminGetResponse> getOneAPI(@PathVariable Long adminId) {
 
-        AdminGetResponse getOneResponse = adminService.getOne(adminId);
-        return ResponseEntity.status(HttpStatus.OK).body(getOneResponse);
+        AdminGetResponse getOneResponseAPI = adminService.getOne(adminId);
+        return ResponseEntity.status(HttpStatus.OK).body(getOneResponseAPI);
+    }
+
+    // 내 프로필 조회
+    @GetMapping("/profile")
+    public ResponseEntity<AdminProfileGetResponse> getProfileAPI(HttpServletRequest httpServletRequest) {
+
+        // 1. 세션에서 내 id 가져오기
+        SessionAdminDto sessionAdminDto = (SessionAdminDto) httpServletRequest.getSession()
+                .getAttribute("loginAdmin");
+
+        // 2. 세션에서 꺼낸 id 조회
+        AdminProfileGetResponse profileGetResponseAPI = adminService.getProfile(sessionAdminDto.getId());
+        return ResponseEntity.status(HttpStatus.OK).body(profileGetResponseAPI);
     }
 
     // 관리자 정보 수정
@@ -51,9 +65,22 @@ public class AdminController {
             @PathVariable Long adminId,
             @Valid
             @RequestBody AdminPatchRequest adminPatchRequest) {
+    }
 
+    // 내 프로필 수정
+    @PatchMapping("/profile")
+    public ResponseEntity<AdminPatchResponse> patchAPI(
+            @PathVariable Long adminId,
+            @Valid
+            @RequestBody AdminPatchRequest adminPatchRequest) {
+    }
 
-
+    // 내 비밀번호 변경
+    @PatchMapping("/profile/password")
+    public ResponseEntity<AdminPatchResponse> patchAPI(
+            @PathVariable Long adminId,
+            @Valid
+            @RequestBody AdminPatchRequest adminPatchRequest) {
     }
 
     // 관리자 역할 변경
@@ -73,4 +100,6 @@ public class AdminController {
     public ResponseEntity<Void> deleteAPI(@PathVariable Long adminId) {
 
     }
+
+    //
 }

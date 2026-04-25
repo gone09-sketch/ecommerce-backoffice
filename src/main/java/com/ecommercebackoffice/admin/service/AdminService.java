@@ -3,6 +3,7 @@ package com.ecommercebackoffice.admin.service;
 import com.ecommercebackoffice.admin.dto.AdminCreateRequest;
 import com.ecommercebackoffice.admin.dto.AdminCreateResponse;
 import com.ecommercebackoffice.admin.dto.AdminGetResponse;
+import com.ecommercebackoffice.admin.dto.AdminProfileGetResponse;
 import com.ecommercebackoffice.admin.entity.Admin;
 import com.ecommercebackoffice.admin.repository.AdminRepository;
 import com.ecommercebackoffice.exception.AdminNotFoundException;
@@ -52,11 +53,34 @@ public class AdminService {
     public AdminGetResponse getOne(Long adminId) {
         // 1. 해당 관리자 Id 존재 유무 확인 (검증) + 데이터 가져와서 넣기
         Admin admin = adminRepository.findById(adminId).orElseThrow(
-                () -> new AdminNotFoundException("해당 관리자를 찾지 않았습니다."));
+                () -> new AdminNotFoundException("해당 관리자를 찾을 수 없습니다."));
 
         // 2. 반환
         return AdminGetResponse.from(admin);
     }
+
+    // 내 프로필 조회
+    @Transactional(readOnly = true)
+    public AdminProfileGetResponse getProfile(Long adminId) {
+        // 1. 해당 Id 관리자 데이터 가져오기
+        Admin admin = adminRepository.findById(adminId).orElseThrow(
+                () -> new AdminNotFoundException("해당 관리자를 찾을 수 없습니다."));
+
+        // 2. 반환
+        return AdminProfileGetResponse.from(admin);
+    }
+
+    // 관리자 정보 수정
+
+    // 내 프로필 수정
+
+    // 내 비밀번호 변경
+
+    // 관리자 역할 변경
+
+    // 관리자 상태 변경
+
+    // 관리자 삭제
 
 
 
