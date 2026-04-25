@@ -3,12 +3,16 @@ package com.ecommercebackoffice.order.dto;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+<<<<<<< HEAD
 import jakarta.validation.constraints.Pattern;
+=======
+>>>>>>> dev
 import lombok.Getter;
 
 @Getter
 public class OrderCreateRequest {
 
+<<<<<<< HEAD
     @NotNull(message = "고객 ID는 필수입니다.")
     private Long customerId;
 
@@ -30,5 +34,19 @@ public class OrderCreateRequest {
     private String receiverPhone;
 
     @NotBlank(message = "배송지는 필수입니다.")
+=======
+    @NotNull
+    private Long customerId;
+    @NotNull
+    private Long productId;
+    @NotNull
+    @Min(1)
+    private Integer quantity;
+    @NotBlank
+    private String receiverName;
+    @NotBlank
+    private String receiverPhone;
+    @NotBlank
+>>>>>>> dev
     private String deliveryAddress;
 }

@@ -10,7 +10,11 @@ public class OrderCreateResponse {
     private final Long id;
     private final LocalDateTime createdAt;
     private final String orderNumber;
+<<<<<<< HEAD
     private final String status;            // 응답에는 "준비중"을 보여주고 서비스 로직은 READY 설명값으로 꺼냄
+=======
+    private final String status;
+>>>>>>> dev
     private final Integer quantity;
     private final Long orderPrice;
     private final Long totalPrice;

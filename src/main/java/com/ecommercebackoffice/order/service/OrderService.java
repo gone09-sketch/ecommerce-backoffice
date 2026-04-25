@@ -1,5 +1,6 @@
 package com.ecommercebackoffice.order.service;
 
+<<<<<<< HEAD
 import com.ecommercebackoffice.admin.entity.Admin;
 import com.ecommercebackoffice.admin.repository.AdminRepository;
 import com.ecommercebackoffice.customer.entity.Customer;
@@ -10,6 +11,12 @@ import com.ecommercebackoffice.order.entity.Order;
 import com.ecommercebackoffice.order.repository.OrderRepository;
 import com.ecommercebackoffice.product.entity.Product;
 import com.ecommercebackoffice.product.repository.ProductRepository;
+=======
+import com.ecommercebackoffice.customer.repository.CustomerRepository;
+import com.ecommercebackoffice.order.dto.OrderCreateRequest;
+import com.ecommercebackoffice.order.dto.OrderCreateResponse;
+import com.ecommercebackoffice.order.repository.OrderRepository;
+>>>>>>> dev
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,12 +28,16 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final CustomerRepository customerRepository;
+<<<<<<< HEAD
     private final AdminRepository adminRepository;
     private final ProductRepository productRepository;
+=======
+>>>>>>> dev
 
     @Transactional
     public OrderCreateResponse save(@Valid OrderCreateRequest request, Long adminId) {
         if (request.getQuantity()<1){
+<<<<<<< HEAD
             throw new IllegalStateException("수량은 1 이상이어야 합니다.");
         }
         Admin admin = adminRepository.findById(adminId).orElseThrow(
@@ -67,5 +78,10 @@ public class OrderService {
                 savedOrder.getTotalPrice(),
                 savedOrder.getAdminId()
         );
+=======
+            throw new IllegalStateException("재고가 부족합니다.");
+        }
+
+>>>>>>> dev
     }
 }
