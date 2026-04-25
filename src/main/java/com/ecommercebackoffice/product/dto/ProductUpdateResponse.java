@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ProductUpdateResponse {
 
-    private final int status;
+    private final int httpStatus;
     private final String message;
     private final ProductUpdateResult data;
 }

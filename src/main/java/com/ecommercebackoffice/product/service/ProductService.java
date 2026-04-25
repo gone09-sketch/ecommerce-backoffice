@@ -49,7 +49,7 @@ public class ProductService {
 
     @Transactional(readOnly = true)
     public ProductGetOneResponse findOne(SessionUser sessionUser, Long productId) {
-        if(sessionUser == null) {
+        if (sessionUser == null) {
             throw new UnauthorizedException("로그인이 필요한 기능입니다.");
         }
 
@@ -58,14 +58,18 @@ public class ProductService {
         );
 
         return new ProductGetOneResponse(
-                product.getName(),
-                product.getCategory(),
-                product.getPrice(),
-                product.getStock(),
-                product.getStatus(),
-                product.getCreatedAt(),
-                product.getAdmin().getName(),
-                product.getAdmin().getEmail()
+                200,
+                "상품 상세 조회 성공",
+                new ProductGetOneResult(
+                        product.getName(),
+                        product.getCategory(),
+                        product.getPrice(),
+                        product.getStock(),
+                        product.getStatus(),
+                        product.getCreatedAt(),
+                        product.getAdmin().getName(),
+                        product.getAdmin().getEmail()
+                )
         );
     }
 
