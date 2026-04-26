@@ -166,6 +166,18 @@ public class AdminService {
     }
 
     // 관리자 상태 변경
+    @Transactional
+    public AdminStatusPatchResponse patchStatus(Long adminId, AdminStatusPatchRequest adminStatusPatchRequest) {
+        // 1. 관리자 조회
+        Admin foundAdmin = adminRepository.findById(adminId).orElseThrow(
+                () -> new AdminNotFoundException("해당 관리자를 찾을 수 없습니다."));
+
+        // 2. 수정 내용 업데이트
+        foundAdmin.statusUpdate(adminStatusPatchRequest.getStatus());
+
+        // 3. 반환
+        return AdminStatusPatchResponse.from(foundAdmin);
+    }
 
     // 관리자 삭제
 

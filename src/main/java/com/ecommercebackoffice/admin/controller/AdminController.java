@@ -35,6 +35,7 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.OK).body(signUpResponseAPI);
     }
 
+
     // 관리자 상세 조회
     @GetMapping("/{adminId}")
     public ResponseEntity<AdminGetResponse> getOneAPI(@PathVariable Long adminId) {
@@ -42,6 +43,7 @@ public class AdminController {
         AdminGetResponse getOneResponseAPI = adminService.getOne(adminId);
         return ResponseEntity.status(HttpStatus.OK).body(getOneResponseAPI);
     }
+
 
     // 내 프로필 조회
     @GetMapping("/profile")
@@ -56,6 +58,7 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.OK).body(profileGetResponseAPI);
     }
 
+
     // 관리자 정보 수정
     @PatchMapping("/{adminId}")
     public ResponseEntity<AdminPatchResponse> patchAPI(
@@ -66,6 +69,7 @@ public class AdminController {
         AdminPatchResponse adminPatchResponseAPI = adminService.patchAdmin(adminId, adminPatchRequest);
         return ResponseEntity.status(HttpStatus.OK).body(adminPatchResponseAPI);
     }
+
 
     // 내 프로필 수정
     @PatchMapping("/profile")
@@ -78,6 +82,7 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.OK).body(profilePatchResponseAPI);
     }
 
+
     // 관리자 역할 변경
     @PatchMapping("/{adminId}/role")
     public ResponseEntity<AdminRolePatchResponse> patchRoleAPI(
@@ -89,11 +94,18 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.OK).body(rolePatchResponseAPI);
     }
 
+
     // 관리자 상태 변경
     @PatchMapping("/{adminId}/status")
-    public ResponseEntity<AdminStatusPatchResponse> patchStatusAPI(@PathVariable Long adminId) {
+    public ResponseEntity<AdminStatusPatchResponse> patchStatusAPI(
+            @PathVariable Long adminId,
+            @Valid
+            @RequestBody AdminStatusPatchRequest adminStatusPatchRequest) {
 
+        AdminStatusPatchResponse statusPatchResponseAPI = adminService.patchStatus(adminId, adminStatusPatchRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(statusPatchResponseAPI);
     }
+
 
     // 관리자 삭제
     @DeleteMapping("/{adminId}")

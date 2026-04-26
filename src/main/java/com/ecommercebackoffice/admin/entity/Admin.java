@@ -115,7 +115,10 @@ public class Admin extends BaseEntity {
         this.role = newRole;
     }
 
-    // 관리자 상태 변경
+    // 관리자 상태 upadate
+    public void statusUpdate(AdminStatus newStatus) {
+        this.status = newStatus;
+    }
 
     // 관리자 삭제
 }
