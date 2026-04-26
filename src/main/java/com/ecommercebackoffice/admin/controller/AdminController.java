@@ -116,7 +116,4 @@ public class AdminController {
         adminService.deleteAdmin(adminId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
-
-
-
 }

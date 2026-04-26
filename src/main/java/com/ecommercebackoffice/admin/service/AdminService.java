@@ -203,10 +203,4 @@ public class AdminService {
         // 2. 삭제 업데이트
         adminRepository.delete(foundAdmin);
     }
-
-
-
-
-
-
 }

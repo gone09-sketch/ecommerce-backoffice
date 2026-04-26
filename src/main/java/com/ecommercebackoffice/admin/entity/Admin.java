@@ -81,33 +81,31 @@ public class Admin extends BaseEntity {
     }
 
     // 관리자 수정 update
-    public Admin adminUpdate(AdminPatchRequest adminPatchRequest) {
+    public void adminUpdate(String name, String email, String phoneNumber) {
         // null이 아닌 경우 수정, null인 경우 기존 데이터 유지
-        if (adminPatchRequest.getName() != null) {
-            this.name = adminPatchRequest.getName();
+        if (name != null) {
+            this.name = name;
         }
-        if (adminPatchRequest.getEmail() != null) {
-            this.email = adminPatchRequest.getEmail();
+        if (email != null) {
+            this.email = email;
         }
-        if (adminPatchRequest.getPhoneNumber() != null) {
-            this.phoneNumber = adminPatchRequest.getPhoneNumber();
+        if (phoneNumber != null) {
+            this.phoneNumber = phoneNumber;
         }
-        return this;
     }
 
     // 내 프로필 수정 update
-    public Admin profileUpdate(AdminProfilePatchRequest profilePatchRequest) {
+    public void profileUpdate(String name, String email, String phoneNumber) {
         // null이 아닌 경우 수정, null인 경우 기존 데이터 유지
-        if (profilePatchRequest.getName() != null) {
-            this.name = profilePatchRequest.getName();
+        if (name != null) {
+            this.name = name;
         }
-        if (profilePatchRequest.getEmail() != null) {
-            this.email = profilePatchRequest.getEmail();
+        if (email != null) {
+            this.email = email;
         }
-        if (profilePatchRequest.getPhoneNumber() != null) {
-            this.phoneNumber = profilePatchRequest.getPhoneNumber();
+        if (phoneNumber != null) {
+            this.phoneNumber = phoneNumber;
         }
-        return this;
     }
 
     // 관리자 역할 update
@@ -119,6 +117,4 @@ public class Admin extends BaseEntity {
     public void statusUpdate(AdminStatus newStatus) {
         this.status = newStatus;
     }
-
-    // 관리자 삭제
 }
