@@ -1,7 +1,7 @@
 package com.ecommercebackoffice.customer.dto;
 
 import com.ecommercebackoffice.customer.entity.Customer;
-import com.ecommercebackoffice.customer.enums.CustomerStatus;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -9,42 +9,53 @@ import java.util.List;
 
 @Getter
 public class CustomerGetListResponse {
-    
-    private List<CustomerGetDto> customerGetDtos;
 
-    public CustomerGetListResponse(List<CustomerGetDto> customerGetDtos) {
+    private final List<CustomerGetResponse> customerGetResponses;
 
-        this.customerGetDtos = customerGetDtos;
+    public CustomerGetListResponse(List<CustomerGetResponse> customerGetResponses) {
+        this.customerGetResponses = customerGetResponses;
     }
 
-
     @Getter
-    public static class CustomerGetDto {
+    @JsonPropertyOrder({
+            "customerId",
+            "name",
+            "email",
+            "phoneNumber",
+            "status",
+            "createdAt",
+            "updatedAt"
+    })
+    public static class CustomerGetResponse {
 
-        private final Long id;
+        private final Long customerId;
         private final String name;
         private final String email;
         private final String phoneNumber;
+        private final String status;
         private final LocalDateTime createdAt;
-        private final CustomerStatus customerStatus;
+        private final LocalDateTime updatedAt;
 
-        private CustomerGetDto(Long id, String name, String email, String phoneNumber, LocalDateTime createdAt, CustomerStatus customerStatus) {
-            this.id = id;
+        private CustomerGetResponse(Long customerId, String name, String email, String phoneNumber,
+                                    String status, LocalDateTime createdAt, LocalDateTime updatedAt) {
+            this.customerId = customerId;
             this.name = name;
             this.email = email;
             this.phoneNumber = phoneNumber;
+            this.status = status;
             this.createdAt = createdAt;
-            this.customerStatus = customerStatus;
+            this.updatedAt = updatedAt;
         }
 
-        public static CustomerGetDto from (Customer customer){
-            return  new CustomerGetDto(
+        public static CustomerGetResponse from(Customer customer) {
+            return new CustomerGetResponse(
                     customer.getId(),
                     customer.getName(),
                     customer.getEmail(),
                     customer.getPhoneNumber(),
+                    customer.getStatus().getDescription(),
                     customer.getCreatedAt(),
-                    customer.getCustomerStatus()
+                    customer.getUpdatedAt()
             );
         }
     }

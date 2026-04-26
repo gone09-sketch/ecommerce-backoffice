@@ -2,10 +2,14 @@ package com.ecommercebackoffice.product.entity;
 
 import com.ecommercebackoffice.admin.entity.Admin;
 import com.ecommercebackoffice.config.BaseEntity;
+import com.ecommercebackoffice.product.enums.ProductEnum;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import static com.ecommercebackoffice.product.enums.ProductEnum.ON_SALE;
+import static com.ecommercebackoffice.product.enums.ProductEnum.SOLD_OUT;
 
 @Getter
 @Entity
@@ -30,7 +34,7 @@ public class Product extends BaseEntity {
     private int stock;
 
     @Enumerated(EnumType.STRING)
-    private Enum status = "판매중";
+    private ProductEnum status = ON_SALE;
 
     @Column(nullable = false)
     private boolean isDeleted = false;
@@ -63,9 +67,9 @@ public class Product extends BaseEntity {
 
         if(!this.status.equals("단종")) {
             if(this.stock >= 1) {
-                this.status = "판매중";
+                this.status = ON_SALE;
             } else {
-                this.status = "품절";
+                this.status = SOLD_OUT;
             }
         }
     }

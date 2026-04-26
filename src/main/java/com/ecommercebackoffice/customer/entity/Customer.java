@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.SoftDelete;
 
 import java.time.LocalDateTime;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 @Table(name = "customers")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLRestriction("is_deleted = false") @SoftDelete(columnName = "is_deleted")
 public class Customer extends BaseEntity {
 
     @Id
@@ -33,34 +35,29 @@ public class Customer extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private CustomerStatus customerStatus;
+    private CustomerStatus status;
 
     private LocalDateTime removedAt;
 
     private String removedReason;
-
-    @Column(name = "isdeleted", nullable = false)
-    private Boolean isDeleted;
-
 
 
     public Customer(String name, String email, String phoneNumber) {
         this.name = name;
         this.email = email;
         this.phoneNumber = phoneNumber;
-        this.customerStatus = CustomerStatus.ACTIVE;
-        this.isDeleted = false;
+        this.status = CustomerStatus.ACTIVE;
     }
 
 
-    public CustomerUpdateResponse update(CustomerUpdateRequest request) {
+    public void update(CustomerUpdateRequest request) {
         this.name = request.getName();
         this.email = request.getEmail();
         this.phoneNumber = request.getPhoneNumber();
-        return null;
     }
 
     public void updateStatus(CustomerStatus status) {
-        this.customerStatus = status;
+        this.status = status;
     }
+
 }

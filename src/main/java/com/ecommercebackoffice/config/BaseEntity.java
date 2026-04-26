@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 @Getter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-
 public class BaseEntity {
 
     // 속성
@@ -23,4 +22,5 @@ public class BaseEntity {
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
+
 }
