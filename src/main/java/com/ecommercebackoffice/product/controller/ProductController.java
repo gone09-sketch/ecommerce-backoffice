@@ -56,4 +56,12 @@ public class ProductController {
     ) {
         return ResponseEntity.status(HttpStatus.OK).body(productService.updateStatus(sessionUser, productId, request));
     }
+
+    @DeleteMapping("/{productId}")
+    public ResponseEntity<ProductDeleteResponse> productDelete(
+            @SessionAttribute(name = "loginAdmin", required = false) SessionUser sessionUser,
+            @PathVariable Long productId
+    ) {
+        return ResponseEntity.status(HttpStatus.OK).body(productService.delete(sessionUser, productId));
+    }
 }

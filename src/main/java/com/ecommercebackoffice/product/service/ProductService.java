@@ -153,4 +153,22 @@ public class ProductService {
                 )
         );
     }
+
+    @Transactional
+    public ProductDeleteResponse delete(SessionUser sessionUser, Long productId) {
+        if(sessionUser == null) {
+            throw new UnauthorizedException("로그인이 필요한 기능입니다.");
+        }
+
+        Product product = productRepository.findById(productId).orElseThrow(
+                () -> new ProductNotFoundException("해당하는 상품이 존재하지 않습니다.")
+        );
+
+        productRepository.delete(product);
+
+        return new ProductDeleteResponse(
+                204,
+                "상품 삭제 성공"
+        );
+    }
 }
