@@ -1,8 +1,18 @@
 package com.ecommercebackoffice.session;
 
-/**
- * NOTE:세션 정보를 이곳에 저장합니다.
- */
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-public class SessionUser {
+import java.io.Serializable;
+
+@Getter
+@AllArgsConstructor
+public class SessionUser implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+    private Long id;
+    private String email;
+    private String name;
+    private String role;
+    private String userType;
 }
