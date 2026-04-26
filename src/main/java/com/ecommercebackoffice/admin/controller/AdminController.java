@@ -4,6 +4,7 @@ import com.ecommercebackoffice.admin.dto.*;
 import com.ecommercebackoffice.admin.service.AdminService;
 import com.ecommercebackoffice.session.SessionAdminDto;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
@@ -64,9 +65,10 @@ public class AdminController {
     public ResponseEntity<AdminPatchResponse> patchAPI(
             @PathVariable Long adminId,
             @Valid
-            @RequestBody AdminPatchRequest adminPatchRequest) {
+            @RequestBody AdminPatchRequest adminPatchRequest,
+            HttpSession httpSession) {
 
-        AdminPatchResponse adminPatchResponseAPI = adminService.patchAdmin(adminId, adminPatchRequest);
+        AdminPatchResponse adminPatchResponseAPI = adminService.patchAdmin(adminId, adminPatchRequest, httpSession);
         return ResponseEntity.status(HttpStatus.OK).body(adminPatchResponseAPI);
     }
 
@@ -74,11 +76,11 @@ public class AdminController {
     // 내 프로필 수정
     @PatchMapping("/profile")
     public ResponseEntity<AdminProfilePatchResponse> patchProfileAPI(
-            @PathVariable Long adminId,
             @Valid
-            @RequestBody AdminProfilePatchRequest adminProfilePatchRequest) {
+            @RequestBody AdminProfilePatchRequest adminProfilePatchRequest,
+            HttpSession httpSession) {
 
-        AdminProfilePatchResponse profilePatchResponseAPI = adminService.patchProfile(adminId, adminProfilePatchRequest);
+        AdminProfilePatchResponse profilePatchResponseAPI = adminService.patchProfile(adminProfilePatchRequest, httpSession);
         return ResponseEntity.status(HttpStatus.OK).body(profilePatchResponseAPI);
     }
 
@@ -111,7 +113,10 @@ public class AdminController {
     @DeleteMapping("/{adminId}")
     public ResponseEntity<Void> deleteAPI(@PathVariable Long adminId) {
 
+        adminService.deleteAdmin(adminId);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    //
+
+
 }

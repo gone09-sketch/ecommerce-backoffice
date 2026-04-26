@@ -59,6 +59,7 @@ public class AdminService {
         return AdminGetResponse.from(admin);
     }
 
+
     // 내 프로필 조회
     @Transactional(readOnly = true)
     public AdminProfileGetResponse getProfile(Long adminId) {
@@ -76,7 +77,7 @@ public class AdminService {
     public AdminPatchResponse patchAdmin(Long adminId, AdminPatchRequest adminPatchRequest,
                                          HttpSession httpSession) {
         // 1. 관리자 조회
-        Admin foundAdmin = adminRepository.findById(adminId).orElseThrow(
+        Admin admin = adminRepository.findById(adminId).orElseThrow(
                 () -> new AdminNotFoundException("해당 관리자를 찾을 수 없습니다."));
 
         // 2. 데이터 준비
@@ -90,64 +91,75 @@ public class AdminService {
             }
 
             // 3-2. 이메일을 변경한 경우, 기존 이메일과 다르고 DB에 이미 존재하면 예외처리
-            if (!newEmail.equals(foundAdmin.getEmail()) &&
+            if (!newEmail.equals(admin.getEmail()) &&
             adminRepository.existsByEmail(newEmail)) {
                 throw new DuplicateEmailException("이미 사용 중인 이메일입니다.");
             }
         }
 
         // 4. 수정 내용 업데이트 + 데이터 담아주기
-        foundAdmin.adminUpdate(adminPatchRequest);
+        admin.adminUpdate(
+                adminPatchRequest.getName(),
+                adminPatchRequest.getEmail(),
+                adminPatchRequest.getPhoneNumber());
 
         // 5. 세션 업데이트
         httpSession.setAttribute("loginAdmin", new SessionAdminDto(
-                foundAdmin.getId(),
-                foundAdmin.getEmail(),
-                foundAdmin.getRole().getDescription()
+                admin.getId(),
+                admin.getEmail(),
+                admin.getRole().getDescription()
         ));
 
         // 6. 반환
-        return AdminPatchResponse.from(foundAdmin);
+        return AdminPatchResponse.from(admin);
     }
 
 
     // 내 프로필 수정
     @Transactional
-    public AdminProfilePatchResponse patchProfile(Long adminId, AdminProfilePatchRequest profilePatchRequest,
+    public AdminProfilePatchResponse patchProfile(AdminProfilePatchRequest profilePatchRequest,
                                                   HttpSession httpSession) {
-        // 1. 관리자 조회
-        Admin foundProfile = adminRepository.findById(adminId).orElseThrow(
+        // 1. 세션에서 adminId 가져오기
+        SessionAdminDto sessionAdmin = (SessionAdminDto) httpSession.getAttribute("loginAdmin");
+        Long adminId = sessionAdmin.getId();
+
+        // 2. 해당 관리자 조회
+        Admin admin = adminRepository.findById(adminId).orElseThrow(
                 () -> new AdminNotFoundException("해당 관리자를 찾을 수 없습니다."));
 
-        // 2. 데이터 준비
+        // 3. 데이터 준비
         String newEmail = profilePatchRequest.getEmail();
 
-        // 3. 이메일 변경 시 중복 체크 newEmail이 null이 아닐 경우,
+        // 4. 이메일 변경 시 중복 체크 (null이면 변경 안 하는 것으로 간주)
         if (newEmail != null) {
-            // 3-1. newEmail이 공백일 경우 예외처리
+
+            // 4-1. 공백 이메일 예외처리
             if (newEmail.isBlank()) {
                 throw new InvalidInputException("이메일은 공백일 수 없습니다.");
             }
 
-            // 3-2. 이메일을 변경한 경우, 기존 이메일과 다르고 DB에 이미 존재하면 예외처리
-            if (!newEmail.equals(foundProfile.getEmail()) &&
+            // 4-2. 기존 이메일과 다르고 DB에 이미 존재하면 예외처리
+            if (!newEmail.equals(admin.getEmail()) &&
                     adminRepository.existsByEmail(newEmail)) {
                 throw new DuplicateEmailException("이미 사용 중인 이메일입니다.");
             }
         }
 
-        // 3. 수정 내용 업데이트 + 데이터 담아주기
-        foundProfile.profileUpdate(profilePatchRequest);
+        // 5. 수정 내용 업데이트
+        admin.profileUpdate(
+                profilePatchRequest.getName(),
+                profilePatchRequest.getEmail(),
+                profilePatchRequest.getPhoneNumber());
 
-        // 4. 세션 업데이트
+        // 6. 세션 업데이트
         httpSession.setAttribute("loginAdmin", new SessionAdminDto(
-                foundProfile.getId(),
-                foundProfile.getEmail(),
-                foundProfile.getRole().getDescription()
+                admin.getId(),
+                admin.getEmail(),
+                admin.getRole().getDescription()
         ));
 
-        // 5. 반환
-        return AdminProfilePatchResponse.from(foundProfile);
+        // 7. 반환
+        return AdminProfilePatchResponse.from(admin);
     }
 
 
@@ -155,31 +167,42 @@ public class AdminService {
     @Transactional
     public AdminRolePatchResponse patchRole(Long adminId, AdminRolePatchRequest adminRolePatchRequest) {
         // 1. 관리자 조회
-        Admin foundAdmin = adminRepository.findById(adminId).orElseThrow(
+        Admin admin = adminRepository.findById(adminId).orElseThrow(
                 () -> new AdminNotFoundException("해당 관리자를 찾을 수 없습니다."));
 
         // 2. 수정 내용 업데이트
-        foundAdmin.roleUpdate(adminRolePatchRequest.getRole());
+        admin.roleUpdate(adminRolePatchRequest.getRole());
 
         // 3. 반환
-        return AdminRolePatchResponse.from(foundAdmin);
+        return AdminRolePatchResponse.from(admin);
     }
+
 
     // 관리자 상태 변경
     @Transactional
     public AdminStatusPatchResponse patchStatus(Long adminId, AdminStatusPatchRequest adminStatusPatchRequest) {
         // 1. 관리자 조회
-        Admin foundAdmin = adminRepository.findById(adminId).orElseThrow(
+        Admin admin = adminRepository.findById(adminId).orElseThrow(
                 () -> new AdminNotFoundException("해당 관리자를 찾을 수 없습니다."));
 
         // 2. 수정 내용 업데이트
-        foundAdmin.statusUpdate(adminStatusPatchRequest.getStatus());
+        admin.statusUpdate(adminStatusPatchRequest.getStatus());
 
         // 3. 반환
-        return AdminStatusPatchResponse.from(foundAdmin);
+        return AdminStatusPatchResponse.from(admin);
     }
 
+
     // 관리자 삭제
+    @Transactional
+    public void deleteAdmin(Long adminId) {
+        // 1. 관리자 조회
+        Admin foundAdmin = adminRepository.findById(adminId).orElseThrow(
+                () -> new AdminNotFoundException("해당 관리자를 찾을 수 없습니다."));
+
+        // 2. 삭제 업데이트
+        adminRepository.delete(foundAdmin);
+    }
 
 
 
