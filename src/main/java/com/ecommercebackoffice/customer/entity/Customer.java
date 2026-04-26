@@ -17,7 +17,8 @@ import java.time.LocalDateTime;
 @Table(name = "customers")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SQLRestriction("is_deleted = false") @SoftDelete(columnName = "is_deleted")
+@SoftDelete(columnName = "is_deleted")
+@SQLRestriction("is_deleted = false")
 public class Customer extends BaseEntity {
 
     @Id
