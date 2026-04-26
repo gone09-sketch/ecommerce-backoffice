@@ -3,6 +3,7 @@ package com.ecommercebackoffice.admin.service;
 import com.ecommercebackoffice.admin.dto.*;
 import com.ecommercebackoffice.admin.entity.Admin;
 import com.ecommercebackoffice.admin.repository.AdminRepository;
+import com.ecommercebackoffice.config.PasswordEncoder;
 import com.ecommercebackoffice.exception.AdminNotFoundException;
 import com.ecommercebackoffice.exception.DuplicateEmailException;
 import com.ecommercebackoffice.exception.InvalidInputException;
@@ -16,12 +17,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Getter
 
 public class AdminService {
+    private final PasswordEncoder passwordEncoder;
     // 속성
     private AdminRepository adminRepository;
 
     // 생성자
-    public AdminService(AdminRepository adminRepository) {
+    public AdminService(AdminRepository adminRepository, PasswordEncoder passwordEncoder) {
         this.adminRepository = adminRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
 
@@ -160,6 +163,36 @@ public class AdminService {
 
         // 7. 반환
         return AdminProfilePatchResponse.from(admin);
+    }
+
+
+    // 내 비밀번호 변경
+    @Transactional
+    public void patchPassword(AdminPasswordPatchRequest adminPasswordPatchRequest,
+                              HttpSession httpSession) {
+        // 1. 세션에서 adminId 가져오기
+        SessionAdminDto sessionAdmin = (SessionAdminDto) httpSession.getAttribute("loginAdmin");
+        Long adminId = sessionAdmin.getId();
+
+        // 2. 해당 관리자 조회
+        Admin foudAdmin = adminRepository.findById(adminId).orElseThrow(
+                () -> new AdminNotFoundException("해당 관리자를 찾을 수 없습니다."));
+
+        // 3. 기존 비밀번호 일치 확인
+        if (!passwordEncoder.matches(adminPasswordPatchRequest.getCurrentPassword(), foudAdmin.getPassword())) {
+            throw new InvalidInputException("현재 비밀번호와 일치하지 않습니다.");
+        }
+
+        // 4. 새 비밀번호와 다시 입력받은 비밀번호 일치 검증
+        if (!adminPasswordPatchRequest.getNewPassword().equals(adminPasswordPatchRequest.getConfirmPassword())) {
+            throw new InvalidInputException("새 비밀번화와 일치하지 않습니다.");
+        }
+
+        // 5. 새 비밀번호 암호화
+        String encodedPassword = passwordEncoder.encode(adminPasswordPatchRequest.getNewPassword());
+
+        // 6. 새 비밀번호 업데이트
+        foudAdmin.passwordUpdate(encodedPassword);
     }
 
 

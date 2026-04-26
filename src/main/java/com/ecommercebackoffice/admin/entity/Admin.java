@@ -1,8 +1,5 @@
 package com.ecommercebackoffice.admin.entity;
 
-import com.ecommercebackoffice.admin.dto.AdminPatchRequest;
-import com.ecommercebackoffice.admin.dto.AdminProfilePatchRequest;
-import com.ecommercebackoffice.admin.dto.AdminRolePatchRequest;
 import com.ecommercebackoffice.admin.enums.AdminRole;
 import com.ecommercebackoffice.admin.enums.AdminStatus;
 import com.ecommercebackoffice.config.BaseEntity;
@@ -116,5 +113,10 @@ public class Admin extends BaseEntity {
     // 관리자 상태 upadate
     public void statusUpdate(AdminStatus newStatus) {
         this.status = newStatus;
+    }
+
+    // 비밀번호 update
+    public void passwordUpdate(String encodedPassword) {
+        this.password = encodedPassword;
     }
 }

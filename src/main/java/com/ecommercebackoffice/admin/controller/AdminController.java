@@ -84,6 +84,8 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.OK).body(profilePatchResponseAPI);
     }
 
+    // 내 비밀번호 변경
+
 
     // 관리자 역할 변경
     @PatchMapping("/{adminId}/role")
