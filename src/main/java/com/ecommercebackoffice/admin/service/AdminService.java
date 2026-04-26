@@ -70,6 +70,7 @@ public class AdminService {
         return AdminProfileGetResponse.from(admin);
     }
 
+
     // 관리자 정보 수정
     @Transactional
     public AdminPatchResponse patchAdmin(Long adminId, AdminPatchRequest adminPatchRequest,
@@ -109,6 +110,7 @@ public class AdminService {
         return AdminPatchResponse.from(foundAdmin);
     }
 
+
     // 내 프로필 수정
     @Transactional
     public AdminProfilePatchResponse patchProfile(Long adminId, AdminProfilePatchRequest profilePatchRequest,
@@ -144,21 +146,23 @@ public class AdminService {
                 foundProfile.getRole().getDescription()
         ));
 
-        // 4. 반환
+        // 5. 반환
         return AdminProfilePatchResponse.from(foundProfile);
     }
 
+
     // 관리자 역할 변경
     @Transactional
-    public AdminRolePatchResponse patchRole(Long adminId) {
+    public AdminRolePatchResponse patchRole(Long adminId, AdminRolePatchRequest adminRolePatchRequest) {
         // 1. 관리자 조회
-        Admin foundRole = adminRepository.findById(adminId).orElseThrow(
+        Admin foundAdmin = adminRepository.findById(adminId).orElseThrow(
                 () -> new AdminNotFoundException("해당 관리자를 찾을 수 없습니다."));
 
-        // 2. Role 변경하기
+        // 2. 수정 내용 업데이트
+        foundAdmin.roleUpdate(adminRolePatchRequest.getRole());
 
-        // 3.
-
+        // 3. 반환
+        return AdminRolePatchResponse.from(foundAdmin);
     }
 
     // 관리자 상태 변경

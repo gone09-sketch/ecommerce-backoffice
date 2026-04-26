@@ -2,6 +2,7 @@ package com.ecommercebackoffice.admin.entity;
 
 import com.ecommercebackoffice.admin.dto.AdminPatchRequest;
 import com.ecommercebackoffice.admin.dto.AdminProfilePatchRequest;
+import com.ecommercebackoffice.admin.dto.AdminRolePatchRequest;
 import com.ecommercebackoffice.admin.enums.AdminRole;
 import com.ecommercebackoffice.admin.enums.AdminStatus;
 import com.ecommercebackoffice.config.BaseEntity;
@@ -108,4 +109,13 @@ public class Admin extends BaseEntity {
         }
         return this;
     }
+
+    // 관리자 역할 update
+    public void roleUpdate(AdminRole newRole) {
+        this.role = newRole;
+    }
+
+    // 관리자 상태 변경
+
+    // 관리자 삭제
 }

@@ -78,18 +78,15 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.OK).body(profilePatchResponseAPI);
     }
 
-    // 내 비밀번호 변경
-    @PatchMapping("/profile/password")
-    public ResponseEntity<AdminPasswordPatchResponse> patchPasswordAPI(
-            @PathVariable Long adminId,
-            @Valid
-            @RequestBody AdminPatchRequest adminPatchRequest) {
-    }
-
     // 관리자 역할 변경
     @PatchMapping("/{adminId}/role")
-    public ResponseEntity<AdminRolePatchResponse> patchRoleAPI(@PathVariable Long adminId) {
+    public ResponseEntity<AdminRolePatchResponse> patchRoleAPI(
+            @PathVariable Long adminId,
+            @Valid
+            @RequestBody AdminRolePatchRequest adminRolePatchRequest) {
 
+        AdminRolePatchResponse rolePatchResponseAPI = adminService.patchRole(adminId, adminRolePatchRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(rolePatchResponseAPI);
     }
 
     // 관리자 상태 변경
