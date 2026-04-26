@@ -6,6 +6,8 @@ import com.ecommercebackoffice.admin.repository.AdminRepository;
 import com.ecommercebackoffice.exception.AdminNotFoundException;
 import com.ecommercebackoffice.exception.DuplicateEmailException;
 import com.ecommercebackoffice.exception.InvalidInputException;
+import com.ecommercebackoffice.session.SessionAdminDto;
+import jakarta.servlet.http.HttpSession;
 import lombok.Getter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -70,7 +72,8 @@ public class AdminService {
 
     // 관리자 정보 수정
     @Transactional
-    public AdminPatchResponse patchAdmin(Long adminId, AdminPatchRequest adminPatchRequest) {
+    public AdminPatchResponse patchAdmin(Long adminId, AdminPatchRequest adminPatchRequest,
+                                         HttpSession httpSession) {
         // 1. 관리자 조회
         Admin foundAdmin = adminRepository.findById(adminId).orElseThrow(
                 () -> new AdminNotFoundException("해당 관리자를 찾을 수 없습니다."));
@@ -95,13 +98,21 @@ public class AdminService {
         // 4. 수정 내용 업데이트 + 데이터 담아주기
         foundAdmin.adminUpdate(adminPatchRequest);
 
-        // 5. 반환
+        // 5. 세션 업데이트
+        httpSession.setAttribute("loginAdmin", new SessionAdminDto(
+                foundAdmin.getId(),
+                foundAdmin.getEmail(),
+                foundAdmin.getRole().getDescription()
+        ));
+
+        // 6. 반환
         return AdminPatchResponse.from(foundAdmin);
     }
 
     // 내 프로필 수정
     @Transactional
-    public AdminProfilePatchResponse patchProfile(Long adminId, AdminProfilePatchRequest profilePatchRequest) {
+    public AdminProfilePatchResponse patchProfile(Long adminId, AdminProfilePatchRequest profilePatchRequest,
+                                                  HttpSession httpSession) {
         // 1. 관리자 조회
         Admin foundProfile = adminRepository.findById(adminId).orElseThrow(
                 () -> new AdminNotFoundException("해당 관리자를 찾을 수 없습니다."));
@@ -126,13 +137,29 @@ public class AdminService {
         // 3. 수정 내용 업데이트 + 데이터 담아주기
         foundProfile.profileUpdate(profilePatchRequest);
 
+        // 4. 세션 업데이트
+        httpSession.setAttribute("loginAdmin", new SessionAdminDto(
+                foundProfile.getId(),
+                foundProfile.getEmail(),
+                foundProfile.getRole().getDescription()
+        ));
+
         // 4. 반환
         return AdminProfilePatchResponse.from(foundProfile);
     }
 
-    // 내 비밀번호 변경
-
     // 관리자 역할 변경
+    @Transactional
+    public AdminRolePatchResponse patchRole(Long adminId) {
+        // 1. 관리자 조회
+        Admin foundRole = adminRepository.findById(adminId).orElseThrow(
+                () -> new AdminNotFoundException("해당 관리자를 찾을 수 없습니다."));
+
+        // 2. Role 변경하기
+
+        // 3.
+
+    }
 
     // 관리자 상태 변경
 
