@@ -3,6 +3,7 @@ package com.ecommercebackoffice.admin.service;
 import com.ecommercebackoffice.admin.dto.*;
 import com.ecommercebackoffice.admin.entity.Admin;
 import com.ecommercebackoffice.admin.repository.AdminRepository;
+import com.ecommercebackoffice.common.PageResponse;
 import com.ecommercebackoffice.config.PasswordEncoder;
 import com.ecommercebackoffice.exception.AdminNotFoundException;
 import com.ecommercebackoffice.exception.DuplicateEmailException;
@@ -10,8 +11,12 @@ import com.ecommercebackoffice.exception.InvalidInputException;
 import com.ecommercebackoffice.session.SessionAdminDto;
 import jakarta.servlet.http.HttpSession;
 import lombok.Getter;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+
 
 @Service
 @Getter
@@ -46,8 +51,43 @@ public class AdminService {
                 adminCreateRequest.getRole()
         );
 
-        // 3. 반환
+        // 3. db 저장
+        adminRepository.save(newAdmin);
+
+        // 4. 반환
         return AdminCreateResponse.from(newAdmin);
+    }
+
+
+    // 관리자 리스트 조회
+    @Transactional(readOnly = true)
+    public PageResponse<AdminPageListResponse> getList(AdminPageRequest pageRequest) {
+        // 1. JPA pageable로 변환
+        Pageable pageable = pageRequest.toPageable();
+
+        // 2. 검색 시, 빈 문자열 → null
+        String keyword;
+        if (StringUtils.hasText(pageRequest.getKeyword())) {
+            // 값이 있으면 → 앞뒤 공백 제거해서 저장
+            keyword = pageRequest.getKeyword().trim();
+        } else {
+            // null이거나 빈 문자열이면 → null로 저장
+            keyword = null;
+        }
+
+        // 3. DB에서 Admin 엔티티 목록 조회
+        Page<Admin> adminPage = adminRepository.findAllWithFilters(
+                keyword,
+                pageRequest.getRole(),
+                pageRequest.getStatus(),
+                pageable
+        );
+
+        // 4. dto 변환
+        Page<AdminPageListResponse> responsePage = adminPage.map(admin -> AdminPageListResponse.from(admin));
+
+        // 5. 반환
+        return new PageResponse<>(responsePage);
     }
 
 
