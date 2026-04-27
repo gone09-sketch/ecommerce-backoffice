@@ -13,7 +13,6 @@ package com.ecommercebackoffice.config;
 
 import com.ecommercebackoffice.exception.UnauthorizedException;
 import com.ecommercebackoffice.session.SessionAdminDto;
-import com.ecommercebackoffice.session.SessionUser;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;

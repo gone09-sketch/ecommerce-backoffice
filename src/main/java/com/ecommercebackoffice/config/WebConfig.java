@@ -20,7 +20,7 @@ public class WebConfig implements WebMvcConfigurer {
                 // 로그인 전에도 접근 가능한 URL 제외
                 .excludePathPatterns(
                         "/auth/login",
-                        "/admins/signup"
+                        "/admins/signUp"
                 );
     }
 }
