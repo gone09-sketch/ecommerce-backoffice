@@ -1,5 +1,6 @@
 package com.ecommercebackoffice.product.controller;
 
+import com.ecommercebackoffice.common.PageResponse;
 import com.ecommercebackoffice.product.dto.*;
 import com.ecommercebackoffice.product.service.ProductService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,9 +31,10 @@ public class ProductController {
     }
 
     @GetMapping()
-    public ResponseEntity<ProductGetAllResponse> productGetAll(
+    public ResponseEntity<PageResponse<ProductGetAllResult>> productGetAll(
+            @ModelAttribute ProductGetAllRequest request
             ) {
-        return ResponseEntity.status(HttpStatus.OK).body(productService.findAll());
+        return ResponseEntity.status(HttpStatus.OK).body(productService.findAll(request));
     }
 
     @PatchMapping("/{productId}")

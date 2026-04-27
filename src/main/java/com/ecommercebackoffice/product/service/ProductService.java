@@ -2,6 +2,7 @@ package com.ecommercebackoffice.product.service;
 
 import com.ecommercebackoffice.admin.entity.Admin;
 import com.ecommercebackoffice.admin.repository.AdminRepository;
+import com.ecommercebackoffice.common.PageResponse;
 import com.ecommercebackoffice.exception.AdminNotFoundException;
 import com.ecommercebackoffice.exception.ProductDuplicateException;
 import com.ecommercebackoffice.exception.ProductNotFoundException;
@@ -11,6 +12,8 @@ import com.ecommercebackoffice.product.repository.ProductRepository;
 import com.ecommercebackoffice.session.SessionAdminDto;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -82,11 +85,18 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public ProductGetAllResponse findAll() {
+    public PageResponse<ProductGetAllResult> findAll(ProductGetAllRequest request) {
 
-        List<Product> products= productRepository.findAll();
+        Pageable pageable = request.toPageable();
 
-        List<ProductGetAllResult> dtoDatas =  products.stream()
+        Page<Product> productPage = productRepository.searchProducts(
+                request.getKeyword(),
+                request.getCategory(),
+                request.getStatus(),
+                pageable
+        );
+
+        List<ProductGetAllResult> dtoDatas =  productPage.stream()
                 .map(product -> new ProductGetAllResult(
                         product.getId(),
                         product.getName(),
@@ -98,11 +108,15 @@ public class ProductService {
                         product.getAdmin().getName()
                 )).toList();
 
-        return new ProductGetAllResponse(
-                200,
-                "상품 리스트 조회 성공",
-                dtoDatas
-        );
+        // 👉 PageResponse로 바로 감싸기
+        Page<ProductGetAllResult> mappedPage =
+                new org.springframework.data.domain.PageImpl<>(
+                        dtoDatas,
+                        pageable,
+                        productPage.getTotalElements()
+                );
+
+        return new PageResponse<>(mappedPage);
     }
 
     @Transactional
