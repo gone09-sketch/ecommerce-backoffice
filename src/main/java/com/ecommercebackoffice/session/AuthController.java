@@ -22,7 +22,7 @@ public class AuthController {
         Admin admin = authService.authenticate(request.getEmail(), request.getPassword());
 
         // 2. 통합 세션 객체 생성
-        SessionAdmin sessionUser = new SessionAdmin(
+        SessionAdmin sessionAdmin = new SessionAdmin(
                 admin.getId(),
                 admin.getEmail(),
                 admin.getRole().name()
@@ -30,7 +30,7 @@ public class AuthController {
 
         // 3. 세션 생성 및 데이터 저장
         HttpSession session = httpRequest.getSession(true);
-        session.setAttribute("loginAdmin", sessionUser);
+        session.setAttribute("loginAdmin", sessionAdmin);
 
         return ResponseEntity.ok(admin.getName() + "님, 로그인에 성공했습니다.");
     }
