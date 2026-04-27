@@ -14,8 +14,7 @@ import java.time.LocalDateTime;
 @Getter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-@SoftDelete(columnName = "is_deleted")
-
+@SoftDelete // 공통처리
 public class BaseEntity {
 
     // 속성
