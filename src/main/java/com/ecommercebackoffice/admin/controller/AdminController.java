@@ -135,7 +135,7 @@ public class AdminController {
 
 
     // 관리자 등록 승인
-    @PatchMapping("/{adminId}/approve")
+    @PostMapping("/{adminId}/approve")
     public ResponseEntity<AdminApproveCreateResponse> approveAPI(@PathVariable Long adminId) {
 
         AdminApproveCreateResponse approveResponseAPI = adminService.adminApprove(adminId);
@@ -144,7 +144,7 @@ public class AdminController {
 
 
     // 관리자 등록 거부
-    @PatchMapping("/{adminId}/reject")
+    @PostMapping("/{adminId}/reject")
     public ResponseEntity<AdminRejectCreateResponse> rejectAPI(
             @PathVariable Long adminId,
             @Valid
