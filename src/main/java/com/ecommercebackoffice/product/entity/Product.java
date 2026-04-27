@@ -38,18 +38,17 @@ public class Product extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ProductEnum status = ON_SALE;
 
-    /* 현재 login을 통해 SessionUser 객체에 Product 등록을 요청한 Admin의 Id를 저장하는 기능이 없어,
-     Product 등록 시에 어떤 Admin객체를 참조해야 하는지를 지정할 수 없는 상태이기에 일단 연관관계 매핑부분은 다 빼 놓은 상황입니다.*/
-//    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-//    @JoinColumn(name = "admin_id", nullable = false)
-//    @NotFound(action = NotFoundAction.IGNORE)
-//    private Admin admin;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "admin_id", nullable = false)
+    @NotFound(action = NotFoundAction.IGNORE)
+    private Admin admin;
 
-    public Product(String name, String category, Long price, int stock) {
+    public Product(String name, String category, Long price, int stock, Admin admin) {
         this.name = name;
         this.category = category;
         this.price = price;
         this.stock = stock;
+        this.admin = admin;
     }
 
     public void updateInfo(String name, String category, Long price) {

@@ -2,6 +2,7 @@ package com.ecommercebackoffice.product.controller;
 
 import com.ecommercebackoffice.product.dto.*;
 import com.ecommercebackoffice.product.service.ProductService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,9 +17,10 @@ public class ProductController {
 
     @PostMapping()
     public ResponseEntity<ProductCreateResponse> productCreate(
-            @RequestBody ProductCreateRequest request
+            @RequestBody ProductCreateRequest request,
+            HttpServletRequest httpServletRequest
             ) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(productService.create(request));
+        return ResponseEntity.status(HttpStatus.CREATED).body(productService.create(httpServletRequest, request));
     }
 
     @GetMapping("/{productId}")

@@ -14,8 +14,8 @@ public class ProductGetOneResult {
     private final String category;
     private final Long price;
     private final int stock;
-    private final ProductEnum status;
+    private final String status;
     private final LocalDateTime createdAt;
-//    private final String adminName;
-//    private final String adminEmail;
+    private final String adminName;
+    private final String adminEmail;
 }

@@ -1,10 +1,15 @@
 package com.ecommercebackoffice.product.service;
 
+import com.ecommercebackoffice.admin.entity.Admin;
+import com.ecommercebackoffice.admin.repository.AdminRepository;
+import com.ecommercebackoffice.exception.AdminNotFoundException;
 import com.ecommercebackoffice.exception.ProductDuplicateException;
 import com.ecommercebackoffice.exception.ProductNotFoundException;
 import com.ecommercebackoffice.product.dto.*;
 import com.ecommercebackoffice.product.entity.Product;
 import com.ecommercebackoffice.product.repository.ProductRepository;
+import com.ecommercebackoffice.session.SessionAdminDto;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,9 +21,17 @@ import java.util.List;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final AdminRepository adminRepository;
 
     @Transactional
-    public ProductCreateResponse create(ProductCreateRequest request) {
+    public ProductCreateResponse create(HttpServletRequest httpServletRequest, ProductCreateRequest request) {
+
+        SessionAdminDto sessionAdminDto = (SessionAdminDto) httpServletRequest.getSession()
+                .getAttribute("LOGIN_USER");
+
+        Admin admin = adminRepository.findById(sessionAdminDto.getId()).orElseThrow(
+                () -> new AdminNotFoundException("해당 관리자를 찾을 수 없습니다.")
+        );
 
         if(productRepository.existsByName(request.getName())) {
             throw new ProductDuplicateException("이미 등록된 상품입니다.");
@@ -28,7 +41,8 @@ public class ProductService {
                 request.getName(),
                 request.getCategory(),
                 request.getPrice(),
-                request.getStock()
+                request.getStock(),
+                admin
         );
 
         Product savedProduct = productRepository.save(product);
@@ -39,7 +53,7 @@ public class ProductService {
                 savedProduct.getCategory(),
                 savedProduct.getPrice(),
                 savedProduct.getStock(),
-                savedProduct.getStatus(),
+                savedProduct.getStatus().getStatus(),
                 savedProduct.getCreatedAt()
         );
     }
@@ -59,10 +73,10 @@ public class ProductService {
                         product.getCategory(),
                         product.getPrice(),
                         product.getStock(),
-                        product.getStatus(),
-                        product.getCreatedAt()
-//                        product.getAdmin().getName(),
-//                        product.getAdmin().getEmail()
+                        product.getStatus().getStatus(),
+                        product.getCreatedAt(),
+                        product.getAdmin().getName(),
+                        product.getAdmin().getEmail()
                 )
         );
     }
@@ -79,9 +93,9 @@ public class ProductService {
                         product.getCategory(),
                         product.getPrice(),
                         product.getStock(),
-                        product.getStatus(),
-                        product.getCreatedAt()
-//                        product.getAdmin().getName()
+                        product.getStatus().getStatus(),
+                        product.getCreatedAt(),
+                        product.getAdmin().getName()
                 )).toList();
 
         return new ProductGetAllResponse(
@@ -109,7 +123,7 @@ public class ProductService {
                         product.getCategory(),
                         product.getPrice(),
                         product.getStock(),
-                        product.getStatus(),
+                        product.getStatus().getStatus(),
                         product.getUpdatedAt()
                 )
         );
@@ -133,7 +147,7 @@ public class ProductService {
                         product.getCategory(),
                         product.getPrice(),
                         product.getStock(),
-                        product.getStatus(),
+                        product.getStatus().getStatus(),
                         product.getUpdatedAt()
                 )
         );
@@ -157,7 +171,7 @@ public class ProductService {
                         product.getCategory(),
                         product.getPrice(),
                         product.getStock(),
-                        product.getStatus(),
+                        product.getStatus().getStatus(),
                         product.getUpdatedAt()
                 )
         );
