@@ -293,6 +293,7 @@ public class AdminService {
 
 
     // 관리자 등록 거부
+    @Transactional
     public AdminRejectCreateResponse adminReject(Long adminId, AdminRejectCreateRequest adminRejectCreateRequest) {
         // 1. 관리자 조회
         Admin admin = adminRepository.findById(adminId).orElseThrow(
