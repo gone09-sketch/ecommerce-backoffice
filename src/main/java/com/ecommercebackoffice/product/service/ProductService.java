@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class ProductService {
@@ -70,6 +72,33 @@ public class ProductService {
                         product.getAdmin().getName(),
                         product.getAdmin().getEmail()
                 )
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public ProductGetAllResponse findAll(SessionUser sessionUser) {
+        if (sessionUser == null) {
+            throw new UnauthorizedException("로그인이 필요한 기능입니다.");
+        }
+
+        List<Product> products= productRepository.findAll();
+
+        List<ProductGetAllResult> dtoDatas =  products.stream()
+                .map(product -> new ProductGetAllResult(
+                        product.getId(),
+                        product.getName(),
+                        product.getCategory(),
+                        product.getPrice(),
+                        product.getStock(),
+                        product.getStatus(),
+                        product.getCreatedAt(),
+                        product.getAdmin().getName()
+                )).toList();
+
+        return new ProductGetAllResponse(
+                200,
+                "상품 리스트 조회 성공",
+                dtoDatas
         );
     }
 

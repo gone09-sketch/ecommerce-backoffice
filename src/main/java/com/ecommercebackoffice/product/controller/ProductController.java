@@ -30,6 +30,13 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.OK).body(productService.findOne(sessionUser, productId));
     }
 
+    @GetMapping()
+    public ResponseEntity<ProductGetAllResponse> productGetAll(
+            @SessionAttribute(name = "loginAdmin", required = false) SessionUser sessionUser
+            ) {
+        return ResponseEntity.status(HttpStatus.OK).body(productService.findAll(sessionUser));
+    }
+
     @PatchMapping("/{productId}")
     public ResponseEntity<ProductUpdateResponse> productInfoUpdate(
             @SessionAttribute(name = "loginAdmin", required = false) SessionUser sessionUser,
