@@ -3,11 +3,17 @@ package com.ecommercebackoffice.product.dto;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Getter
 @RequiredArgsConstructor
 public class ProductUpdateResponse {
 
-    private final int httpStatus;
-    private final String message;
-    private final ProductUpdateResult data;
+    private final Long id;
+    private final String name;
+    private final String category;
+    private final Long price;
+    private final int stock;
+    private final String status;
+    private final LocalDateTime updatedAt;
 }

@@ -3,11 +3,18 @@ package com.ecommercebackoffice.product.dto;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Getter
 @RequiredArgsConstructor
 public class ProductGetOneResponse {
 
-    private final int httpStatus;
-    private final String message;
-    private final ProductGetOneResult data;
+    private final String name;
+    private final String category;
+    private final Long price;
+    private final int stock;
+    private final String status;
+    private final LocalDateTime createdAt;
+    private final String adminName;
+    private final String adminEmail;
 }

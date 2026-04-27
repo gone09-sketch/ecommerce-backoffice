@@ -31,7 +31,7 @@ public class ProductController {
     }
 
     @GetMapping()
-    public ResponseEntity<PageResponse<ProductGetAllResult>> productGetAll(
+    public ResponseEntity<PageResponse<ProductGetAllResponse>> productGetAll(
             @ModelAttribute ProductGetAllRequest request
             ) {
         return ResponseEntity.status(HttpStatus.OK).body(productService.findAll(request));
@@ -62,9 +62,10 @@ public class ProductController {
     }
 
     @DeleteMapping("/{productId}")
-    public ResponseEntity<ProductDeleteResponse> productDelete(
+    public ResponseEntity<Void> productDelete(
             @PathVariable Long productId
     ) {
-        return ResponseEntity.status(HttpStatus.OK).body(productService.delete(productId));
+        productService.delete(productId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

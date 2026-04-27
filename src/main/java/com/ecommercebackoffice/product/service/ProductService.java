@@ -69,23 +69,19 @@ public class ProductService {
         );
 
         return new ProductGetOneResponse(
-                200,
-                "상품 상세 조회 성공",
-                new ProductGetOneResult(
-                        product.getName(),
-                        product.getCategory(),
-                        product.getPrice(),
-                        product.getStock(),
-                        product.getStatus().getStatus(),
-                        product.getCreatedAt(),
-                        product.getAdmin().getName(),
-                        product.getAdmin().getEmail()
-                )
+                product.getName(),
+                product.getCategory(),
+                product.getPrice(),
+                product.getStock(),
+                product.getStatus().getStatus(),
+                product.getCreatedAt(),
+                product.getAdmin().getName(),
+                product.getAdmin().getEmail()
         );
     }
 
     @Transactional(readOnly = true)
-    public PageResponse<ProductGetAllResult> findAll(ProductGetAllRequest request) {
+    public PageResponse<ProductGetAllResponse> findAll(ProductGetAllRequest request) {
 
         Pageable pageable = request.toPageable();
 
@@ -96,8 +92,8 @@ public class ProductService {
                 pageable
         );
 
-        List<ProductGetAllResult> dtoDatas =  productPage.stream()
-                .map(product -> new ProductGetAllResult(
+        List<ProductGetAllResponse> dtoDatas =  productPage.stream()
+                .map(product -> new ProductGetAllResponse(
                         product.getId(),
                         product.getName(),
                         product.getCategory(),
@@ -109,7 +105,7 @@ public class ProductService {
                 )).toList();
 
         // 👉 PageResponse로 바로 감싸기
-        Page<ProductGetAllResult> mappedPage =
+        Page<ProductGetAllResponse> mappedPage =
                 new org.springframework.data.domain.PageImpl<>(
                         dtoDatas,
                         pageable,
@@ -129,17 +125,13 @@ public class ProductService {
         product.updateInfo(request.getName(), request.getCategory(), request.getPrice());
 
         return new ProductUpdateResponse(
-                200,
-                "상품 정보 수정 성공",
-                new ProductUpdateResult(
-                        product.getId(),
-                        product.getName(),
-                        product.getCategory(),
-                        product.getPrice(),
-                        product.getStock(),
-                        product.getStatus().getStatus(),
-                        product.getUpdatedAt()
-                )
+                product.getId(),
+                product.getName(),
+                product.getCategory(),
+                product.getPrice(),
+                product.getStock(),
+                product.getStatus().getStatus(),
+                product.getUpdatedAt()
         );
     }
 
@@ -153,17 +145,13 @@ public class ProductService {
         product.updateStock(request.getStock());
 
         return new ProductUpdateResponse(
-                200,
-                "상품 재고 변경 성공",
-                new ProductUpdateResult(
-                        product.getId(),
-                        product.getName(),
-                        product.getCategory(),
-                        product.getPrice(),
-                        product.getStock(),
-                        product.getStatus().getStatus(),
-                        product.getUpdatedAt()
-                )
+                product.getId(),
+                product.getName(),
+                product.getCategory(),
+                product.getPrice(),
+                product.getStock(),
+                product.getStatus().getStatus(),
+                product.getUpdatedAt()
         );
     }
 
@@ -177,32 +165,23 @@ public class ProductService {
         product.updateStatus(request.getStatus());
 
         return new ProductUpdateResponse(
-                200,
-                "상품 상태 변경 성공",
-                new ProductUpdateResult(
-                        product.getId(),
-                        product.getName(),
-                        product.getCategory(),
-                        product.getPrice(),
-                        product.getStock(),
-                        product.getStatus().getStatus(),
-                        product.getUpdatedAt()
-                )
+                product.getId(),
+                product.getName(),
+                product.getCategory(),
+                product.getPrice(),
+                product.getStock(),
+                product.getStatus().getStatus(),
+                product.getUpdatedAt()
         );
     }
 
     @Transactional
-    public ProductDeleteResponse delete(Long productId) {
+    public void delete(Long productId) {
 
         Product product = productRepository.findById(productId).orElseThrow(
                 () -> new ProductNotFoundException("해당하는 상품이 존재하지 않습니다.")
         );
 
         productRepository.delete(product);
-
-        return new ProductDeleteResponse(
-                204,
-                "상품 삭제 성공"
-        );
     }
 }
