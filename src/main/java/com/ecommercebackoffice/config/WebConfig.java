@@ -19,8 +19,9 @@ public class WebConfig implements WebMvcConfigurer {
                 .addPathPatterns("/**")
                 // 로그인 전에도 접근 가능한 URL 제외
                 .excludePathPatterns(
-                        "/auth/login",
-                        "/admins/signUp"
+                        "/auth/login", // 로그인
+                        "/admins/signUp", // 회원가입
+                        "/error" // 예외(이메일, 핸드폰 형식 오류 등)
                 );
     }
 }
