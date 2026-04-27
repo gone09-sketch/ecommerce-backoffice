@@ -4,8 +4,7 @@ import com.ecommercebackoffice.admin.entity.Admin;
 import com.ecommercebackoffice.admin.repository.AdminRepository;
 import com.ecommercebackoffice.customer.entity.Customer;
 import com.ecommercebackoffice.customer.repository.CustomerRepository;
-import com.ecommercebackoffice.exception.OrderNotFoundException;
-import com.ecommercebackoffice.exception.ProductNotFoundException;
+import com.ecommercebackoffice.exception.*;
 import com.ecommercebackoffice.order.dto.*;
 import com.ecommercebackoffice.order.entity.Order;
 import com.ecommercebackoffice.order.entity.OrderProduct;
@@ -38,27 +37,27 @@ public class OrderService {
 
     // 주문 생성
     @Transactional
-    public OrderCreateResponse save(@Valid OrderCreateRequest request, HttpSession httpSession) {
+    public OrderCreateResponse save(@Valid OrderCreateRequest request, Long adminId) {
 
-        SessionAdminDto loginAdmin = (SessionAdminDto) httpSession.getAttribute("loginAdmin");
-        Long adminId = loginAdmin.getId();
+//        SessionAdminDto loginAdmin = (SessionAdminDto) httpSession.getAttribute("loginAdmin");
+//        Long adminId = loginAdmin.getId();
 
         Admin admin = adminRepository.findById(adminId).orElseThrow(
-                () -> new IllegalStateException("존재하지않는 관리자입니다.")
+                () -> new AdminNotFoundException("존재하지 않는 관리자입니다.")
         );
         Customer customer = customerRepository.findById(request.getCustomerId()).orElseThrow(
-                () -> new IllegalStateException("존재하지않는 고객입니다.")
+                () -> new IllegalStateException("존재하지 않는 고객입니다.")     // 예외 꼭 바꾸기
         );
         Product product = productRepository.findById(request.getProductId()).orElseThrow(
-                () -> new ProductNotFoundException("존재하지않는 상품입니다.")
+                () -> new ProductNotFoundException("존재하지 않는 상품입니다.")
         );
 
         if (product.getStatus().equals("단종"))
-            throw new IllegalStateException("단종 상품은 주문할 수 없습니다.");
+            throw new BadRequestException("단종 상품은 주문할 수 없습니다.");
         if (product.getStatus().equals("품절"))
-            throw new IllegalStateException("품절 상품은 주문할 수 없습니다.");
+            throw new BadRequestException("품절 상품은 주문할 수 없습니다.");
         if (product.getStock() < request.getQuantity()) {
-            throw new IllegalStateException("재고가 부족합니다");
+            throw new BadRequestException("재고가 부족합니다");
         }
         Long orderPrice = product.getPrice();
         Order order = new Order(
@@ -71,18 +70,22 @@ public class OrderService {
                 request.getDeliveryAddress()
         );
 
+        // 주문 차감 메서드
         product.updateStock(request.getQuantity());
+
         Order savedOrder = orderRepository.save(order);
-        return new OrderCreateResponse(
-                savedOrder.getId(),
-                savedOrder.getCreatedAt(),
-                savedOrder.getOrderNumber(),
-                savedOrder.getStatus().getDescription(),
-                savedOrder.getQuantity(),
-                savedOrder.getOrderPrice(),
-                savedOrder.getTotalPrice(),
-                savedOrder.getAdmin().getId()
+
+        // orderProduct 저장
+        OrderProduct orderProduct = new OrderProduct(
+                savedOrder,
+                product.getId(),
+                product.getName(),
+                request.getQuantity(),
+                product.getPrice()
         );
+        orderProductRepository.save(orderProduct);
+
+        return OrderCreateResponse.from(savedOrder);
     }
 
     // 주문 상세 조회
@@ -96,7 +99,7 @@ public class OrderService {
         List<OrderProduct> orderProducts = orderProductRepository.findAllByOrder_Id(orderId);
 
         if (orderProducts.isEmpty()){
-            throw new IllegalStateException("주문 상품 정보가 없습니다.");
+            throw new OrderProductNotFoundException("주문 상품 정보가 없습니다.");
         }
 
         List<OrderProductResponse> products = orderProducts.stream()
@@ -129,7 +132,7 @@ public class OrderService {
         List<OrderProduct> orderProducts = orderProductRepository.findAllByOrder_Id(order.getId());
 
         if (orderProducts.isEmpty()){
-            throw new IllegalStateException("주문 상품 정보가 없습니다.");
+            throw new OrderProductNotFoundException("주문 상품 정보가 없습니다.");
         }
         return OrderListResponse.from(order,orderProducts);
     }
@@ -143,7 +146,7 @@ public class OrderService {
 
         // 현재 주문 상태가 배송완료면 예외
         if (order.getStatus().equals(OrderStatus.DELIVERED))
-            throw new IllegalStateException("배송완료 상태의 주문은 변경할 수 없습니다.");
+            throw new InvalidOrderStatusException("배송완료 상태의 주문은 변경할 수 없습니다.");
 
         // && 앞은 현재 주문 상태
         // && 뒤는 요청 주문 상태
@@ -152,13 +155,13 @@ public class OrderService {
         } else if (order.getStatus().equals(OrderStatus.SHIPPING) && orderStatus.equals(OrderStatus.DELIVERED)){
             order.updateStatus(OrderStatus.DELIVERED);
         } else {
-            throw new IllegalStateException("잘못된 요청입니다.");
+            throw new InvalidOrderStatusException("주문 상태는 준비중 -> 배송중 -> 배송완료 순서로만 변경할 수 있습니다.");
         }
 
         List<OrderProduct> orderProducts = orderProductRepository.findAllByOrder_Id(order.getId());
 
         if (orderProducts.isEmpty()){
-            throw new IllegalStateException("주문 상품 정보가 없습니다.");
+            throw new OrderProductNotFoundException("주문 상품 정보가 없습니다.");
         }
 
         // 응답으로 엔티티가 아닌 Response로 내보내기 위해 주문 상품 하나씩 Response로 바꿔 다시 리스트로 만들기
@@ -178,11 +181,11 @@ public class OrderService {
         List<OrderProduct> orderProducts = orderProductRepository.findAllByOrder_Id(order.getId());
 
         if (orderProducts.isEmpty()){
-            throw new IllegalStateException("주문 상품 정보가 없습니다.");
+            throw new OrderProductNotFoundException("주문 상품 정보가 없습니다.");
         }
 
         if (!order.getStatus().equals(OrderStatus.READY)){
-            throw new IllegalStateException("준비중 상태의 주문만 취소할 수 있습니다.");
+            throw new InvalidOrderStatusException("준비중 상태의 주문만 취소할 수 있습니다.");
         }
 
         order.cancel(request.getCancelReason());

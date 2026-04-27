@@ -11,7 +11,4 @@ public class ErrorResponse {
     public ErrorResponse(String message) {
         this.message = message;
     }
-
-    // 기능
-    // getter 기능은 롬북으로 구현하였습니다.
 }

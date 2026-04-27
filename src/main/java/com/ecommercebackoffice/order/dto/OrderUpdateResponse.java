@@ -8,13 +8,13 @@ import java.util.List;
 @Getter
 public class OrderUpdateResponse {
     private final String orderNumber;
-    private final String receiverName;
+    private final String customerName;
     private final List<OrderProductResponse> products;
     private final String status;
 
-    public OrderUpdateResponse(String orderNumber, String receiverName, List<OrderProductResponse> products, String status) {
+    public OrderUpdateResponse(String orderNumber, String customerName, List<OrderProductResponse> products, String status) {
         this.orderNumber = orderNumber;
-        this.receiverName = receiverName;
+        this.customerName =customerName;
         this.products = products;
         this.status = status;
     }
@@ -22,7 +22,7 @@ public class OrderUpdateResponse {
     public static OrderUpdateResponse from(Order order, List<OrderProductResponse> products){
         return new OrderUpdateResponse(
                 order.getOrderNumber(),
-                order.getReceiverName(),
+                order.getCustomer().getName(),
                 products,
                 order.getStatus().getDescription()
         );

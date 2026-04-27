@@ -1,5 +1,6 @@
 package com.ecommercebackoffice.order.dto;
 
+import com.ecommercebackoffice.order.entity.Order;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -10,7 +11,7 @@ public class OrderCreateResponse {
     private final Long id;
     private final LocalDateTime createdAt;
     private final String orderNumber;
-    private final String status;            // 응답에는 "준비중"을 보여주고 서비스 로직은 READY 설명값으로 꺼냄
+    private final String status;
     private final Integer quantity;
     private final Long orderPrice;
     private final Long totalPrice;
@@ -25,5 +26,18 @@ public class OrderCreateResponse {
         this.orderPrice = orderPrice;
         this.totalPrice = totalPrice;
         this.adminId = adminId;
+    }
+
+    public static OrderCreateResponse from(Order order){
+        return new OrderCreateResponse(
+                order.getId(),
+                order.getCreatedAt(),
+                order.getOrderNumber(),
+                order.getStatus().getDescription(),
+                order.getQuantity(),
+                order.getOrderPrice(),
+                order.getTotalPrice(),
+                order.getAdmin().getId()
+        );
     }
 }

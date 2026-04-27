@@ -17,14 +17,13 @@ public class OrderGetResponse {
     private final String receiverName;
     private final String receiverPhone;
     private final String deliveryAddress;
-    private final Long totalPrice;
     private final LocalDateTime createdAt;
     private final String status;
     private final String adminName;
     private final String adminEmail;
     private final String adminRole;
 
-    public OrderGetResponse(String orderNumber, String customerName, String customerEmail, List<OrderProductResponse> products, String receiverName, String receiverPhone, String deliveryAddress, Long totalPrice, LocalDateTime createdAt, String status, String adminName, String adminEmail, String adminRole) {
+    public OrderGetResponse(String orderNumber, String customerName, String customerEmail, List<OrderProductResponse> products, String receiverName, String receiverPhone, String deliveryAddress, LocalDateTime createdAt, String status, String adminName, String adminEmail, String adminRole) {
         this.orderNumber = orderNumber;
         this.customerName = customerName;
         this.customerEmail = customerEmail;
@@ -32,7 +31,6 @@ public class OrderGetResponse {
         this.receiverName = receiverName;
         this.receiverPhone = receiverPhone;
         this.deliveryAddress = deliveryAddress;
-        this.totalPrice = totalPrice;
         this.createdAt = createdAt;
         this.status = status;
         this.adminName = adminName;
@@ -63,7 +61,6 @@ public class OrderGetResponse {
                 order.getReceiverName(),
                 order.getReceiverPhone(),
                 order.getDeliveryAddress(),
-                order.getTotalPrice(),
                 order.getCreatedAt(),
                 order.getStatus().getDescription(),
                 adminName,

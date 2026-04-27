@@ -13,23 +13,17 @@ public class OrderListResponse {
     private final String orderNumber;
     private final String customerName;
     private final String productName;
-    private final String receiverName;
-    private final String receiverPhone;
-    private final String deliveryAddress;
     private final Integer quantity;
     private final Long totalPrice;
     private final LocalDateTime createdAt;
     private final String status;
     private final String adminName;
 
-    public OrderListResponse(Long id, String orderNumber, String customerName, String productName, String receiverName, String receiverPhone, String deliveryAddress, Integer quantity, Long totalPrice, LocalDateTime createdAt, String status, String adminName) {
+    public OrderListResponse(Long id, String orderNumber, String customerName, String productName, Integer quantity, Long totalPrice, LocalDateTime createdAt, String status, String adminName) {
         this.id = id;
         this.orderNumber = orderNumber;
         this.customerName = customerName;
         this.productName = productName;
-        this.receiverName = receiverName;
-        this.receiverPhone = receiverPhone;
-        this.deliveryAddress = deliveryAddress;
         this.quantity = quantity;
         this.totalPrice = totalPrice;
         this.createdAt = createdAt;
@@ -70,9 +64,6 @@ public class OrderListResponse {
                 order.getOrderNumber(),
                 order.getCustomer().getName(),
                 productName,
-                order.getReceiverName(),
-                order.getReceiverPhone(),
-                order.getDeliveryAddress(),
                 quantity,
                 totalPrice,
                 order.getCreatedAt(),

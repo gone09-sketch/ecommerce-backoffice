@@ -5,6 +5,7 @@ import com.ecommercebackoffice.order.dto.*;
 
 import com.ecommercebackoffice.order.enums.OrderStatus;
 import com.ecommercebackoffice.order.service.OrderService;
+import com.ecommercebackoffice.session.SessionAdminDto;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,9 +23,16 @@ public class OrderController {
     @PostMapping("/orders")
     public ResponseEntity<OrderCreateResponse> save(
             @Valid @RequestBody OrderCreateRequest request,
-            HttpSession httpSession){
+            HttpSession session){
+        SessionAdminDto loginAdmin = (SessionAdminDto) session.getAttribute("LOGIN_ADMIN");
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(orderService.save(request,httpSession));
+        if (loginAdmin == null) {
+            throw new IllegalStateException("로그인이 필요합니다.");
+        }
+
+        Long adminId = loginAdmin.getId();
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(orderService.save(request,adminId));
     }
 
     @GetMapping("/orders/{orderId}")
