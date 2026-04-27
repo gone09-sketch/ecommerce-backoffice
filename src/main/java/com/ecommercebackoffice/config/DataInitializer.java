@@ -24,7 +24,7 @@ public class DataInitializer implements CommandLineRunner {
             return;
         }
 
-        IntStream.rangeClosed(1, 10).forEach(i -> {
+        IntStream.rangeClosed(1, 20).forEach(i -> {
             Customer customer = new Customer(
                     "고객" + i,
                     "customer" + i + "@test.com",

@@ -11,6 +11,6 @@ import lombok.Setter;
 public class CustomerGetListRequest extends BasePageRequest {
 
     private String keyword; // 이름, 이메일, 가입일
-    private String status;  // 활성, 비활성, 정지
+    private String status;  // ACTIVE, INACTIVE, SUSPENDED
 
 }

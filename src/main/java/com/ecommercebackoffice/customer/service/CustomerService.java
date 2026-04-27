@@ -2,6 +2,7 @@ package com.ecommercebackoffice.customer.service;
 
 import com.ecommercebackoffice.customer.dto.*;
 import com.ecommercebackoffice.customer.entity.Customer;
+import com.ecommercebackoffice.customer.enums.CustomerStatus;
 import com.ecommercebackoffice.customer.repository.CustomerRepository;
 import com.ecommercebackoffice.exception.CustomerNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -11,9 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,19 +23,28 @@ public class CustomerService {
     @Transactional(readOnly = true)
     public Page<CustomerGetResponse> getCustomersList(CustomerGetListRequest request) {
 
+        Pageable pageable = request.toPageable();//?page=1&size=10&sortBy=id&sortOrder=asc 이런 걸 JPA가 알아들을 수 있는 Pageable 객체로 바꿈
+
         String sortBy = request.getSortBy() == null || request.getSortBy().isBlank()
                 ? "createdAt" : request.getSortBy();
+
 
         Sort.Direction direction = "asc".equalsIgnoreCase(request.getSortOrder())
                 ? Sort.Direction.ASC : Sort.Direction.DESC;
 
-        Pageable pageable = PageRequest.of(
-                request.getPage() - 1,
-                request.getSize(),
-                Sort.by(direction, sortBy)
-        );
+        // 검색어가 비어 있으면 null로 보내고, 값이 있으면 그 값을 그대로 보냄
+        String keyword = null;
+        if (request.getKeyword() != null && !request.getKeyword().isBlank()) {
+            keyword = request.getKeyword();
+        }
 
-        return customerRepository.findAll(pageable)
+        // 문자열 "ACTIVE"를 enum CustomerStatus.ACTIVE로 바꿈
+        CustomerStatus status = null;
+        if (request.getStatus() != null && !request.getStatus().isBlank()) {
+            status = CustomerStatus.valueOf(request.getStatus().toUpperCase());
+        }
+
+        return customerRepository.searchCustomers(keyword, status, pageable)
                 .map(CustomerGetResponse::from);
     }
 
@@ -82,6 +89,7 @@ public class CustomerService {
                 () -> new CustomerNotFoundException("존재하지 않는 고객입니다")
         );
 
+        // BaseEntity의 @SoftDelete 설정에 따라 실제 DB에서는 del_yn 값이 변경된다.
         customerRepository.delete(foundCustomer);
     }
 
