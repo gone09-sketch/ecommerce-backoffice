@@ -2,17 +2,11 @@ package com.ecommercebackoffice.customer.entity;
 
 import com.ecommercebackoffice.config.BaseEntity;
 import com.ecommercebackoffice.customer.dto.CustomerUpdateRequest;
-import com.ecommercebackoffice.customer.dto.CustomerUpdateResponse;
 import com.ecommercebackoffice.customer.enums.CustomerStatus;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.SQLRestriction;
-import org.hibernate.annotations.SoftDelete;
-import org.hibernate.type.YesNoConverter;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "customers")
@@ -36,11 +30,6 @@ public class Customer extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private CustomerStatus status;
-
-    private LocalDateTime removedAt;
-
-    private String removedReason;
-
 
     public Customer(String name, String email, String phoneNumber) {
         this.name = name;
