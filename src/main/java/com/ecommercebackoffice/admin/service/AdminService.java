@@ -236,4 +236,21 @@ public class AdminService {
         // 2. 삭제 업데이트
         adminRepository.delete(foundAdmin);
     }
+
+    // 관리자 등록 승인
+    @Transactional
+    public AdminApproveCreateResponse adminApprove(Long adminId) {
+        // 1. 관리자 조회
+        Admin admin = adminRepository.findById(adminId).orElseThrow(
+                () -> new AdminNotFoundException("해당 관리자를 찾을 수 없습니다."));
+
+        // 2. 승인 처리
+        admin.approve();
+
+        // 3. 반환
+        return AdminApproveCreateResponse.from(admin);
+    }
+
+
+    // 관리자 등록 거부
 }

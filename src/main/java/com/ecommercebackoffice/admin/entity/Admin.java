@@ -63,6 +63,8 @@ public class Admin extends BaseEntity {
 
         this.status = AdminStatus.ACTIVE;
         this.approvedAt = LocalDateTime.now();
+        this.rejectedAt = null;
+        this.rejectedReason = null;
     }
 
     // 등록 거부 시점에 거부일 및 거부 사유
@@ -75,6 +77,7 @@ public class Admin extends BaseEntity {
         this.status = AdminStatus.REJECTED;
         this.rejectedAt = LocalDateTime.now();
         this.rejectedReason = reason;
+        this.approvedAt = null;
     }
 
     // 관리자 수정 update
@@ -110,7 +113,7 @@ public class Admin extends BaseEntity {
         this.role = newRole;
     }
 
-    // 관리자 상태 upadate
+    // 관리자 상태 update
     public void statusUpdate(AdminStatus newStatus) {
         this.status = newStatus;
     }

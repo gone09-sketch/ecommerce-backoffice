@@ -118,4 +118,16 @@ public class AdminController {
         adminService.deleteAdmin(adminId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
+
+
+    // 관리자 등록 승인
+    @PatchMapping("/{adminId}/approve")
+    public ResponseEntity<AdminApproveCreateResponse> approveAPI(@PathVariable Long adminId) {
+
+        AdminApproveCreateResponse approveResponseAPI = adminService.adminApprove(adminId);
+        return ResponseEntity.status(HttpStatus.OK).body(approveResponseAPI);
+    }
+
+
+    // 관리자 등록 거부
 }
