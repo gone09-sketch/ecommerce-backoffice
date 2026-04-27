@@ -8,14 +8,16 @@ import com.ecommercebackoffice.product.entity.Product;
 import com.ecommercebackoffice.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.stream.IntStream;
 
+@Profile("dev")
 @Component
 @RequiredArgsConstructor
-public class DataInitializer implements CommandLineRunner {
+public class OrderDataInitializer implements CommandLineRunner {
 
     private final AdminRepository adminRepository;
     private final CustomerRepository customerRepository;
@@ -27,6 +29,7 @@ public class DataInitializer implements CommandLineRunner {
         if (adminRepository.count() > 0 || customerRepository.count() > 0 || productRepository.count() > 0) {
             return;
         }
+
         initAdmins();
         initCustomers();
         initProducts();
@@ -52,7 +55,12 @@ public class DataInitializer implements CommandLineRunner {
 
     private void initProducts() {
         IntStream.rangeClosed(1, 10).forEach(i -> {
-            Product product = new Product();
+            Product product = new Product(
+                    "상품" +i,
+                    "전자",
+                    10000L * i,
+                    10 * i
+            );
             productRepository.save(product);
         });
     }

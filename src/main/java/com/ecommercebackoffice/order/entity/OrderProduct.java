@@ -14,8 +14,9 @@ public class OrderProduct {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Long orderId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id", nullable = false)
+    private Order order;
 
     @Column(nullable = false)
     private Long productId;
@@ -32,8 +33,8 @@ public class OrderProduct {
     @Column(nullable = false)
     private Long totalPrice;
 
-    public OrderProduct(Long orderId, Long productId, String productName, Integer quantity, Long orderPrice){
-        this.orderId = orderId;
+    public OrderProduct(Order order, Long productId, String productName, Integer quantity, Long orderPrice){
+        this.order = order;
         this.productId = productId;
         this.productName = productName;
         this.quantity = quantity;

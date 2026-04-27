@@ -30,6 +30,5 @@ public class OrderCreateRequest {
     private String receiverPhone;
 
     @NotBlank(message = "배송지는 필수입니다.")
-    @NotBlank
     private String deliveryAddress;
 }

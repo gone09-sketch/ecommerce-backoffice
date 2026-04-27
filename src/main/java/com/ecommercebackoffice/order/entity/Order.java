@@ -1,8 +1,9 @@
 package com.ecommercebackoffice.order.entity;
 
+import com.ecommercebackoffice.admin.entity.Admin;
+import com.ecommercebackoffice.customer.entity.Customer;
 import com.ecommercebackoffice.order.enums.OrderStatus;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,10 +23,13 @@ public class Order {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long adminId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "admin_id")
+    private Admin admin;
 
-    @NotNull
-    private Long customerId;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "customer_id", nullable = false)
+    private Customer customer;
 
     @Column(nullable = false)
     private String orderNumber;
@@ -60,17 +64,17 @@ public class Order {
 
     private String cancelReason;
 
-    public Order(Long adminId
-            ,Long customerId
+    public Order(Admin admin
+            ,Customer customer
             ,Integer quantity
             ,Long orderPrice
             ,String receiverName
             , String receiverPhone
             ,String deliveryAddress)
     {
-        this.adminId = adminId;
-        this.customerId = customerId;
-        this.orderNumber = createOrderNumber(customerId);
+        this.admin = admin;
+        this.customer = customer;
+        this.orderNumber = createOrderNumber(customer.getId());
         this.quantity = quantity;
         this.orderPrice = orderPrice;
         this.totalPrice = orderPrice * quantity;
@@ -89,4 +93,14 @@ public class Order {
                         .ofPattern("yyyyMMdd"));
     }
 
+    // 주문 상태 변환 메서드
+    public void updateStatus(OrderStatus status){
+        this.status = status;
+    }
+
+    public void cancel(String cancelReason) {
+        this.status = OrderStatus.CANCELED;
+        this.canceledAt = LocalDateTime.now();
+        this.cancelReason = cancelReason;
+    }
 }
