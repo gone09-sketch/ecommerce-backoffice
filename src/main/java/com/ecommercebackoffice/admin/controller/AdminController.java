@@ -35,7 +35,7 @@ public class AdminController {
     }
 
 
-    // 관리자 리스트 조회
+    // 관리자 리스트 조회(전체조회)
     @GetMapping
     public ResponseEntity<PageResponse<AdminPageListResponse>> getListAPI(AdminPageRequest pageRequest) {
 

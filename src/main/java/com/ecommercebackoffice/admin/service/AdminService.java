@@ -86,7 +86,7 @@ public class AdminService {
         // 4. dto 변환
         Page<AdminPageListResponse> responsePage = adminPage.map(admin -> AdminPageListResponse.from(admin));
 
-        // 5. 반환
+        // 5. 최종반환
         return new PageResponse<>(responsePage);
     }
 
