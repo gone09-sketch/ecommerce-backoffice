@@ -2,18 +2,16 @@ package com.ecommercebackoffice.admin.controller;
 
 import com.ecommercebackoffice.admin.dto.*;
 import com.ecommercebackoffice.admin.service.AdminService;
+import com.ecommercebackoffice.common.PageResponse;
 import com.ecommercebackoffice.session.SessionAdminDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
-import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
-@Getter
+@RestController
 @RequestMapping("/admins")
 
 public class AdminController {
@@ -33,7 +31,16 @@ public class AdminController {
             @RequestBody AdminCreateRequest adminCreateRequest) {
 
         AdminCreateResponse signUpResponseAPI = adminService.signUp(adminCreateRequest);
-        return ResponseEntity.status(HttpStatus.OK).body(signUpResponseAPI);
+        return ResponseEntity.status(HttpStatus.CREATED).body(signUpResponseAPI);
+    }
+
+
+    // 관리자 리스트 조회
+    @GetMapping
+    public ResponseEntity<PageResponse<AdminPageListResponse>> getListAPI(AdminPageRequest pageRequest) {
+
+        PageResponse<AdminPageListResponse> data = adminService.getList(pageRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(data);
     }
 
 
