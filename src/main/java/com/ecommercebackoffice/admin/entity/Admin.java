@@ -96,16 +96,8 @@ public class Admin extends BaseEntity {
 
     // 내 프로필 수정 update
     public void profileUpdate(String name, String email, String phoneNumber) {
-        // null이 아닌 경우 수정, null인 경우 기존 데이터 유지
-        if (name != null) {
-            this.name = name;
-        }
-        if (email != null) {
-            this.email = email;
-        }
-        if (phoneNumber != null) {
-            this.phoneNumber = phoneNumber;
-        }
+       // 관리자 수정과 같은 로직이므로 adminUpdate 호출
+        adminUpdate(name, email, phoneNumber);
     }
 
     // 관리자 역할 update
