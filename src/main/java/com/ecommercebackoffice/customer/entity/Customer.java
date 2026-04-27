@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.SoftDelete;
+import org.hibernate.type.YesNoConverter;
 
 import java.time.LocalDateTime;
 
@@ -17,8 +18,6 @@ import java.time.LocalDateTime;
 @Table(name = "customers")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SoftDelete(columnName = "is_deleted")
-@SQLRestriction("is_deleted = false")
 public class Customer extends BaseEntity {
 
     @Id

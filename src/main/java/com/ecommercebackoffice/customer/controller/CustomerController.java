@@ -1,13 +1,11 @@
 package com.ecommercebackoffice.customer.controller;
 
-import com.ecommercebackoffice.customer.dto.CustomerGetListResponse;
-import com.ecommercebackoffice.customer.dto.CustomerStatusUpdateRequest;
-import com.ecommercebackoffice.customer.dto.CustomerStatusUpdateResponse;
-import com.ecommercebackoffice.customer.dto.CustomerUpdateRequest;
-import com.ecommercebackoffice.customer.dto.CustomerUpdateResponse;
+import com.ecommercebackoffice.common.PageResponse;
+import com.ecommercebackoffice.customer.dto.*;
 import com.ecommercebackoffice.customer.service.CustomerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,19 +19,23 @@ public class CustomerController {
 
     // 고객 리스트 조회
     @GetMapping
-    public ResponseEntity<CustomerGetListResponse> getCustomers() {
-
-        CustomerGetListResponse customersList = customerService.getCustomersList();
-
-        return ResponseEntity.status(HttpStatus.OK).body(customersList);
+    //@ModelAttribute는 리퀘스트 파람을 여러개 묶어 쓸 수 있다.
+    public ResponseEntity<PageResponse<CustomerGetResponse>> getCustomers(
+            @ModelAttribute CustomerGetListRequest request
+    ) {
+        Page<CustomerGetResponse> customersPage = customerService.getCustomersList(request);
+        return ResponseEntity.ok(new PageResponse<>(customersPage));
+//        CustomerGetListResponse customersList = customerService.getCustomersList(request);
+//
+//        return ResponseEntity.status(HttpStatus.OK).body(customersList);
     }
 
     // 고객 단건 조회
     @GetMapping("/{customerId}")
-    public ResponseEntity<CustomerGetListResponse.CustomerGetResponse> getOneCustomer(
+    public ResponseEntity<CustomerGetResponse> getOneCustomer(
             @PathVariable Long customerId
     ) {
-        CustomerGetListResponse.CustomerGetResponse result = customerService.getByCustomerId(customerId);
+        CustomerGetResponse result = customerService.getByCustomerId(customerId);
 
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }

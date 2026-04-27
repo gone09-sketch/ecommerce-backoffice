@@ -1,14 +1,14 @@
 package com.ecommercebackoffice.customer.service;
 
-import com.ecommercebackoffice.customer.dto.CustomerGetListResponse;
-import com.ecommercebackoffice.customer.dto.CustomerStatusUpdateRequest;
-import com.ecommercebackoffice.customer.dto.CustomerStatusUpdateResponse;
-import com.ecommercebackoffice.customer.dto.CustomerUpdateRequest;
-import com.ecommercebackoffice.customer.dto.CustomerUpdateResponse;
+import com.ecommercebackoffice.customer.dto.*;
 import com.ecommercebackoffice.customer.entity.Customer;
 import com.ecommercebackoffice.customer.repository.CustomerRepository;
 import com.ecommercebackoffice.exception.CustomerNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,24 +23,32 @@ public class CustomerService {
 
     // 고객 리스트 조회
     @Transactional(readOnly = true)
-    public CustomerGetListResponse getCustomersList() {
-        List<Customer> customers = customerRepository.findAll();
+    public Page<CustomerGetResponse> getCustomersList(CustomerGetListRequest request) {
 
-        List<CustomerGetListResponse.CustomerGetResponse> customerGetResponses = customers.stream()
-                .map(CustomerGetListResponse.CustomerGetResponse::from)
-                .collect(Collectors.toList());
+        String sortBy = request.getSortBy() == null || request.getSortBy().isBlank()
+                ? "createdAt" : request.getSortBy();
 
-        return new CustomerGetListResponse(customerGetResponses);
+        Sort.Direction direction = "asc".equalsIgnoreCase(request.getSortOrder())
+                ? Sort.Direction.ASC : Sort.Direction.DESC;
+
+        Pageable pageable = PageRequest.of(
+                request.getPage() - 1,
+                request.getSize(),
+                Sort.by(direction, sortBy)
+        );
+
+        return customerRepository.findAll(pageable)
+                .map(CustomerGetResponse::from);
     }
 
     // 고객 단 건 조회
     @Transactional(readOnly = true)
-    public CustomerGetListResponse.CustomerGetResponse getByCustomerId(Long customerId) {
+    public CustomerGetResponse getByCustomerId(Long customerId) {
         Customer foundCustomer = customerRepository.findById(customerId).orElseThrow(
                 () -> new CustomerNotFoundException("존재하지 않는 고객입니다")
         );
 
-        return CustomerGetListResponse.CustomerGetResponse.from(foundCustomer);
+        return CustomerGetResponse.from(foundCustomer);
     }
 
     // 고객 수정
@@ -76,4 +84,6 @@ public class CustomerService {
 
         customerRepository.delete(foundCustomer);
     }
+
+
 }
