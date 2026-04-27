@@ -85,6 +85,13 @@ public class AdminController {
     }
 
     // 내 비밀번호 변경
+    @PatchMapping("/profile/password")
+    public ResponseEntity<Void> patchPassword(@RequestBody AdminPasswordPatchRequest adminPasswordPatchRequest,
+                                              HttpSession httpSession) {
+
+        adminService.patchPassword(adminPasswordPatchRequest, httpSession);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
 
 
     // 관리자 역할 변경
