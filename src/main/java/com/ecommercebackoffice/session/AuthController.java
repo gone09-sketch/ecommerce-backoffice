@@ -27,13 +27,13 @@ public class AuthController {
                 admin.getEmail(),
                 admin.getName(),
                 admin.getRole().name(),
-                "ADMIN"
+                "admin"
         );
 
         // 3. 세션 생성 및 데이터 저장
         // 이 과정에서 스프링이 자동으로 'JSESSIONID' 쿠키를 생성하여 응답 헤더에 담아줍니다.
         HttpSession session = httpRequest.getSession(true);
-        session.setAttribute("LOGIN_USER", sessionUser);
+        session.setAttribute("loginUser", sessionUser);
 
         return ResponseEntity.ok(admin.getName() + "님, 로그인에 성공했습니다.");
     }
