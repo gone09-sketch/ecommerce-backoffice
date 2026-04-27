@@ -35,6 +35,6 @@ public class CommonResponse<T> {
 
     // 실패
     public static <T> CommonResponse<T> fail(int httpStatus, String message) {
-        return new CommonResponse<>(httpStatus, message, null);
+        return new CommonResponse<>(400, message, null);
     }
 }
