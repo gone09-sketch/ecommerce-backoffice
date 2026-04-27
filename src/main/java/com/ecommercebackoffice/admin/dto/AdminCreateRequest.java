@@ -1,7 +1,6 @@
 package com.ecommercebackoffice.admin.dto;
 
 import com.ecommercebackoffice.admin.enums.AdminRole;
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
