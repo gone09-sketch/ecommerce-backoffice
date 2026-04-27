@@ -1,6 +1,5 @@
 package com.ecommercebackoffice.product.dto;
 
-import com.ecommercebackoffice.product.enums.ProductEnum;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
