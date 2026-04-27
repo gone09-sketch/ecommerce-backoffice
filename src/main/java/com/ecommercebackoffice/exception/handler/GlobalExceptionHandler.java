@@ -5,6 +5,7 @@ import com.ecommercebackoffice.exception.dto.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -44,5 +45,18 @@ public class GlobalExceptionHandler {
 
         // 4. 반환
         return exceptionResponse;
+    }
+
+    // @Valid 유효성 검사 실패 시 발생 (@NotBlank, @Email 등)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException e) {
+
+        String message = e.getBindingResult()
+                .getFieldErrors()
+                .get(0)
+                .getDefaultMessage();
+
+        ErrorResponse body = new ErrorResponse(message);
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 }
