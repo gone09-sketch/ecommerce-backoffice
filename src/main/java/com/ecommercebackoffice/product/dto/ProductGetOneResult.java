@@ -16,6 +16,6 @@ public class ProductGetOneResult {
     private final int stock;
     private final ProductEnum status;
     private final LocalDateTime createdAt;
-    private final String adminName;
-    private final String adminEmail;
+//    private final String adminName;
+//    private final String adminEmail;
 }

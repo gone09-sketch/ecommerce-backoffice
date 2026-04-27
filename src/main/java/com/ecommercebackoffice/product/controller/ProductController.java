@@ -2,7 +2,6 @@ package com.ecommercebackoffice.product.controller;
 
 import com.ecommercebackoffice.product.dto.*;
 import com.ecommercebackoffice.product.service.ProductService;
-import com.ecommercebackoffice.session.SessionUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,58 +16,51 @@ public class ProductController {
 
     @PostMapping()
     public ResponseEntity<ProductCreateResponse> productCreate(
-            @SessionAttribute(name = "loginAdmin", required = false) SessionUser sessionUser,
             @RequestBody ProductCreateRequest request
             ) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(productService.create(sessionUser, request));
+        return ResponseEntity.status(HttpStatus.CREATED).body(productService.create(request));
     }
 
     @GetMapping("/{productId}")
     public ResponseEntity<ProductGetOneResponse> productGetOne(
-            @SessionAttribute(name = "loginAdmin", required = false) SessionUser sessionUser,
             @PathVariable Long productId) {
-        return ResponseEntity.status(HttpStatus.OK).body(productService.findOne(sessionUser, productId));
+        return ResponseEntity.status(HttpStatus.OK).body(productService.findOne(productId));
     }
 
     @GetMapping()
     public ResponseEntity<ProductGetAllResponse> productGetAll(
-            @SessionAttribute(name = "loginAdmin", required = false) SessionUser sessionUser
             ) {
-        return ResponseEntity.status(HttpStatus.OK).body(productService.findAll(sessionUser));
+        return ResponseEntity.status(HttpStatus.OK).body(productService.findAll());
     }
 
     @PatchMapping("/{productId}")
     public ResponseEntity<ProductUpdateResponse> productInfoUpdate(
-            @SessionAttribute(name = "loginAdmin", required = false) SessionUser sessionUser,
             @PathVariable Long productId,
             @RequestBody ProductInfoUpdateRequest request
     ) {
-        return ResponseEntity.status(HttpStatus.OK).body(productService.updateInfo(sessionUser, productId, request));
+        return ResponseEntity.status(HttpStatus.OK).body(productService.updateInfo(productId, request));
     }
 
     @PatchMapping("/{productId}/stock")
     public ResponseEntity<ProductUpdateResponse> productStockUpdate(
-        @SessionAttribute(name = "loginAdmin", required = false) SessionUser sessionUser,
         @PathVariable Long productId,
         @RequestBody ProductStockUpdateRequest request
     ) {
-        return ResponseEntity.status(HttpStatus.OK).body(productService.updateStock(sessionUser, productId, request));
+        return ResponseEntity.status(HttpStatus.OK).body(productService.updateStock(productId, request));
     }
 
     @PatchMapping("/{productId}/status")
     public ResponseEntity<ProductUpdateResponse> productStatusUpdate(
-            @SessionAttribute(name = "loginAdmin", required = false) SessionUser sessionUser,
             @PathVariable Long productId,
             @RequestBody ProductStatusUpdateRequest request
     ) {
-        return ResponseEntity.status(HttpStatus.OK).body(productService.updateStatus(sessionUser, productId, request));
+        return ResponseEntity.status(HttpStatus.OK).body(productService.updateStatus(productId, request));
     }
 
     @DeleteMapping("/{productId}")
     public ResponseEntity<ProductDeleteResponse> productDelete(
-            @SessionAttribute(name = "loginAdmin", required = false) SessionUser sessionUser,
             @PathVariable Long productId
     ) {
-        return ResponseEntity.status(HttpStatus.OK).body(productService.delete(sessionUser, productId));
+        return ResponseEntity.status(HttpStatus.OK).body(productService.delete(productId));
     }
 }

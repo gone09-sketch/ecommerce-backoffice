@@ -17,5 +17,5 @@ public class ProductGetAllResult {
     private final int stock;
     private final ProductEnum status;
     private final LocalDateTime createdAt;
-    private final String adminName;
+//    private final String adminName;
 }

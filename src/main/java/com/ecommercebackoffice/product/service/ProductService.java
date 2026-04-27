@@ -2,11 +2,9 @@ package com.ecommercebackoffice.product.service;
 
 import com.ecommercebackoffice.exception.ProductDuplicateException;
 import com.ecommercebackoffice.exception.ProductNotFoundException;
-import com.ecommercebackoffice.exception.UnauthorizedException;
 import com.ecommercebackoffice.product.dto.*;
 import com.ecommercebackoffice.product.entity.Product;
 import com.ecommercebackoffice.product.repository.ProductRepository;
-import com.ecommercebackoffice.session.SessionUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,10 +18,7 @@ public class ProductService {
     private final ProductRepository productRepository;
 
     @Transactional
-    public ProductCreateResponse create(SessionUser sessionUser, ProductCreateRequest request) {
-        if(sessionUser == null) {
-            throw new UnauthorizedException("로그인이 필요한 기능입니다.");
-        }
+    public ProductCreateResponse create(ProductCreateRequest request) {
 
         if(productRepository.existsByName(request.getName())) {
             throw new ProductDuplicateException("이미 등록된 상품입니다.");
@@ -50,10 +45,7 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public ProductGetOneResponse findOne(SessionUser sessionUser, Long productId) {
-        if (sessionUser == null) {
-            throw new UnauthorizedException("로그인이 필요한 기능입니다.");
-        }
+    public ProductGetOneResponse findOne(Long productId) {
 
         Product product = productRepository.findById(productId).orElseThrow(
                 () -> new ProductNotFoundException("해당하는 상품이 존재하지 않습니다.")
@@ -68,18 +60,15 @@ public class ProductService {
                         product.getPrice(),
                         product.getStock(),
                         product.getStatus(),
-                        product.getCreatedAt(),
-                        product.getAdmin().getName(),
-                        product.getAdmin().getEmail()
+                        product.getCreatedAt()
+//                        product.getAdmin().getName(),
+//                        product.getAdmin().getEmail()
                 )
         );
     }
 
     @Transactional(readOnly = true)
-    public ProductGetAllResponse findAll(SessionUser sessionUser) {
-        if (sessionUser == null) {
-            throw new UnauthorizedException("로그인이 필요한 기능입니다.");
-        }
+    public ProductGetAllResponse findAll() {
 
         List<Product> products= productRepository.findAll();
 
@@ -91,8 +80,8 @@ public class ProductService {
                         product.getPrice(),
                         product.getStock(),
                         product.getStatus(),
-                        product.getCreatedAt(),
-                        product.getAdmin().getName()
+                        product.getCreatedAt()
+//                        product.getAdmin().getName()
                 )).toList();
 
         return new ProductGetAllResponse(
@@ -103,10 +92,7 @@ public class ProductService {
     }
 
     @Transactional
-    public ProductUpdateResponse updateInfo(SessionUser sessionUser, Long productId, ProductInfoUpdateRequest request) {
-        if(sessionUser == null) {
-            throw new UnauthorizedException("로그인이 필요한 기능입니다.");
-        }
+    public ProductUpdateResponse updateInfo(Long productId, ProductInfoUpdateRequest request) {
 
         Product product = productRepository.findById(productId).orElseThrow(
                 () -> new ProductNotFoundException("해당하는 상품이 존재하지 않습니다.")
@@ -130,10 +116,7 @@ public class ProductService {
     }
 
     @Transactional
-    public ProductUpdateResponse updateStock(SessionUser sessionUser, Long productId, ProductStockUpdateRequest request) {
-        if(sessionUser == null) {
-            throw new UnauthorizedException("로그인이 필요한 기능입니다.");
-        }
+    public ProductUpdateResponse updateStock(Long productId, ProductStockUpdateRequest request) {
 
         Product product = productRepository.findById(productId).orElseThrow(
                 () -> new ProductNotFoundException("해당하는 상품이 존재하지 않습니다.")
@@ -157,10 +140,7 @@ public class ProductService {
     }
 
     @Transactional
-    public ProductUpdateResponse updateStatus(SessionUser sessionUser, Long productId, ProductStatusUpdateRequest request) {
-        if(sessionUser == null) {
-            throw new UnauthorizedException("로그인이 필요한 기능입니다.");
-        }
+    public ProductUpdateResponse updateStatus(Long productId, ProductStatusUpdateRequest request) {
 
         Product product = productRepository.findById(productId).orElseThrow(
                 () -> new ProductNotFoundException("해당하는 상품이 존재하지 않습니다.")
@@ -184,10 +164,7 @@ public class ProductService {
     }
 
     @Transactional
-    public ProductDeleteResponse delete(SessionUser sessionUser, Long productId) {
-        if(sessionUser == null) {
-            throw new UnauthorizedException("로그인이 필요한 기능입니다.");
-        }
+    public ProductDeleteResponse delete(Long productId) {
 
         Product product = productRepository.findById(productId).orElseThrow(
                 () -> new ProductNotFoundException("해당하는 상품이 존재하지 않습니다.")
