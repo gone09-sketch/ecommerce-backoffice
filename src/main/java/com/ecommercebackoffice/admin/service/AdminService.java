@@ -253,4 +253,15 @@ public class AdminService {
 
 
     // 관리자 등록 거부
+    public AdminRejectCreateResponse adminReject(Long adminId, AdminRejectCreateRequest adminRejectCreateRequest) {
+        // 1. 관리자 조회
+        Admin admin = adminRepository.findById(adminId).orElseThrow(
+                () -> new AdminNotFoundException("해당 관리자를 찾을 수 없습니다."));
+
+        // 2. 거부 처리
+        admin.reject(adminRejectCreateRequest.getRejectedReason());
+
+        // 3. 반환
+        return AdminRejectCreateResponse.from(admin);
+    }
 }

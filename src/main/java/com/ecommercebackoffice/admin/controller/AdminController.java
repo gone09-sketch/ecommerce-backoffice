@@ -130,4 +130,13 @@ public class AdminController {
 
 
     // 관리자 등록 거부
+    @PatchMapping("/{adminId}/reject")
+    public ResponseEntity<AdminRejectCreateResponse> rejectAPI(
+            @PathVariable Long adminId,
+            @Valid
+            @RequestBody AdminRejectCreateRequest adminRejectCreateRequest) {
+
+        AdminRejectCreateResponse rejectResponseAPI = adminService.adminReject(adminId, adminRejectCreateRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(rejectResponseAPI);
+    }
 }

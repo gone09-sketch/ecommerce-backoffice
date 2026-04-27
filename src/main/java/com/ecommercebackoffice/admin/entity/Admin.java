@@ -68,7 +68,7 @@ public class Admin extends BaseEntity {
     }
 
     // 등록 거부 시점에 거부일 및 거부 사유
-    public void reject(String reason) {
+    public void reject(String rejectedReason) {
         // 승인(PENDING) 상태가 아닐 시 거부 불가
         if (this.status != AdminStatus.PENDING) {
             throw new InvalidAdminStatusException("거부 가능한 상태가 아닙니다.");
@@ -76,7 +76,7 @@ public class Admin extends BaseEntity {
 
         this.status = AdminStatus.REJECTED;
         this.rejectedAt = LocalDateTime.now();
-        this.rejectedReason = reason;
+        this.rejectedReason = rejectedReason;
         this.approvedAt = null;
     }
 
