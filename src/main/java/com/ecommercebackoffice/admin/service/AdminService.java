@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.ModelAttribute;
 
 
 @Service
@@ -61,7 +62,7 @@ public class AdminService {
 
     // 관리자 리스트 조회
     @Transactional(readOnly = true)
-    public PageResponse<AdminPageListResponse> getList(AdminPageRequest pageRequest) {
+    public PageResponse<AdminPageListResponse> getList(@ModelAttribute AdminPageRequest pageRequest) {
         // 1. JPA pageable로 변환
         Pageable pageable = pageRequest.toPageable();
 
@@ -141,7 +142,7 @@ public class AdminService {
         }
 
         // 4. 수정 내용 업데이트 + 데이터 담아주기
-        admin.adminUpdate(
+        admin.update(
                 adminPatchRequest.getName(),
                 adminPatchRequest.getEmail(),
                 adminPatchRequest.getPhoneNumber());
@@ -189,7 +190,7 @@ public class AdminService {
         }
 
         // 5. 수정 내용 업데이트
-        admin.profileUpdate(
+        admin.update(
                 profilePatchRequest.getName(),
                 profilePatchRequest.getEmail(),
                 profilePatchRequest.getPhoneNumber());
@@ -215,11 +216,11 @@ public class AdminService {
         Long adminId = sessionAdmin.getId();
 
         // 2. 해당 관리자 조회
-        Admin foudAdmin = adminRepository.findById(adminId).orElseThrow(
+        Admin foundAdmin = adminRepository.findById(adminId).orElseThrow(
                 () -> new AdminNotFoundException("해당 관리자를 찾을 수 없습니다."));
 
         // 3. 기존 비밀번호 일치 확인
-        if (!passwordEncoder.matches(adminPasswordPatchRequest.getCurrentPassword(), foudAdmin.getPassword())) {
+        if (!passwordEncoder.matches(adminPasswordPatchRequest.getCurrentPassword(), foundAdmin.getPassword())) {
             throw new InvalidInputException("현재 비밀번호와 일치하지 않습니다.");
         }
 
@@ -232,7 +233,7 @@ public class AdminService {
         String encodedPassword = passwordEncoder.encode(adminPasswordPatchRequest.getNewPassword());
 
         // 6. 새 비밀번호 업데이트
-        foudAdmin.passwordUpdate(encodedPassword);
+        foundAdmin.passwordUpdate(encodedPassword);
     }
 
 
