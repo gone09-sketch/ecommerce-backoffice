@@ -35,7 +35,7 @@ public class OrderService {
 
     // 주문 생성
     @Transactional
-    public OrderCreateResponse save(@Valid OrderCreateRequest request, Long adminId) {
+    public OrderCreateResponse save(OrderCreateRequest request, Long adminId) {
 
 //        SessionAdminDto loginAdmin = (SessionAdminDto) httpSession.getAttribute("loginAdmin");
 //        Long adminId = loginAdmin.getId();
