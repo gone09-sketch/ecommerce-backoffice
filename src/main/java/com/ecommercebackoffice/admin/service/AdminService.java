@@ -176,7 +176,7 @@ public class AdminService {
 
             // 3-1. 공백 이메일 예외처리
             if (newEmail.isBlank()) {
-                throw new InvalidInputException("이메일은 공백일 수 없습니다.");
+                throw new InvalidInputException("이메일을 입력해주세요.");
             }
 
             // 3-2. 기존 이메일과 다르고 DB에 이미 존재하면 예외처리
