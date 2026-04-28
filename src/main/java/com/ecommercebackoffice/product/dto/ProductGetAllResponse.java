@@ -1,5 +1,6 @@
 package com.ecommercebackoffice.product.dto;
 
+import com.ecommercebackoffice.product.entity.Product;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -17,4 +18,17 @@ public class ProductGetAllResponse {
     private final String status;
     private final LocalDateTime createdAt;
     private final String adminName;
+
+    public static ProductGetAllResponse from(Product product) {
+        return new ProductGetAllResponse(
+                product.getId(),
+                product.getName(),
+                product.getCategory(),
+                product.getPrice(),
+                product.getStock(),
+                product.getStatus().getStatus(),
+                product.getCreatedAt(),
+                product.getAdmin().getName()
+        );
+    }
 }

@@ -35,18 +35,19 @@ public class Product extends BaseEntity {
     private int stock;
 
     @Enumerated(EnumType.STRING)
-    private ProductStatus status = ON_SALE;
+    private ProductStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "admin_id", nullable = false)
     @NotFound(action = NotFoundAction.IGNORE)
     private Admin admin;
 
-    public Product(String name, String category, Long price, int stock, Admin admin) {
+    public Product(String name, String category, Long price, int stock, ProductStatus status, Admin admin) {
         this.name = name;
         this.category = category;
         this.price = price;
         this.stock = stock;
+        this.status = status;
         this.admin = admin;
     }
 

@@ -1,5 +1,6 @@
 package com.ecommercebackoffice.product.dto;
 
+import com.ecommercebackoffice.product.entity.Product;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -16,4 +17,16 @@ public class ProductCreateResponse {
     private final int stock;
     private final String status;
     private final LocalDateTime createdAt;
+
+    public static ProductCreateResponse from(Product product) {
+        return new ProductCreateResponse(
+                product.getId(),
+                product.getName(),
+                product.getCategory(),
+                product.getPrice(),
+                product.getStock(),
+                product.getStatus().getStatus(),
+                product.getCreatedAt()
+        );
+    }
 }
