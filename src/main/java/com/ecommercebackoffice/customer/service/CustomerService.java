@@ -13,6 +13,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Set;
+
 @Service
 @RequiredArgsConstructor
 public class CustomerService {
@@ -23,16 +25,28 @@ public class CustomerService {
     @Transactional(readOnly = true)
     public Page<CustomerGetResponse> getCustomersList(CustomerGetListRequest request) {
 
-        Pageable pageable = request.toPageable();//?page=1&size=10&sortBy=id&sortOrder=asc 이런 걸 JPA가 알아들을 수 있는 Pageable 객체로 바꿈
+        // 클라이언트가 요청할 수 있는 정렬 필드만 허용하는 필드 만듬
+        Set<String> allowedSortFields = Set.of("createdAt", "updatedAt", "name");
 
-        String sortBy = request.getSortBy() == null || request.getSortBy().isBlank()
-                ? "createdAt" : request.getSortBy();
+        // 정렬 기준이 없거나 허용되지 않은 값이면 기본값(createdAt)으로 정렬한다.
+        String sortBy = request.getSortBy();
+        if (sortBy == null || sortBy.isBlank() || !allowedSortFields.contains(sortBy)) {
+            sortBy = "createdAt";
+        }
 
-
+        // sortOrder가 asc면 오름차순, 그 외에는 기본적으로 내림차순 처리한다.
         Sort.Direction direction = "asc".equalsIgnoreCase(request.getSortOrder())
-                ? Sort.Direction.ASC : Sort.Direction.DESC;
+                ? Sort.Direction.ASC
+                : Sort.Direction.DESC;
 
-        // 검색어가 비어 있으면 null로 보내고, 값이 있으면 그 값을 그대로 보냄
+        // 클라이언트는 1페이지부터 요청하므로, JPA의 0-based 페이지 번호로 변환한다.
+        Pageable pageable = PageRequest.of(
+                Math.max(0, request.getPage() - 1),
+                request.getSize(),
+                Sort.by(direction, sortBy)
+        );
+
+        // 검색어가 비어 있으면 null로 보내고, 값이 있으면 그 값을 그대로 보냄 (전체 조회)
         String keyword = null;
         if (request.getKeyword() != null && !request.getKeyword().isBlank()) {
             keyword = request.getKeyword();
