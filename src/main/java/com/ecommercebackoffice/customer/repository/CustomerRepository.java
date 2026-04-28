@@ -21,4 +21,6 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
             @Param("status") CustomerStatus status,
             Pageable pageable
     );
+
+    boolean existsByEmailAndIdNot(String email, Long id);
 }
