@@ -36,7 +36,7 @@ public class AdminController {
 
     // 관리자 리스트 조회(전체조회)
     @GetMapping
-    public ResponseEntity<PageResponse<AdminPageListResponse>> getListAPI(AdminPageRequest pageRequest) {
+    public ResponseEntity<PageResponse<AdminPageListResponse>> getListAPI(@ModelAttribute AdminPageRequest pageRequest) {
 
         PageResponse<AdminPageListResponse> data = adminService.getList(pageRequest);
         return ResponseEntity.status(HttpStatus.OK).body(data);

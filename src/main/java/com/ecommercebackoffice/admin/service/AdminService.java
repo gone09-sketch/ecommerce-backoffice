@@ -62,7 +62,7 @@ public class AdminService {
 
     // 관리자 리스트 조회
     @Transactional(readOnly = true)
-    public PageResponse<AdminPageListResponse> getList(@ModelAttribute AdminPageRequest pageRequest) {
+    public PageResponse<AdminPageListResponse> getList(AdminPageRequest pageRequest) {
         // 1. JPA pageable로 변환
         Pageable pageable = pageRequest.toPageable();
 
@@ -85,7 +85,7 @@ public class AdminService {
         );
 
         // 4. dto 변환
-        Page<AdminPageListResponse> responsePage = adminPage.map(admin -> AdminPageListResponse.from(admin));
+        Page<AdminPageListResponse> responsePage = adminPage.map(AdminPageListResponse::from);
 
         // 5. 최종반환
         return new PageResponse<>(responsePage);
