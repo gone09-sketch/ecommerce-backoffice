@@ -7,7 +7,7 @@ import java.io.Serializable;
 
 @Getter
 @AllArgsConstructor // 모든 필드를 포함하는 생성자를 자동으로 만들어줍니다.
-public class SessionAdminDto implements Serializable {
+public class SessionAdmin implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private Long id;       // 고유 식별자
