@@ -7,11 +7,14 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.NotFound;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+
+import static org.hibernate.annotations.NotFoundAction.IGNORE;
 
 @Getter
 @Entity
@@ -20,9 +23,11 @@ import java.time.format.DateTimeFormatter;
 @EntityListeners(AuditingEntityListener.class)
 public class Order {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotFound(action = IGNORE)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "admin_id")
     private Admin admin;
@@ -57,7 +62,7 @@ public class Order {
     private String deliveryAddress;
 
     @CreatedDate
-    @Column(nullable = false ,updatable = false)
+    @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     private LocalDateTime canceledAt;
@@ -65,13 +70,12 @@ public class Order {
     private String cancelReason;
 
     public Order(Admin admin
-            ,Customer customer
-            ,Integer quantity
-            ,Long orderPrice
-            ,String receiverName
+            , Customer customer
+            , Integer quantity
+            , Long orderPrice
+            , String receiverName
             , String receiverPhone
-            ,String deliveryAddress)
-    {
+            , String deliveryAddress) {
         this.admin = admin;
         this.customer = customer;
         this.orderNumber = createOrderNumber(customer.getId());
@@ -85,7 +89,7 @@ public class Order {
     }
 
     // 주문 번호 만들기 로직
-    private String createOrderNumber(Long customerId){
+    private String createOrderNumber(Long customerId) {
         return customerId
                 + "-"
                 + LocalDateTime.now()
@@ -94,7 +98,7 @@ public class Order {
     }
 
     // 주문 상태 변환 메서드
-    public void updateStatus(OrderStatus status){
+    public void updateStatus(OrderStatus status) {
         this.status = status;
     }
 

@@ -11,7 +11,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class OrderProduct {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -33,7 +34,7 @@ public class OrderProduct {
     @Column(nullable = false)
     private Long totalPrice;
 
-    public OrderProduct(Order order, Long productId, String productName, Integer quantity, Long orderPrice){
+    public OrderProduct(Order order, Long productId, String productName, Integer quantity, Long orderPrice) {
         this.order = order;
         this.productId = productId;
         this.productName = productName;

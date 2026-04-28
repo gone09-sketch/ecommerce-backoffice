@@ -17,7 +17,7 @@ public class OrderCreateResponse {
     private final Long totalPrice;
     private final Long adminId;
 
-    public OrderCreateResponse(Long id, LocalDateTime createdAt, String orderNumber, String status,Integer quantity, Long orderPrice, Long totalPrice, Long adminId) {
+    public OrderCreateResponse(Long id, LocalDateTime createdAt, String orderNumber, String status, Integer quantity, Long orderPrice, Long totalPrice, Long adminId) {
         this.id = id;
         this.createdAt = createdAt;
         this.orderNumber = orderNumber;
@@ -28,7 +28,7 @@ public class OrderCreateResponse {
         this.adminId = adminId;
     }
 
-    public static OrderCreateResponse from(Order order){
+    public static OrderCreateResponse from(Order order) {
         return new OrderCreateResponse(
                 order.getId(),
                 order.getCreatedAt(),

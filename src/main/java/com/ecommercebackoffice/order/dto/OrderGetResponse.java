@@ -38,7 +38,7 @@ public class OrderGetResponse {
         this.adminRole = adminRole;
     }
 
-    public static OrderGetResponse from(Order order, List<OrderProductResponse> products){
+    public static OrderGetResponse from(Order order, List<OrderProductResponse> products) {
 
         // 관리자 정보는 없다고 가정하려고 null로 할당
         String adminName = null;
@@ -47,7 +47,7 @@ public class OrderGetResponse {
 
         // 주문에 관리자 정보가 있으면 CS주문으로 관리자 정보를 조회해서 다시 재할당
         // 주문에 관리자 정보가 없으면 관리자 정보를 조회하지않고 null 유지
-        if (order.getAdmin() != null){
+        if (order.getAdmin() != null) {
             Admin admin = order.getAdmin();
             adminName = admin.getName();
             adminEmail = admin.getEmail();

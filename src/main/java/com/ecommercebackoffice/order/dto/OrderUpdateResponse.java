@@ -14,12 +14,12 @@ public class OrderUpdateResponse {
 
     public OrderUpdateResponse(String orderNumber, String customerName, List<OrderProductResponse> products, String status) {
         this.orderNumber = orderNumber;
-        this.customerName =customerName;
+        this.customerName = customerName;
         this.products = products;
         this.status = status;
     }
 
-    public static OrderUpdateResponse from(Order order, List<OrderProductResponse> products){
+    public static OrderUpdateResponse from(Order order, List<OrderProductResponse> products) {
         return new OrderUpdateResponse(
                 order.getOrderNumber(),
                 order.getCustomer().getName(),

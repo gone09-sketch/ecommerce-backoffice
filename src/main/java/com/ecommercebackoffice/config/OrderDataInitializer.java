@@ -74,7 +74,7 @@ public class OrderDataInitializer implements CommandLineRunner {
         Admin admin = adminRepository.findAll().get(0);
         IntStream.rangeClosed(1, 10).forEach(i -> {
             Product product = new Product(
-                    "상품" +i,
+                    "상품" + i,
                     "전자",
                     10000L * i,
                     10 * i,
@@ -83,6 +83,7 @@ public class OrderDataInitializer implements CommandLineRunner {
             productRepository.save(product);
         });
     }
+
     private void initOrders() {
         Admin admin = adminRepository.findAll().get(0);
 

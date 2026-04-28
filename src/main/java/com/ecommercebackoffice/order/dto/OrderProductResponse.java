@@ -18,7 +18,7 @@ public class OrderProductResponse {
         this.totalPrice = totalPrice;
     }
 
-    public static OrderProductResponse from(OrderProduct orderProduct){
+    public static OrderProductResponse from(OrderProduct orderProduct) {
         return new OrderProductResponse(
                 orderProduct.getProductName(),
                 orderProduct.getQuantity(),

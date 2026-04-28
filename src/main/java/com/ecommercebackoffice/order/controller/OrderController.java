@@ -24,7 +24,7 @@ public class OrderController {
     @PostMapping
     public ResponseEntity<OrderCreateResponse> save(
             @Valid @RequestBody OrderCreateRequest request,
-            HttpSession session){
+            HttpSession session) {
         SessionAdminDto loginAdmin = (SessionAdminDto) session.getAttribute("LOGIN_ADMIN");
 
         if (loginAdmin == null) {
@@ -33,17 +33,17 @@ public class OrderController {
 
         Long adminId = loginAdmin.getId();
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(orderService.save(request,adminId));
+        return ResponseEntity.status(HttpStatus.CREATED).body(orderService.save(request, adminId));
     }
 
     @GetMapping("/{orderId}")
     public ResponseEntity<OrderGetResponse> getOne(
-            @PathVariable Long orderId){
+            @PathVariable Long orderId) {
         return ResponseEntity.status(HttpStatus.OK).body(orderService.findOne(orderId));
     }
 
     @GetMapping
-    public ResponseEntity<PageResponse<OrderListResponse>> getPage(@ModelAttribute OrderListRequest request){
+    public ResponseEntity<PageResponse<OrderListResponse>> getPage(@ModelAttribute OrderListRequest request) {
         Page<OrderListResponse> page = orderService.findAll(request);
         return ResponseEntity.status(HttpStatus.OK).body(new PageResponse<>(page));
     }
@@ -51,14 +51,14 @@ public class OrderController {
     @PatchMapping("/{orderId}")
     public ResponseEntity<OrderUpdateResponse> updateOrderStatus(
             @PathVariable Long orderId,
-            @RequestBody OrderStatus orderStatus){
-        return ResponseEntity.status(HttpStatus.OK).body(orderService.update(orderId,orderStatus));
+            @RequestBody OrderStatus orderStatus) {
+        return ResponseEntity.status(HttpStatus.OK).body(orderService.update(orderId, orderStatus));
     }
 
     @PatchMapping("/{orderId}/cancel")
     public ResponseEntity<OrderCancelResponse> cancelOrder(
             @PathVariable Long orderId,
-            @Valid @RequestBody OrderCancelRequest request){
-        return ResponseEntity.status(HttpStatus.OK).body(orderService.cancel(orderId,request));
+            @Valid @RequestBody OrderCancelRequest request) {
+        return ResponseEntity.status(HttpStatus.OK).body(orderService.cancel(orderId, request));
     }
 }

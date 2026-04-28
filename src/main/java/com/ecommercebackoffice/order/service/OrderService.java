@@ -13,8 +13,6 @@ import com.ecommercebackoffice.order.repository.OrderProductRepository;
 import com.ecommercebackoffice.order.repository.OrderRepository;
 import com.ecommercebackoffice.product.entity.Product;
 import com.ecommercebackoffice.product.repository.ProductRepository;
-import com.ecommercebackoffice.session.SessionAdminDto;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -98,7 +96,7 @@ public class OrderService {
 
         List<OrderProduct> orderProducts = orderProductRepository.findAllByOrder_Id(orderId);
 
-        if (orderProducts.isEmpty()){
+        if (orderProducts.isEmpty()) {
             throw new OrderProductNotFoundException("주문 상품 정보가 없습니다.");
         }
 
@@ -106,7 +104,7 @@ public class OrderService {
                 .map(OrderProductResponse::from)
                 .collect(Collectors.toList());
 
-        return OrderGetResponse.from(order,products);
+        return OrderGetResponse.from(order, products);
     }
 
     // 주문 페이지 조회
@@ -114,27 +112,27 @@ public class OrderService {
     public Page<OrderListResponse> findAll(OrderListRequest request) {
 
         // 정렬 기준 기본값 createdAt, 정렬 기준이 적혀있지 않으면 기본값으로 반환
-       if (request.getSortBy() ==null|| request.getSortBy().isBlank()){
-           request.setSortBy("createdAt");
-       }
+        if (request.getSortBy() == null || request.getSortBy().isBlank()) {
+            request.setSortBy("createdAt");
+        }
 
-       Pageable pageable = request.toPageable();
+        Pageable pageable = request.toPageable();
 
-       // 반환타입이 Page<Order>여서 Response로 바꾸기 위해 메서드를 넣음
+        // 반환타입이 Page<Order>여서 Response로 바꾸기 위해 메서드를 넣음
         return orderRepository.findAll(pageable)
                 .map(order -> toOrderListResponse(order));
     }
 
     // Order를 OrderListResponse로 바꾸는 메서드
-    private OrderListResponse toOrderListResponse(Order order){
+    private OrderListResponse toOrderListResponse(Order order) {
 
         // 해당 주문의 상품 목록 조회
         List<OrderProduct> orderProducts = orderProductRepository.findAllByOrder_Id(order.getId());
 
-        if (orderProducts.isEmpty()){
+        if (orderProducts.isEmpty()) {
             throw new OrderProductNotFoundException("주문 상품 정보가 없습니다.");
         }
-        return OrderListResponse.from(order,orderProducts);
+        return OrderListResponse.from(order, orderProducts);
     }
 
     @Transactional
@@ -150,9 +148,9 @@ public class OrderService {
 
         // && 앞은 현재 주문 상태
         // && 뒤는 요청 주문 상태
-        if(order.getStatus().equals(OrderStatus.READY) && orderStatus.equals(OrderStatus.SHIPPING)){
+        if (order.getStatus().equals(OrderStatus.READY) && orderStatus.equals(OrderStatus.SHIPPING)) {
             order.updateStatus(OrderStatus.SHIPPING);
-        } else if (order.getStatus().equals(OrderStatus.SHIPPING) && orderStatus.equals(OrderStatus.DELIVERED)){
+        } else if (order.getStatus().equals(OrderStatus.SHIPPING) && orderStatus.equals(OrderStatus.DELIVERED)) {
             order.updateStatus(OrderStatus.DELIVERED);
         } else {
             throw new InvalidOrderStatusException("주문 상태는 준비중 -> 배송중 -> 배송완료 순서로만 변경할 수 있습니다.");
@@ -160,7 +158,7 @@ public class OrderService {
 
         List<OrderProduct> orderProducts = orderProductRepository.findAllByOrder_Id(order.getId());
 
-        if (orderProducts.isEmpty()){
+        if (orderProducts.isEmpty()) {
             throw new OrderProductNotFoundException("주문 상품 정보가 없습니다.");
         }
 
@@ -169,7 +167,7 @@ public class OrderService {
                 .map(OrderProductResponse::from)
                 .collect(Collectors.toList());
 
-        return OrderUpdateResponse.from(order,products);
+        return OrderUpdateResponse.from(order, products);
     }
 
     @Transactional
@@ -180,17 +178,17 @@ public class OrderService {
 
         List<OrderProduct> orderProducts = orderProductRepository.findAllByOrder_Id(order.getId());
 
-        if (orderProducts.isEmpty()){
+        if (orderProducts.isEmpty()) {
             throw new OrderProductNotFoundException("주문 상품 정보가 없습니다.");
         }
 
-        if (!order.getStatus().equals(OrderStatus.READY)){
+        if (!order.getStatus().equals(OrderStatus.READY)) {
             throw new InvalidOrderStatusException("준비중 상태의 주문만 취소할 수 있습니다.");
         }
 
         order.cancel(request.getCancelReason());
 
-        for (OrderProduct orderProduct : orderProducts){
+        for (OrderProduct orderProduct : orderProducts) {
             Product product = productRepository.findById(orderProduct.getProductId()).orElseThrow(
                     () -> new ProductNotFoundException("존재하지 않는 상품입니다.")
             );

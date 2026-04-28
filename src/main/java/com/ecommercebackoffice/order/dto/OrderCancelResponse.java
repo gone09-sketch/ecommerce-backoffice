@@ -20,7 +20,7 @@ public class OrderCancelResponse {
         this.canceledAt = canceledAt;
     }
 
-    public static OrderCancelResponse from(Order order){
+    public static OrderCancelResponse from(Order order) {
         return new OrderCancelResponse(
                 order.getOrderNumber(),
                 order.getStatus().getDescription(),
