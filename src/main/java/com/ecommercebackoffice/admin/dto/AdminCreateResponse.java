@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 
 @Getter
 @RequiredArgsConstructor
-
 public class AdminCreateResponse {
     // 속성
     private final Long id;

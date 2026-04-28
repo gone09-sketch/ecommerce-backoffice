@@ -60,7 +60,7 @@ public class AdminService {
 
     // 관리자 리스트 조회
     @Transactional(readOnly = true)
-    public PageResponse<AdminPageListResponse> getList(AdminPageRequest adminPageRequest) {
+    public PageResponse<AdminPageListResponse> getList(AdminPageListRequest adminPageRequest) {
         // 1. JPA pageable로 변환 (정렬순서, 정렬컬럼, 페이지 로직)
         Pageable pageable = adminPageRequest.toPageable();
 

@@ -1,13 +1,11 @@
 package com.ecommercebackoffice.admin.dto;
 
 import com.ecommercebackoffice.admin.entity.Admin;
-import com.ecommercebackoffice.common.PageResponse;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
 
 @Getter
-
 public class AdminPageListResponse {
     // 속성
     private final Long id;
