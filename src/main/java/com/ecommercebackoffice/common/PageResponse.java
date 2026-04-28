@@ -7,14 +7,14 @@ import java.util.List;
 @Getter
 public class PageResponse<T> {
     private List<T> content;
-    private int currentPage;
+    private int page;
     private int size;
     private long totalElements;
     private int totalPages;
 
     public PageResponse(Page<T> page) {
         this.content = page.getContent();
-        this.currentPage = page.getNumber() + 1; // 클라이언트 응답용으로 1-based 변환
+        this.page = page.getNumber() + 1; // 클라이언트 응답용으로 1-based 변환
         this.size = page.getSize();
         this.totalElements = page.getTotalElements();
         this.totalPages = page.getTotalPages();
