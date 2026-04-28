@@ -1,8 +1,6 @@
 package com.ecommercebackoffice.product.controller;
 
-import com.ecommercebackoffice.admin.entity.Admin;
 import com.ecommercebackoffice.common.PageResponse;
-import com.ecommercebackoffice.exception.AdminNotFoundException;
 import com.ecommercebackoffice.product.dto.*;
 import com.ecommercebackoffice.product.service.ProductService;
 import com.ecommercebackoffice.session.SessionAdminDto;
