@@ -13,7 +13,6 @@ import com.ecommercebackoffice.order.repository.OrderProductRepository;
 import com.ecommercebackoffice.order.repository.OrderRepository;
 import com.ecommercebackoffice.product.entity.Product;
 import com.ecommercebackoffice.product.repository.ProductRepository;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -36,9 +35,6 @@ public class OrderService {
     // 주문 생성
     @Transactional
     public OrderCreateResponse save(OrderCreateRequest request, Long adminId) {
-
-//        SessionAdminDto loginAdmin = (SessionAdminDto) httpSession.getAttribute("loginAdmin");
-//        Long adminId = loginAdmin.getId();
 
         Admin admin = adminRepository.findById(adminId).orElseThrow(
                 () -> new AdminNotFoundException("존재하지 않는 관리자입니다.")
