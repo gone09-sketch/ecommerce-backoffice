@@ -1,5 +1,6 @@
 package com.ecommercebackoffice.product.dto;
 
+import com.ecommercebackoffice.product.enums.ProductEnum;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -14,6 +15,6 @@ public class ProductCreateResponse {
     private final String category;
     private final Long price;
     private final int stock;
-    private final String status;
+    private final ProductEnum status;
     private final LocalDateTime createdAt;
 }
