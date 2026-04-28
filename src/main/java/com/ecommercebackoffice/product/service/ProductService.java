@@ -1,29 +1,40 @@
 package com.ecommercebackoffice.product.service;
 
+import com.ecommercebackoffice.admin.entity.Admin;
+import com.ecommercebackoffice.admin.repository.AdminRepository;
+import com.ecommercebackoffice.common.PageResponse;
+import com.ecommercebackoffice.exception.AdminNotFoundException;
 import com.ecommercebackoffice.exception.ProductDuplicateException;
 import com.ecommercebackoffice.exception.ProductNotFoundException;
-import com.ecommercebackoffice.exception.UnauthorizedException;
 import com.ecommercebackoffice.product.dto.*;
 import com.ecommercebackoffice.product.entity.Product;
 import com.ecommercebackoffice.product.repository.ProductRepository;
-import com.ecommercebackoffice.session.SessionUser;
+import com.ecommercebackoffice.session.SessionAdmin;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.PageImpl;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final AdminRepository adminRepository;
 
+    // 상품 등록
     @Transactional
-    public ProductCreateResponse create(SessionUser sessionUser, ProductCreateRequest request) {
-        if(sessionUser == null) {
-            throw new UnauthorizedException("로그인이 필요한 기능입니다.");
-        }
+    public ProductCreateResponse create(SessionAdmin sessionAdmin, ProductCreateRequest request) {
 
-        if(productRepository.existsByName(request.getName())) {
+        Admin admin = adminRepository.findById(sessionAdmin.getId()).orElseThrow(
+                () -> new AdminNotFoundException("해당 관리자를 찾을 수 없습니다.")
+        );
+
+        if (productRepository.existsByName(request.getName())) {
             throw new ProductDuplicateException("이미 등록된 상품입니다.");
         }
 
@@ -31,53 +42,58 @@ public class ProductService {
                 request.getName(),
                 request.getCategory(),
                 request.getPrice(),
-                request.getStock()
+                request.getStock(),
+                request.getStatus(),
+                admin
         );
 
         Product savedProduct = productRepository.save(product);
 
-        return new ProductCreateResponse(
-                savedProduct.getId(),
-                savedProduct.getName(),
-                savedProduct.getCategory(),
-                savedProduct.getPrice(),
-                savedProduct.getStock(),
-                savedProduct.getStatus(),
-                savedProduct.getCreatedAt()
-        );
+        return ProductCreateResponse.from(savedProduct);
     }
 
+    // 상품 단 건 조회
     @Transactional(readOnly = true)
-    public ProductGetOneResponse findOne(SessionUser sessionUser, Long productId) {
-        if (sessionUser == null) {
-            throw new UnauthorizedException("로그인이 필요한 기능입니다.");
-        }
+    public ProductGetOneResponse findOne(Long productId) {
 
         Product product = productRepository.findById(productId).orElseThrow(
                 () -> new ProductNotFoundException("해당하는 상품이 존재하지 않습니다.")
         );
 
-        return new ProductGetOneResponse(
-                200,
-                "상품 상세 조회 성공",
-                new ProductGetOneResult(
-                        product.getName(),
-                        product.getCategory(),
-                        product.getPrice(),
-                        product.getStock(),
-                        product.getStatus(),
-                        product.getCreatedAt(),
-                        product.getAdmin().getName(),
-                        product.getAdmin().getEmail()
-                )
-        );
+        return ProductGetOneResponse.from(product);
     }
 
+    // 상품 전체 조회
+    @Transactional(readOnly = true)
+    public PageResponse<ProductGetAllResponse> findAll(ProductGetAllRequest request) {
+
+        Pageable pageable = request.toPageable();
+
+        Page<Product> productPage = productRepository.searchProducts(
+                request.getKeyword(),
+                request.getCategory(),
+                request.getStatus(),
+                pageable
+        );
+
+        List<ProductGetAllResponse> dtoDatas = productPage.stream()
+                .map(ProductGetAllResponse::from)
+                .toList();
+
+        // 👉 PageResponse로 바로 감싸기
+        Page<ProductGetAllResponse> mappedPage =
+                new PageImpl<>(
+                        dtoDatas,
+                        pageable,
+                        productPage.getTotalElements()
+                );
+
+        return new PageResponse<>(mappedPage);
+    }
+
+    // 상품 정보 수정
     @Transactional
-    public ProductUpdateResponse updateInfo(SessionUser sessionUser, Long productId, ProductInfoUpdateRequest request) {
-        if(sessionUser == null) {
-            throw new UnauthorizedException("로그인이 필요한 기능입니다.");
-        }
+    public ProductUpdateResponse updateInfo(Long productId, ProductInfoUpdateRequest request) {
 
         Product product = productRepository.findById(productId).orElseThrow(
                 () -> new ProductNotFoundException("해당하는 상품이 존재하지 않습니다.")
@@ -85,26 +101,12 @@ public class ProductService {
 
         product.updateInfo(request.getName(), request.getCategory(), request.getPrice());
 
-        return new ProductUpdateResponse(
-                200,
-                "상품 정보 수정 성공",
-                new ProductUpdateResult(
-                        product.getId(),
-                        product.getName(),
-                        product.getCategory(),
-                        product.getPrice(),
-                        product.getStock(),
-                        product.getStatus(),
-                        product.getUpdatedAt()
-                )
-        );
+        return ProductUpdateResponse.from(product);
     }
 
+    // 상품 재고 수정
     @Transactional
-    public ProductUpdateResponse updateStock(SessionUser sessionUser, Long productId, ProductStockUpdateRequest request) {
-        if(sessionUser == null) {
-            throw new UnauthorizedException("로그인이 필요한 기능입니다.");
-        }
+    public ProductUpdateResponse updateStock(Long productId, ProductStockUpdateRequest request) {
 
         Product product = productRepository.findById(productId).orElseThrow(
                 () -> new ProductNotFoundException("해당하는 상품이 존재하지 않습니다.")
@@ -112,18 +114,30 @@ public class ProductService {
 
         product.updateStock(request.getStock());
 
-        return new ProductUpdateResponse(
-                200,
-                "상품 재고 변경 성공",
-                new ProductUpdateResult(
-                        product.getId(),
-                        product.getName(),
-                        product.getCategory(),
-                        product.getPrice(),
-                        product.getStock(),
-                        product.getStatus(),
-                        product.getUpdatedAt()
-                )
+        return ProductUpdateResponse.from(product);
+    }
+
+    // 상품 상태 수정
+    @Transactional
+    public ProductUpdateResponse updateStatus(Long productId, ProductStatusUpdateRequest request) {
+
+        Product product = productRepository.findById(productId).orElseThrow(
+                () -> new ProductNotFoundException("해당하는 상품이 존재하지 않습니다.")
         );
+
+        product.updateStatus(request.getStatus());
+
+        return ProductUpdateResponse.from(product);
+    }
+
+    // 상품 삭제
+    @Transactional
+    public void delete(Long productId) {
+
+        Product product = productRepository.findById(productId).orElseThrow(
+                () -> new ProductNotFoundException("해당하는 상품이 존재하지 않습니다.")
+        );
+
+        productRepository.delete(product);
     }
 }

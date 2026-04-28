@@ -1,8 +1,11 @@
 package com.ecommercebackoffice.product.controller;
 
+import com.ecommercebackoffice.common.PageResponse;
 import com.ecommercebackoffice.product.dto.*;
 import com.ecommercebackoffice.product.service.ProductService;
-import com.ecommercebackoffice.session.SessionUser;
+import com.ecommercebackoffice.session.SessionAdmin;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,37 +18,66 @@ public class ProductController {
 
     private final ProductService productService;
 
-    @PostMapping()
+    // 상품 등록 API
+    @PostMapping
     public ResponseEntity<ProductCreateResponse> productCreate(
-            @SessionAttribute(name = "loginAdmin", required = false) SessionUser sessionUser,
-            @RequestBody ProductCreateRequest request
-            ) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(productService.create(sessionUser, request));
+            @RequestBody @Valid ProductCreateRequest request,
+            HttpServletRequest httpServletRequest
+    ) {
+        SessionAdmin sessionAdmin = (SessionAdmin) httpServletRequest.getSession()
+                .getAttribute("loginAdmin");
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(productService.create(sessionAdmin, request));
     }
 
+    // 상품 단 건 조회 API
     @GetMapping("/{productId}")
     public ResponseEntity<ProductGetOneResponse> productGetOne(
-            @SessionAttribute(name = "loginAdmin", required = false) SessionUser sessionUser,
             @PathVariable Long productId) {
-        return ResponseEntity.status(HttpStatus.OK).body(productService.findOne(sessionUser, productId));
+        return ResponseEntity.status(HttpStatus.OK).body(productService.findOne(productId));
     }
 
+    // 상품 전체 조회 API
+    @GetMapping
+    public ResponseEntity<PageResponse<ProductGetAllResponse>> productGetAll(
+            @ModelAttribute ProductGetAllRequest request
+    ) {
+        return ResponseEntity.status(HttpStatus.OK).body(productService.findAll(request));
+    }
+
+    // 상품 정보 수정 API
     @PatchMapping("/{productId}")
     public ResponseEntity<ProductUpdateResponse> productInfoUpdate(
-            @SessionAttribute(name = "loginAdmin", required = false) SessionUser sessionUser,
             @PathVariable Long productId,
-            @RequestBody ProductInfoUpdateRequest request
+            @RequestBody ProductInfoUpdateRequest request   // 정보 수정 request의 경우, 이름, 카테고리, 가격 중 선택 수정이라서 따로 Validation 안 달았습니다.
     ) {
-        return ResponseEntity.status(HttpStatus.OK).body(productService.updateInfo(sessionUser, productId, request));
+        return ResponseEntity.status(HttpStatus.OK).body(productService.updateInfo(productId, request));
     }
 
+    // 상품 재고 수정 API
     @PatchMapping("/{productId}/stock")
     public ResponseEntity<ProductUpdateResponse> productStockUpdate(
-        @SessionAttribute(name = "loginAdmin", required = false) SessionUser sessionUser,
-        @PathVariable Long productId,
-        @RequestBody ProductStockUpdateRequest request
+            @PathVariable Long productId,
+            @RequestBody @Valid ProductStockUpdateRequest request
     ) {
-        return ResponseEntity.status(HttpStatus.OK).body(productService.updateStock(sessionUser, productId, request));
+        return ResponseEntity.status(HttpStatus.OK).body(productService.updateStock(productId, request));
     }
 
+    // 상품 상태 수정 API
+    @PatchMapping("/{productId}/status")
+    public ResponseEntity<ProductUpdateResponse> productStatusUpdate(
+            @PathVariable Long productId,
+            @RequestBody @Valid ProductStatusUpdateRequest request
+    ) {
+        return ResponseEntity.status(HttpStatus.OK).body(productService.updateStatus(productId, request));
+    }
+
+    // 상품 삭제 API
+    @DeleteMapping("/{productId}")
+    public ResponseEntity<Void> productDelete(
+            @PathVariable Long productId
+    ) {
+        productService.delete(productId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
 }

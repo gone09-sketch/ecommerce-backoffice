@@ -1,11 +1,12 @@
 package com.ecommercebackoffice.product.dto;
 
-import jakarta.validation.constraints.NotBlank;
+import com.ecommercebackoffice.product.enums.ProductStatus;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 
 @Getter
 public class ProductStatusUpdateRequest {
 
-    @NotBlank
-    private String status;
+    @NotNull
+    private ProductStatus status;
 }
