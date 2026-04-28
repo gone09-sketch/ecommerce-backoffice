@@ -1,11 +1,7 @@
 package com.ecommercebackoffice.admin.dto;
 
 import com.ecommercebackoffice.admin.enums.AdminRole;
-import jakarta.persistence.Column;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 
 @Getter
@@ -23,10 +19,11 @@ public class AdminCreateRequest {
     @Size(min = 8, message = "비밀번호는 8자 이상으로 입력해주세요.")
     private String password;
 
-    @Pattern(regexp = "^01[016789]-?\\d{4}-?\\d{4}$", message = "전화번호 형식이 올바르지 않습니다.")
+    @NotBlank
+    @Pattern(regexp = "^01[016789]-?\\d{4}-\\d{4}$", message = "전화번호 형식이 올바르지 않습니다.")
     private String phoneNumber;
 
-    @NotBlank(message = "관리자 역할을 선택해주세요.")
+    @NotNull(message = "관리자 역할을 선택해주세요.")
     private AdminRole role;
 
     // 생성자
