@@ -13,7 +13,6 @@ import com.ecommercebackoffice.order.repository.OrderProductRepository;
 import com.ecommercebackoffice.order.repository.OrderRepository;
 import com.ecommercebackoffice.product.entity.Product;
 import com.ecommercebackoffice.product.repository.ProductRepository;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -36,9 +35,6 @@ public class OrderService {
     // 주문 생성
     @Transactional
     public OrderCreateResponse save(OrderCreateRequest request, Long adminId) {
-
-//        SessionAdminDto loginAdmin = (SessionAdminDto) httpSession.getAttribute("loginAdmin");
-//        Long adminId = loginAdmin.getId();
 
         Admin admin = adminRepository.findById(adminId).orElseThrow(
                 () -> new AdminNotFoundException("존재하지 않는 관리자입니다.")
@@ -69,7 +65,7 @@ public class OrderService {
         );
 
         // 주문 차감 메서드
-        product.updateStock(request.getQuantity());
+        product.descStock(request.getQuantity());
 
         Order savedOrder = orderRepository.save(order);
 
@@ -188,11 +184,12 @@ public class OrderService {
 
         order.cancel(request.getCancelReason());
 
+        // 주문 취소 후 재고 원복 메서드
         for (OrderProduct orderProduct : orderProducts) {
             Product product = productRepository.findById(orderProduct.getProductId()).orElseThrow(
                     () -> new ProductNotFoundException("존재하지 않는 상품입니다.")
             );
-            product.updateStock(orderProduct.getQuantity());
+            product.revertStock(orderProduct.getQuantity());
         }
         return OrderCancelResponse.from(order);
     }
