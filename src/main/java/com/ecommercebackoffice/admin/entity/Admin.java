@@ -3,17 +3,18 @@ package com.ecommercebackoffice.admin.entity;
 import com.ecommercebackoffice.admin.enums.AdminRole;
 import com.ecommercebackoffice.admin.enums.AdminStatus;
 import com.ecommercebackoffice.config.BaseEntity;
+import com.ecommercebackoffice.exception.InvalidAdminStatusException;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.SoftDelete;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Entity
 @Table(name = "admins")
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 
 public class Admin extends BaseEntity {
     // 속성
@@ -22,7 +23,7 @@ public class Admin extends BaseEntity {
 
     @Column(nullable = false)
     private String name;
-    @Column (nullable = false)
+    @Column (nullable = false, unique = true)
     private String email;
     @Column (nullable = false)
     private String password;
@@ -56,14 +57,57 @@ public class Admin extends BaseEntity {
     // 기능
     // 등록 승인 시점에 승인일 자동 기록
     public void approve() {
+        // 승인(PENDING) 상태가 아닐 시 승인 불가
+        if (this.status != AdminStatus.PENDING) {
+            throw new InvalidAdminStatusException("승인 가능한 상태가 아닙니다.");
+        }
+
         this.status = AdminStatus.ACTIVE;
         this.approvedAt = LocalDateTime.now();
+        this.rejectedAt = null;
+        this.rejectedReason = null;
     }
 
     // 등록 거부 시점에 거부일 및 거부 사유
-    public void reject(String reason) {
+    public void reject(String rejectedReason) {
+        // 승인(PENDING) 상태가 아닐 시 거부 불가
+        if (this.status != AdminStatus.PENDING) {
+            throw new InvalidAdminStatusException("거부 가능한 상태가 아닙니다.");
+        }
+
         this.status = AdminStatus.REJECTED;
         this.rejectedAt = LocalDateTime.now();
-        this.rejectedReason = reason;
+        this.rejectedReason = rejectedReason;
+        this.approvedAt = null;
+    }
+
+    // 관리자 및 내 프로필 수정 update
+    public void update(String name, String email, String phoneNumber) {
+        // null이 아닌 경우 수정, null인 경우 기존 데이터 유지
+        if (name != null) {
+            this.name = name;
+        }
+        if (email != null) {
+            this.email = email;
+        }
+        if (phoneNumber != null) {
+            this.phoneNumber = phoneNumber;
+        }
+    }
+
+
+    // 관리자 역할 update
+    public void roleUpdate(AdminRole newRole) {
+        this.role = newRole;
+    }
+
+    // 관리자 상태 update
+    public void statusUpdate(AdminStatus newStatus) {
+        this.status = newStatus;
+    }
+
+    // 비밀번호 update
+    public void passwordUpdate(String encodedPassword) {
+        this.password = encodedPassword;
     }
 }
