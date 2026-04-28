@@ -88,7 +88,16 @@ public class AdminController {
         SessionAdmin sessionAdmin = (SessionAdmin) httpSession.getAttribute("loginAdmin");
         Long adminId = sessionAdmin.getId();
 
-        AdminProfilePatchResponse profilePatchResponseAPI = adminService.patchProfile(adminId, adminProfilePatchRequest, httpSession);
+        // 프로필 수정
+        AdminProfilePatchResponse profilePatchResponseAPI = adminService.patchProfile(adminId, adminProfilePatchRequest);
+
+        // 세션 업데이트
+        httpSession.setAttribute("loginAdmin", new SessionAdmin(
+                profilePatchResponseAPI.getId(),
+                profilePatchResponseAPI.getEmail(),
+                profilePatchResponseAPI.getRole()
+        ));
+
         return ResponseEntity.status(HttpStatus.OK).body(profilePatchResponseAPI);
     }
 

@@ -161,8 +161,7 @@ public class AdminService {
 
     // 내 프로필 수정
     @Transactional
-    public AdminProfilePatchResponse patchProfile(Long adminId, AdminProfilePatchRequest profilePatchRequest,
-                                                  HttpSession httpSession) {
+    public AdminProfilePatchResponse patchProfile(Long adminId, AdminProfilePatchRequest profilePatchRequest) {
 
         // 1. 해당 관리자 조회
         Admin admin = adminRepository.findById(adminId).orElseThrow(
@@ -174,12 +173,7 @@ public class AdminService {
         // 3. 이메일 변경 시 중복 체크 (null이면 변경 안 하는 것으로 간주)
         if (newEmail != null) {
 
-            // 3-1. 공백 이메일 예외처리
-            if (newEmail.isBlank()) {
-                throw new InvalidInputException("이메일을 입력해주세요.");
-            }
-
-            // 3-2. 기존 이메일과 다르고 DB에 이미 존재하면 예외처리
+            // 기존 이메일과 다르고 DB에 이미 존재하면 예외처리
             if (!newEmail.equals(admin.getEmail()) &&
                     adminRepository.existsByEmail(newEmail)) {
                 throw new DuplicateEmailException("이미 사용 중인 이메일입니다.");
@@ -192,14 +186,7 @@ public class AdminService {
                 profilePatchRequest.getEmail(),
                 profilePatchRequest.getPhoneNumber());
 
-        // 5. 세션 업데이트
-        httpSession.setAttribute("loginAdmin", new SessionAdmin(
-                admin.getId(),
-                admin.getEmail(),
-                admin.getRole().getDescription()
-        ));
-
-        // 6. 반환
+        // 5. 반환
         return AdminProfilePatchResponse.from(admin);
     }
 
