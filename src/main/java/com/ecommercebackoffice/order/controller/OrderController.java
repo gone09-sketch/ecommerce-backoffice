@@ -16,11 +16,12 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/orders")
 public class OrderController {
 
     private final OrderService orderService;
 
-    @PostMapping("/orders")
+    @PostMapping
     public ResponseEntity<OrderCreateResponse> save(
             @Valid @RequestBody OrderCreateRequest request,
             HttpSession session){
@@ -35,26 +36,26 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.CREATED).body(orderService.save(request,adminId));
     }
 
-    @GetMapping("/orders/{orderId}")
+    @GetMapping("/{orderId}")
     public ResponseEntity<OrderGetResponse> getOne(
             @PathVariable Long orderId){
         return ResponseEntity.status(HttpStatus.OK).body(orderService.findOne(orderId));
     }
 
-    @GetMapping("/orders")
+    @GetMapping
     public ResponseEntity<PageResponse<OrderListResponse>> getPage(@ModelAttribute OrderListRequest request){
         Page<OrderListResponse> page = orderService.findAll(request);
         return ResponseEntity.status(HttpStatus.OK).body(new PageResponse<>(page));
     }
 
-    @PatchMapping("/orders/{orderId}")
+    @PatchMapping("/{orderId}")
     public ResponseEntity<OrderUpdateResponse> updateOrderStatus(
             @PathVariable Long orderId,
             @RequestBody OrderStatus orderStatus){
         return ResponseEntity.status(HttpStatus.OK).body(orderService.update(orderId,orderStatus));
     }
 
-    @PatchMapping("/orders/{orderId}/cancel")
+    @PatchMapping("/{orderId}/cancel")
     public ResponseEntity<OrderCancelResponse> cancelOrder(
             @PathVariable Long orderId,
             @Valid @RequestBody OrderCancelRequest request){
