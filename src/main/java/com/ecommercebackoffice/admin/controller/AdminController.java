@@ -70,10 +70,10 @@ public class AdminController {
     @PatchMapping("/{adminId}")
     public ResponseEntity<AdminPatchResponse> patchAPI(
             @PathVariable Long adminId,
-            @RequestBody @Valid AdminPatchRequest adminPatchRequest,
-            HttpSession httpSession) {
+            @RequestBody @Valid AdminPatchRequest adminPatchRequest) {
 
-        AdminPatchResponse adminPatchResponseAPI = adminService.patchAdmin(adminId, adminPatchRequest, httpSession);
+
+        AdminPatchResponse adminPatchResponseAPI = adminService.patchAdmin(adminId, adminPatchRequest);
         return ResponseEntity.status(HttpStatus.OK).body(adminPatchResponseAPI);
     }
 
@@ -100,6 +100,7 @@ public class AdminController {
 
         return ResponseEntity.status(HttpStatus.OK).body(profilePatchResponseAPI);
     }
+
 
     // 내 비밀번호 변경
     @PatchMapping("/profile/password")
