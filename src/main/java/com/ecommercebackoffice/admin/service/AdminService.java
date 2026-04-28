@@ -197,7 +197,7 @@ public class AdminService {
         String encodedPassword = passwordEncoder.encode(adminPasswordPatchRequest.getNewPassword());
 
         // 6. 새 비밀번호 업데이트
-        foundAdmin.passwordUpdate(encodedPassword);
+        foundAdmin.updatePassword(encodedPassword);
     }
 
 
@@ -209,7 +209,7 @@ public class AdminService {
                 () -> new AdminNotFoundException("해당 관리자를 찾을 수 없습니다."));
 
         // 2. 수정 내용 업데이트
-        admin.roleUpdate(adminRolePatchRequest.getRole());
+        admin.updateRole(adminRolePatchRequest.getRole());
 
         // 3. 반환
         return AdminRolePatchResponse.from(admin);
@@ -224,7 +224,7 @@ public class AdminService {
                 () -> new AdminNotFoundException("해당 관리자를 찾을 수 없습니다."));
 
         // 2. 수정 내용 업데이트
-        admin.statusUpdate(adminStatusPatchRequest.getStatus());
+        admin.updateStatus(adminStatusPatchRequest.getStatus());
 
         // 3. 반환
         return AdminStatusPatchResponse.from(admin);

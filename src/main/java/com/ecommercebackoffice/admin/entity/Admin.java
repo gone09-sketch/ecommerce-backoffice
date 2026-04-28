@@ -23,10 +23,13 @@ public class Admin extends BaseEntity {
 
     @Column(nullable = false)
     private String name;
+
     @Column (nullable = false, unique = true)
     private String email;
+
     @Column (nullable = false)
     private String password;
+
     @Column (nullable = false)
     private String phoneNumber;
 
@@ -38,8 +41,7 @@ public class Admin extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private AdminStatus status;
 
-
-    private LocalDateTime approvedAt; // 등록 승인일
+    private LocalDateTime approvedAt; // 승인일
     private LocalDateTime rejectedAt; // 거부일
     private String rejectedReason; // 거부 사유
 
@@ -54,10 +56,12 @@ public class Admin extends BaseEntity {
         this.status = AdminStatus.PENDING;
     }
 
+
     // 기능
     // 등록 승인 시점에 승인일 자동 기록
+
     public void approve() {
-        // 승인(PENDING) 상태가 아닐 시 승인 불가
+        // 승인 대기 상태에서만 승인 가능
         if (this.status != AdminStatus.PENDING) {
             throw new InvalidAdminStatusException("승인 가능한 상태가 아닙니다.");
         }
@@ -70,7 +74,7 @@ public class Admin extends BaseEntity {
 
     // 등록 거부 시점에 거부일 및 거부 사유
     public void reject(String rejectedReason) {
-        // 승인(PENDING) 상태가 아닐 시 거부 불가
+        // 승인 대기 상태에서만 거부 가능
         if (this.status != AdminStatus.PENDING) {
             throw new InvalidAdminStatusException("거부 가능한 상태가 아닙니다.");
         }
@@ -97,17 +101,17 @@ public class Admin extends BaseEntity {
 
 
     // 관리자 역할 update
-    public void roleUpdate(AdminRole newRole) {
+    public void updateRole(AdminRole newRole) {
         this.role = newRole;
     }
 
     // 관리자 상태 update
-    public void statusUpdate(AdminStatus newStatus) {
+    public void updateStatus(AdminStatus newStatus) {
         this.status = newStatus;
     }
 
     // 비밀번호 update
-    public void passwordUpdate(String encodedPassword) {
+    public void updatePassword(String encodedPassword) {
         this.password = encodedPassword;
     }
 }
