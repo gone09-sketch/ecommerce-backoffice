@@ -60,7 +60,7 @@ public class CustomerController {
     @PatchMapping("/{customerId}/status")
     public ResponseEntity<CommonResponse<CustomerStatusUpdateResponse>> statusUpdate(
             @PathVariable Long customerId,
-            @RequestBody CustomerStatusUpdateRequest request
+            @RequestBody @Valid CustomerStatusUpdateRequest request
     ) {
         CustomerStatusUpdateResponse result = customerService.statusUpdate(customerId, request);
 
