@@ -5,6 +5,7 @@ import com.ecommercebackoffice.admin.enums.AdminStatus;
 import com.ecommercebackoffice.config.BaseEntity;
 import com.ecommercebackoffice.exception.InvalidAdminStatusException;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -13,7 +14,7 @@ import java.time.LocalDateTime;
 @Getter
 @Entity
 @Table(name = "admins")
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 
 public class Admin extends BaseEntity {
     // 속성
@@ -22,7 +23,7 @@ public class Admin extends BaseEntity {
 
     @Column(nullable = false)
     private String name;
-    @Column (nullable = false)
+    @Column (nullable = false, unique = true)
     private String email;
     @Column (nullable = false)
     private String password;
@@ -80,8 +81,8 @@ public class Admin extends BaseEntity {
         this.approvedAt = null;
     }
 
-    // 관리자 수정 update
-    public void adminUpdate(String name, String email, String phoneNumber) {
+    // 관리자 및 내 프로필 수정 update
+    public void update(String name, String email, String phoneNumber) {
         // null이 아닌 경우 수정, null인 경우 기존 데이터 유지
         if (name != null) {
             this.name = name;
@@ -94,11 +95,6 @@ public class Admin extends BaseEntity {
         }
     }
 
-    // 내 프로필 수정 update
-    public void profileUpdate(String name, String email, String phoneNumber) {
-       // 관리자 수정과 같은 로직이므로 adminUpdate 호출
-        adminUpdate(name, email, phoneNumber);
-    }
 
     // 관리자 역할 update
     public void roleUpdate(AdminRole newRole) {
