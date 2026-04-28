@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Optional;
+
 public interface AdminRepository extends JpaRepository<Admin, Long> {
 
     // 중복 이메일 확인
@@ -32,4 +34,6 @@ public interface AdminRepository extends JpaRepository<Admin, Long> {
             @Param("role") AdminRole role,
             @Param("status") AdminStatus status,
             Pageable pageable);
+
+    Optional<Object> finqdByEmail(String email);
 }
