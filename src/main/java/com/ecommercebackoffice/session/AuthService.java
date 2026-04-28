@@ -13,7 +13,7 @@ public class AuthService {
 
     public Admin authenticate(String email, String password) {
         // 1. 이메일로 관리자 조회
-        Admin admin = (Admin) adminRepository.finqdByEmail(email)
+        Admin admin = (Admin) adminRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("이메일 또는 비밀번호가 일치하지 않습니다."));
 
         // 2. 비밀번호 검증
