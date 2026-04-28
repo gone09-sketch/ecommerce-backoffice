@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Optional;
+
 public interface AdminRepository extends JpaRepository<Admin, Long> {
 
     // 중복 이메일 확인
@@ -26,10 +28,13 @@ public interface AdminRepository extends JpaRepository<Admin, Long> {
              * role과 status 필터된 것 조회 */
             "(:role IS NULL OR a.role = :role) AND " +
             "(:status IS NULL OR a.status = :status)")
-
     Page<Admin> findAllWithFilters(
             @Param("keyword") String keyword,
             @Param("role") AdminRole role,
             @Param("status") AdminStatus status,
             Pageable pageable);
+
+
+    // 이메일로 찾기
+    Optional<Object> findByEmail(String email);
 }
