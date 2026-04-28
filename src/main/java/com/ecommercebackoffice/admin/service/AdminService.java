@@ -161,48 +161,45 @@ public class AdminService {
 
     // 내 프로필 수정
     @Transactional
-    public AdminProfilePatchResponse patchProfile(AdminProfilePatchRequest profilePatchRequest,
+    public AdminProfilePatchResponse patchProfile(Long adminId, AdminProfilePatchRequest profilePatchRequest,
                                                   HttpSession httpSession) {
-        // 1. 세션에서 adminId 가져오기
-        SessionAdmin sessionAdmin = (SessionAdmin) httpSession.getAttribute("loginAdmin");
-        Long adminId = sessionAdmin.getId();
 
-        // 2. 해당 관리자 조회
+        // 1. 해당 관리자 조회
         Admin admin = adminRepository.findById(adminId).orElseThrow(
                 () -> new AdminNotFoundException("해당 관리자를 찾을 수 없습니다."));
 
-        // 3. 데이터 준비
+        // 2. 데이터 준비
         String newEmail = profilePatchRequest.getEmail();
 
-        // 4. 이메일 변경 시 중복 체크 (null이면 변경 안 하는 것으로 간주)
+        // 3. 이메일 변경 시 중복 체크 (null이면 변경 안 하는 것으로 간주)
         if (newEmail != null) {
 
-            // 4-1. 공백 이메일 예외처리
+            // 3-1. 공백 이메일 예외처리
             if (newEmail.isBlank()) {
                 throw new InvalidInputException("이메일은 공백일 수 없습니다.");
             }
 
-            // 4-2. 기존 이메일과 다르고 DB에 이미 존재하면 예외처리
+            // 3-2. 기존 이메일과 다르고 DB에 이미 존재하면 예외처리
             if (!newEmail.equals(admin.getEmail()) &&
                     adminRepository.existsByEmail(newEmail)) {
                 throw new DuplicateEmailException("이미 사용 중인 이메일입니다.");
             }
         }
 
-        // 5. 수정 내용 업데이트
+        // 4. 수정 내용 업데이트
         admin.update(
                 profilePatchRequest.getName(),
                 profilePatchRequest.getEmail(),
                 profilePatchRequest.getPhoneNumber());
 
-        // 6. 세션 업데이트
+        // 5. 세션 업데이트
         httpSession.setAttribute("loginAdmin", new SessionAdmin(
                 admin.getId(),
                 admin.getEmail(),
                 admin.getRole().getDescription()
         ));
 
-        // 7. 반환
+        // 6. 반환
         return AdminProfilePatchResponse.from(admin);
     }
 

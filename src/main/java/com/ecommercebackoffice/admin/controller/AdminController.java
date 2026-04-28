@@ -84,7 +84,11 @@ public class AdminController {
             @RequestBody @Valid AdminProfilePatchRequest adminProfilePatchRequest,
             HttpSession httpSession) {
 
-        AdminProfilePatchResponse profilePatchResponseAPI = adminService.patchProfile(adminProfilePatchRequest, httpSession);
+        // 세션에서 adminId 가져오기
+        SessionAdmin sessionAdmin = (SessionAdmin) httpSession.getAttribute("loginAdmin");
+        Long adminId = sessionAdmin.getId();
+
+        AdminProfilePatchResponse profilePatchResponseAPI = adminService.patchProfile(adminId, adminProfilePatchRequest, httpSession);
         return ResponseEntity.status(HttpStatus.OK).body(profilePatchResponseAPI);
     }
 
