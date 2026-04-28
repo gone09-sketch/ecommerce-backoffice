@@ -6,13 +6,12 @@ import com.ecommercebackoffice.config.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.SoftDelete;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Entity
-@Table(name = "admins")
+@Table(name = "admin_id")
 @NoArgsConstructor
 
 public class Admin extends BaseEntity {
@@ -41,6 +40,8 @@ public class Admin extends BaseEntity {
     private LocalDateTime approvedAt; // 등록 승인일
     private LocalDateTime rejectedAt; // 거부일
     private String rejectedReason; // 거부 사유
+
+
 
 
     // 생성자

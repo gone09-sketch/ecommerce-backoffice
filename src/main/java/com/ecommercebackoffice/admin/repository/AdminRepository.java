@@ -5,7 +5,4 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AdminRepository extends JpaRepository<Admin, Long> {
 
-    // 중복 이메일 확인
-    boolean existsByEmail(String email);
-
 }
