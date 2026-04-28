@@ -90,11 +90,10 @@ public class Order {
 
     // 주문 번호 만들기 로직
     private String createOrderNumber(Long customerId) {
-        return customerId
-                + "-"
-                + LocalDateTime.now()
-                .format(DateTimeFormatter
-                        .ofPattern("yyyyMMdd"));
+        String orderDate = LocalDateTime.now()
+                .format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+
+        return customerId + "-" +orderDate;
     }
 
     // 주문 상태 변환 메서드
