@@ -146,10 +146,10 @@ public class AdminController {
 
     // 관리자 등록 승인
     @PostMapping("/{adminId}/approve")
-    public ResponseEntity<AdminApproveCreateResponse> approveAPI(@PathVariable Long adminId) {
+    public ResponseEntity<AdminApproveResponse> approveAPI(@PathVariable Long adminId) {
 
-        AdminApproveCreateResponse adminApproveCreateResponse = adminService.adminApprove(adminId);
-        return ResponseEntity.status(HttpStatus.OK).body(adminApproveCreateResponse);
+        AdminApproveResponse adminApproveResponse = adminService.adminApprove(adminId);
+        return ResponseEntity.status(HttpStatus.OK).body(adminApproveResponse);
     }
 
 

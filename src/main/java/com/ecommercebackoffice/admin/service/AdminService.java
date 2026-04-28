@@ -24,7 +24,7 @@ import org.springframework.util.StringUtils;
 public class AdminService {
     private final PasswordEncoder passwordEncoder;
     // 속성
-    private AdminRepository adminRepository;
+    private final AdminRepository adminRepository;
 
     // 생성자
     public AdminService(AdminRepository adminRepository, PasswordEncoder passwordEncoder) {
@@ -244,7 +244,7 @@ public class AdminService {
 
     // 관리자 등록 승인
     @Transactional
-    public AdminApproveCreateResponse adminApprove(Long adminId) {
+    public AdminApproveResponse adminApprove(Long adminId) {
         // 1. 관리자 조회
         Admin admin = adminRepository.findById(adminId).orElseThrow(
                 () -> new AdminNotFoundException("해당 관리자를 찾을 수 없습니다."));
@@ -253,7 +253,7 @@ public class AdminService {
         admin.approve();
 
         // 3. 반환
-        return AdminApproveCreateResponse.from(admin);
+        return AdminApproveResponse.from(admin);
     }
 
 

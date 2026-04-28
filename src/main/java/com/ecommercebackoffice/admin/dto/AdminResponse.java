@@ -2,11 +2,13 @@ package com.ecommercebackoffice.admin.dto;
 
 import com.ecommercebackoffice.admin.entity.Admin;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 import java.time.LocalDateTime;
 
 @Getter
-
-public class AdminApproveCreateResponse {
+@RequiredArgsConstructor
+public class AdminResponse {
     // 속성
     private final Long id;
     private final String name;
@@ -17,29 +19,13 @@ public class AdminApproveCreateResponse {
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
     private final LocalDateTime approvedAt;
-    private final LocalDateTime rejectedAt; // null
-    private final String rejectedReason; // null
+    private final LocalDateTime rejectedAt;
+    private final String rejectedReason;
 
-    // 생성자
-    public AdminApproveCreateResponse(Long id, String name, String email, String phoneNumber, String role, String status,
-                            LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime approvedAt,
-                            LocalDateTime rejectedAt, String rejectedReason) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.phoneNumber = phoneNumber;
-        this.role = role;
-        this.status = status;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.approvedAt = approvedAt;
-        this.rejectedAt = rejectedAt;
-        this.rejectedReason = rejectedReason;
-    }
 
     // 기능
-    public static AdminApproveCreateResponse from(Admin admin) {
-        return new AdminApproveCreateResponse(
+    public static AdminResponse from(Admin admin) {
+        return new AdminResponse(
                 admin.getId(),
                 admin.getName(),
                 admin.getEmail(),
