@@ -11,7 +11,7 @@ import org.springframework.data.domain.Sort;
 public abstract class BasePageRequest {
     private int page = 1;      // 기본값: 1페이지
     private int size = 10;     // 기본값: 페이지당 10개
-    private String createdAt;     // 정렬 기준 (예: id, createdAt 등)
+    private String sortBy;     // 정렬 기준 (예: id, createdAt 등)
     private String sortOrder = "desc"; // 정렬 순서 (기본값: 내림차순)
 
     public Pageable toPageable() {
@@ -21,8 +21,8 @@ public abstract class BasePageRequest {
         Sort.Direction direction = "asc".equalsIgnoreCase(sortOrder) ? Sort.Direction.ASC : Sort.Direction.DESC;
 
         // 정렬 기준이 있으면 정렬 포함, 없으면 페이징만 적용
-        if (createdAt != null && !createdAt.trim().isEmpty()) {
-            return PageRequest.of(pageNumber, size, Sort.by(direction, createdAt));
+        if (sortBy != null && !sortBy.trim().isEmpty()) {
+            return PageRequest.of(pageNumber, size, Sort.by(direction, sortBy));
         } else {
             return PageRequest.of(pageNumber, size);
         }
