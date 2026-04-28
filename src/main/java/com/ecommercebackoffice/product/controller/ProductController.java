@@ -3,7 +3,7 @@ package com.ecommercebackoffice.product.controller;
 import com.ecommercebackoffice.common.PageResponse;
 import com.ecommercebackoffice.product.dto.*;
 import com.ecommercebackoffice.product.service.ProductService;
-import com.ecommercebackoffice.session.SessionAdminDto;
+import com.ecommercebackoffice.session.SessionAdmin;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,10 +24,10 @@ public class ProductController {
             @RequestBody @Valid ProductCreateRequest request,
             HttpServletRequest httpServletRequest
     ) {
-        SessionAdminDto sessionAdminDto = (SessionAdminDto) httpServletRequest.getSession()
+        SessionAdmin sessionAdmin = (SessionAdmin) httpServletRequest.getSession()
                 .getAttribute("loginAdmin");
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(productService.create(sessionAdminDto, request));
+        return ResponseEntity.status(HttpStatus.CREATED).body(productService.create(sessionAdmin, request));
     }
 
     // 상품 단 건 조회 API

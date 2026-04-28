@@ -9,7 +9,7 @@ import com.ecommercebackoffice.exception.ProductNotFoundException;
 import com.ecommercebackoffice.product.dto.*;
 import com.ecommercebackoffice.product.entity.Product;
 import com.ecommercebackoffice.product.repository.ProductRepository;
-import com.ecommercebackoffice.session.SessionAdminDto;
+import com.ecommercebackoffice.session.SessionAdmin;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,9 +28,9 @@ public class ProductService {
 
     // 상품 등록
     @Transactional
-    public ProductCreateResponse create(SessionAdminDto sessionAdminDto, ProductCreateRequest request) {
+    public ProductCreateResponse create(SessionAdmin sessionAdmin, ProductCreateRequest request) {
 
-        Admin admin = adminRepository.findById(sessionAdminDto.getId()).orElseThrow(
+        Admin admin = adminRepository.findById(sessionAdmin.getId()).orElseThrow(
                 () -> new AdminNotFoundException("해당 관리자를 찾을 수 없습니다.")
         );
 
