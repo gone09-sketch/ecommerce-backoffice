@@ -2,10 +2,9 @@ package com.ecommercebackoffice.order.controller;
 
 import com.ecommercebackoffice.common.PageResponse;
 import com.ecommercebackoffice.order.dto.*;
-
 import com.ecommercebackoffice.order.enums.OrderStatus;
 import com.ecommercebackoffice.order.service.OrderService;
-import com.ecommercebackoffice.session.SessionAdminDto;
+import com.ecommercebackoffice.session.SessionAdmin;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,13 +24,9 @@ public class OrderController {
     public ResponseEntity<OrderCreateResponse> save(
             @Valid @RequestBody OrderCreateRequest request,
             HttpSession session) {
-        SessionAdminDto loginAdmin = (SessionAdminDto) session.getAttribute("LOGIN_ADMIN");
 
-        if (loginAdmin == null) {
-            throw new IllegalStateException("로그인이 필요합니다.");
-        }
-
-        Long adminId = loginAdmin.getId();
+        SessionAdmin sessionAdmin = (SessionAdmin) session.getAttribute("loginAdmin");
+        Long adminId = sessionAdmin.getId();
 
         return ResponseEntity.status(HttpStatus.CREATED).body(orderService.save(request, adminId));
     }
