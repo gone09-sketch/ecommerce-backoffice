@@ -11,7 +11,7 @@ import org.springframework.data.domain.Sort;
 public abstract class BasePageRequest {
     private int page = 1;      // 기본값: 1페이지
     private int size = 10;     // 기본값: 페이지당 10개
-    private String sortBy;     // 정렬 기준 (예: id, createdAt 등)
+    private String sortBy ;   // 정렬 기준 (예: name, email, createdAt 등)
     private String sortOrder = "desc"; // 정렬 순서 (기본값: 내림차순)
 
     public Pageable toPageable() {
