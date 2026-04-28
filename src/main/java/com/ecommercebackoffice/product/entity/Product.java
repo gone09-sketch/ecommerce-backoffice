@@ -10,8 +10,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
-import static com.ecommercebackoffice.product.enums.ProductStatus.ON_SALE;
-import static com.ecommercebackoffice.product.enums.ProductStatus.SOLD_OUT;
+import static com.ecommercebackoffice.product.enums.ProductStatus.*;
 
 @Getter
 @Entity
@@ -52,13 +51,13 @@ public class Product extends BaseEntity {
     }
 
     public void updateInfo(String name, String category, Long price) {
-        if(name != null) {
+        if (name != null) {
             this.name = name;
         }
-        if(category != null) {
+        if (category != null) {
             this.category = category;
         }
-        if(price != null) {
+        if (price != null) {
             this.price = price;
         }
     }
@@ -66,11 +65,30 @@ public class Product extends BaseEntity {
     public void updateStock(int stock) {
         this.stock = stock;
 
-        if(!this.status.equals("단종")) {
-            if(this.stock >= 1) {
+        if (!this.status.equals("단종")) {
+            if (this.stock >= 1) {
                 this.status = ON_SALE;
             } else {
                 this.status = SOLD_OUT;
+            }
+        }
+    }
+
+    public void descStock(int quantity) {
+        this.stock -= quantity;
+
+        if (stock <= 0) {
+            stock = 0;
+            this.status = SOLD_OUT;
+        }
+    }
+
+    public void revertStock(int quantity) {
+        this.stock += quantity;
+
+        if (this.status != DISCONTINUED) {
+            if (stock > 0) {
+                this.status = ON_SALE;
             }
         }
     }
