@@ -27,8 +27,7 @@ public class AdminController {
     // 관리자 등록(회원가입)
     @PostMapping("/signUp")
     public ResponseEntity<AdminCreateResponse> signUpAPI(
-            @Valid
-            @RequestBody AdminCreateRequest adminCreateRequest) {
+            @RequestBody @Valid AdminCreateRequest adminCreateRequest) {
 
         AdminCreateResponse signUpResponseAPI = adminService.signUp(adminCreateRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(signUpResponseAPI);
@@ -71,8 +70,7 @@ public class AdminController {
     @PatchMapping("/{adminId}")
     public ResponseEntity<AdminPatchResponse> patchAPI(
             @PathVariable Long adminId,
-            @Valid
-            @RequestBody AdminPatchRequest adminPatchRequest,
+            @RequestBody @Valid AdminPatchRequest adminPatchRequest,
             HttpSession httpSession) {
 
         AdminPatchResponse adminPatchResponseAPI = adminService.patchAdmin(adminId, adminPatchRequest, httpSession);
@@ -83,8 +81,7 @@ public class AdminController {
     // 내 프로필 수정
     @PatchMapping("/profile")
     public ResponseEntity<AdminProfilePatchResponse> patchProfileAPI(
-            @Valid
-            @RequestBody AdminProfilePatchRequest adminProfilePatchRequest,
+            @RequestBody @Valid AdminProfilePatchRequest adminProfilePatchRequest,
             HttpSession httpSession) {
 
         AdminProfilePatchResponse profilePatchResponseAPI = adminService.patchProfile(adminProfilePatchRequest, httpSession);
@@ -93,7 +90,7 @@ public class AdminController {
 
     // 내 비밀번호 변경
     @PatchMapping("/profile/password")
-    public ResponseEntity<Void> patchPassword(@RequestBody AdminPasswordPatchRequest adminPasswordPatchRequest,
+    public ResponseEntity<Void> patchPassword(@RequestBody @Valid AdminPasswordPatchRequest adminPasswordPatchRequest,
                                               HttpSession httpSession) {
 
         adminService.patchPassword(adminPasswordPatchRequest, httpSession);
@@ -105,8 +102,7 @@ public class AdminController {
     @PatchMapping("/{adminId}/role")
     public ResponseEntity<AdminRolePatchResponse> patchRoleAPI(
             @PathVariable Long adminId,
-            @Valid
-            @RequestBody AdminRolePatchRequest adminRolePatchRequest) {
+            @RequestBody @Valid AdminRolePatchRequest adminRolePatchRequest) {
 
         AdminRolePatchResponse rolePatchResponseAPI = adminService.patchRole(adminId, adminRolePatchRequest);
         return ResponseEntity.status(HttpStatus.OK).body(rolePatchResponseAPI);
@@ -117,8 +113,7 @@ public class AdminController {
     @PatchMapping("/{adminId}/status")
     public ResponseEntity<AdminStatusPatchResponse> patchStatusAPI(
             @PathVariable Long adminId,
-            @Valid
-            @RequestBody AdminStatusPatchRequest adminStatusPatchRequest) {
+            @RequestBody @Valid AdminStatusPatchRequest adminStatusPatchRequest) {
 
         AdminStatusPatchResponse statusPatchResponseAPI = adminService.patchStatus(adminId, adminStatusPatchRequest);
         return ResponseEntity.status(HttpStatus.OK).body(statusPatchResponseAPI);
@@ -147,8 +142,7 @@ public class AdminController {
     @PostMapping("/{adminId}/reject")
     public ResponseEntity<AdminRejectCreateResponse> rejectAPI(
             @PathVariable Long adminId,
-            @Valid
-            @RequestBody AdminRejectCreateRequest adminRejectCreateRequest) {
+            @RequestBody @Valid AdminRejectCreateRequest adminRejectCreateRequest) {
 
         AdminRejectCreateResponse rejectResponseAPI = adminService.adminReject(adminId, adminRejectCreateRequest);
         return ResponseEntity.status(HttpStatus.OK).body(rejectResponseAPI);
