@@ -7,11 +7,6 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
-
-import static com.ecommercebackoffice.product.enums.ProductEnum.ON_SALE;
-import static com.ecommercebackoffice.product.enums.ProductEnum.SOLD_OUT;
 
 @Getter
 @Entity
@@ -36,18 +31,21 @@ public class Product extends BaseEntity {
     private int stock;
 
     @Enumerated(EnumType.STRING)
-    private ProductEnum status = ON_SALE;
+    private ProductEnum status = ProductEnum.ON_SALE;
+
+    @Column(nullable = false)
+    private boolean isDeleted = false;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "admin_id", nullable = false)
-    @NotFound(action = NotFoundAction.IGNORE)
     private Admin admin;
 
-    public Product(String name, String category, Long price, int stock) {
+    public Product(String name, String category, Long price, int stock,Admin admin) {
         this.name = name;
         this.category = category;
         this.price = price;
         this.stock = stock;
+        this.admin = admin;
     }
 
     public void updateInfo(String name, String category, Long price) {
@@ -67,14 +65,10 @@ public class Product extends BaseEntity {
 
         if(!this.status.equals("단종")) {
             if(this.stock >= 1) {
-                this.status = ON_SALE;
+                this.status = ProductEnum.ON_SALE;
             } else {
-                this.status = SOLD_OUT;
+                this.status = ProductEnum.SOLD_OUT;
             }
         }
-    }
-
-    public void updateStatus(ProductEnum status) {
-        this.status = status;
     }
 }
