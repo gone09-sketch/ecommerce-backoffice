@@ -25,6 +25,9 @@ public class AuthInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
 
+        // 삭제예정: API test
+        System.out.println("요청 URI: " + request.getRequestURI());
+
         // 1. 세션에서 로그인 유저 꺼내기
         SessionAdminDto sessionAdmin = (SessionAdminDto) request.getSession().getAttribute("loginAdmin");
 

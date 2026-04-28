@@ -31,7 +31,7 @@ public class AuthController {
         HttpSession session = httpRequest.getSession(true);
 
         // 세션에 "LOGIN_ADMIN"이라는 키로 DTO를 저장합니다.
-        session.setAttribute("LOGIN_ADMIN", sessionAdmin);
+        session.setAttribute("loginAdmin", sessionAdmin);
 
         return ResponseEntity.ok("로그인에 성공했습니다.");
     }
