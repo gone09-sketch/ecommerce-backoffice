@@ -13,14 +13,14 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     boolean existsByName(@NotBlank String name);
 
     @Query("""
-    SELECT p FROM Product p
-    JOIN p.admin a
-    WHERE (:keyword IS NULL OR p.name LIKE CONCAT('%', :keyword, '%'))
-    AND (:category IS NULL OR p.category = :category)
-    AND (:status IS NULL OR p.status = :status)
-""")
+                SELECT p FROM Product p
+                JOIN p.admin a
+                WHERE (:keyword IS NULL OR p.name LIKE CONCAT('%', :keyword, '%'))
+                AND (:category IS NULL OR p.category = :category)
+                AND (:status IS NULL OR p.status = :status)
+            """)
 
-    // if) Param 값이 모두 null 이면 그냥 true이므로, 걍 전체 조회 기능이 된다
+        // if) Param 값이 모두 null 이면 그냥 true이므로, 걍 전체 조회 기능이 된다
     Page<Product> searchProducts(
             @Param("keyword") String keyword,
             @Param("category") String category,

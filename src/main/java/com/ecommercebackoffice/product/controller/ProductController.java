@@ -20,7 +20,7 @@ public class ProductController {
     public ResponseEntity<ProductCreateResponse> productCreate(
             @RequestBody ProductCreateRequest request,
             HttpServletRequest httpServletRequest
-            ) {
+    ) {
         return ResponseEntity.status(HttpStatus.CREATED).body(productService.create(httpServletRequest, request));
     }
 
@@ -33,7 +33,7 @@ public class ProductController {
     @GetMapping()
     public ResponseEntity<PageResponse<ProductGetAllResponse>> productGetAll(
             @ModelAttribute ProductGetAllRequest request
-            ) {
+    ) {
         return ResponseEntity.status(HttpStatus.OK).body(productService.findAll(request));
     }
 
@@ -47,8 +47,8 @@ public class ProductController {
 
     @PatchMapping("/{productId}/stock")
     public ResponseEntity<ProductUpdateResponse> productStockUpdate(
-        @PathVariable Long productId,
-        @RequestBody ProductStockUpdateRequest request
+            @PathVariable Long productId,
+            @RequestBody ProductStockUpdateRequest request
     ) {
         return ResponseEntity.status(HttpStatus.OK).body(productService.updateStock(productId, request));
     }

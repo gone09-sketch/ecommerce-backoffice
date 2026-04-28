@@ -36,7 +36,7 @@ public class ProductService {
                 () -> new AdminNotFoundException("해당 관리자를 찾을 수 없습니다.")
         );
 
-        if(productRepository.existsByName(request.getName())) {
+        if (productRepository.existsByName(request.getName())) {
             throw new ProductDuplicateException("이미 등록된 상품입니다.");
         }
 
@@ -92,7 +92,7 @@ public class ProductService {
                 pageable
         );
 
-        List<ProductGetAllResponse> dtoDatas =  productPage.stream()
+        List<ProductGetAllResponse> dtoDatas = productPage.stream()
                 .map(product -> new ProductGetAllResponse(
                         product.getId(),
                         product.getName(),
