@@ -8,7 +8,7 @@ import com.ecommercebackoffice.config.PasswordEncoder;
 import com.ecommercebackoffice.exception.AdminNotFoundException;
 import com.ecommercebackoffice.exception.DuplicateEmailException;
 import com.ecommercebackoffice.exception.InvalidInputException;
-import com.ecommercebackoffice.session.SessionAdminDto;
+import com.ecommercebackoffice.session.SessionAdmin;
 import jakarta.servlet.http.HttpSession;
 import lombok.Getter;
 import org.springframework.data.domain.Page;
@@ -62,7 +62,7 @@ public class AdminService {
 
     // 관리자 리스트 조회
     @Transactional(readOnly = true)
-    public PageResponse<AdminPageListResponse> getList(@ModelAttribute AdminPageRequest pageRequest) {
+    public PageResponse<AdminPageListResponse> getList(AdminPageRequest pageRequest) {
         // 1. JPA pageable로 변환
         Pageable pageable = pageRequest.toPageable();
 
@@ -85,7 +85,7 @@ public class AdminService {
         );
 
         // 4. dto 변환
-        Page<AdminPageListResponse> responsePage = adminPage.map(admin -> AdminPageListResponse.from(admin));
+        Page<AdminPageListResponse> responsePage = adminPage.map(AdminPageListResponse::from);
 
         // 5. 최종반환
         return new PageResponse<>(responsePage);
@@ -148,7 +148,7 @@ public class AdminService {
                 adminPatchRequest.getPhoneNumber());
 
         // 5. 세션 업데이트
-        httpSession.setAttribute("loginAdmin", new SessionAdminDto(
+        httpSession.setAttribute("loginAdmin", new SessionAdmin(
                 admin.getId(),
                 admin.getEmail(),
                 admin.getRole().getDescription()
@@ -164,7 +164,7 @@ public class AdminService {
     public AdminProfilePatchResponse patchProfile(AdminProfilePatchRequest profilePatchRequest,
                                                   HttpSession httpSession) {
         // 1. 세션에서 adminId 가져오기
-        SessionAdminDto sessionAdmin = (SessionAdminDto) httpSession.getAttribute("loginAdmin");
+        SessionAdmin sessionAdmin = (SessionAdmin) httpSession.getAttribute("loginAdmin");
         Long adminId = sessionAdmin.getId();
 
         // 2. 해당 관리자 조회
@@ -196,7 +196,7 @@ public class AdminService {
                 profilePatchRequest.getPhoneNumber());
 
         // 6. 세션 업데이트
-        httpSession.setAttribute("loginAdmin", new SessionAdminDto(
+        httpSession.setAttribute("loginAdmin", new SessionAdmin(
                 admin.getId(),
                 admin.getEmail(),
                 admin.getRole().getDescription()
@@ -212,7 +212,7 @@ public class AdminService {
     public void patchPassword(AdminPasswordPatchRequest adminPasswordPatchRequest,
                               HttpSession httpSession) {
         // 1. 세션에서 adminId 가져오기
-        SessionAdminDto sessionAdmin = (SessionAdminDto) httpSession.getAttribute("loginAdmin");
+        SessionAdmin sessionAdmin = (SessionAdmin) httpSession.getAttribute("loginAdmin");
         Long adminId = sessionAdmin.getId();
 
         // 2. 해당 관리자 조회
