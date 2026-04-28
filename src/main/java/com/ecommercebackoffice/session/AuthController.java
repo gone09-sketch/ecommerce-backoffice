@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 public class AuthController {
 
     // (참고용) 실제로는 AuthService 등을 주입받아 비밀번호를 검증해야 합니다.
@@ -31,7 +31,7 @@ public class AuthController {
         HttpSession session = httpRequest.getSession(true);
 
         // 세션에 "LOGIN_ADMIN"이라는 키로 DTO를 저장합니다.
-        session.setAttribute("LOGIN_ADMIN", sessionAdmin);
+        session.setAttribute("loginAdmin", sessionAdmin);
 
         return ResponseEntity.ok("로그인에 성공했습니다.");
     }
