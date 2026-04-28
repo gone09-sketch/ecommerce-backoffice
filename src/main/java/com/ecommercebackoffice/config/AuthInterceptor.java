@@ -12,7 +12,7 @@ package com.ecommercebackoffice.config;
  */
 
 import com.ecommercebackoffice.exception.UnauthorizedException;
-import com.ecommercebackoffice.session.SessionAdminDto;
+import com.ecommercebackoffice.session.SessionAdmin;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
@@ -29,7 +29,7 @@ public class AuthInterceptor implements HandlerInterceptor {
         System.out.println("요청 URI: " + request.getRequestURI());
 
         // 1. 세션에서 로그인 유저 꺼내기
-        SessionAdminDto sessionAdmin = (SessionAdminDto) request.getSession().getAttribute("loginAdmin");
+        SessionAdmin sessionAdmin = (SessionAdmin) request.getSession().getAttribute("loginAdmin");
 
         // 2. 로그인 상태가 아닐 시 예외처리
         if (sessionAdmin == null) {
