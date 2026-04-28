@@ -29,10 +29,7 @@ public class ProductService {
 
     // 상품 등록
     @Transactional
-    public ProductCreateResponse create(HttpServletRequest httpServletRequest, ProductCreateRequest request) {
-
-        SessionAdminDto sessionAdminDto = (SessionAdminDto) httpServletRequest.getSession()
-                .getAttribute("loginAdmin");
+    public ProductCreateResponse create(SessionAdminDto sessionAdminDto, ProductCreateRequest request) {
 
         Admin admin = adminRepository.findById(sessionAdminDto.getId()).orElseThrow(
                 () -> new AdminNotFoundException("해당 관리자를 찾을 수 없습니다.")

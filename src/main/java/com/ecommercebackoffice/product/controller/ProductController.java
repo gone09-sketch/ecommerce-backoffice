@@ -1,8 +1,11 @@
 package com.ecommercebackoffice.product.controller;
 
+import com.ecommercebackoffice.admin.entity.Admin;
 import com.ecommercebackoffice.common.PageResponse;
+import com.ecommercebackoffice.exception.AdminNotFoundException;
 import com.ecommercebackoffice.product.dto.*;
 import com.ecommercebackoffice.product.service.ProductService;
+import com.ecommercebackoffice.session.SessionAdminDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +26,10 @@ public class ProductController {
             @RequestBody @Valid ProductCreateRequest request,
             HttpServletRequest httpServletRequest
     ) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(productService.create(httpServletRequest, request));
+        SessionAdminDto sessionAdminDto = (SessionAdminDto) httpServletRequest.getSession()
+                .getAttribute("loginAdmin");
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(productService.create(sessionAdminDto, request));
     }
 
     // 상품 단 건 조회 API
