@@ -65,7 +65,11 @@ public class CustomerService {
                 () -> new CustomerNotFoundException("존재하지 않는 고객입니다")
         );
 
-        foundCustomer.update(request);
+        foundCustomer.update(
+                request.getName(),
+                request.getEmail(),
+                request.getPhoneNumber()
+        );
 
         return CustomerUpdateResponse.from(foundCustomer);
     }
