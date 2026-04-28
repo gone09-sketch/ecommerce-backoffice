@@ -3,7 +3,7 @@ package com.ecommercebackoffice.admin.controller;
 import com.ecommercebackoffice.admin.dto.*;
 import com.ecommercebackoffice.admin.service.AdminService;
 import com.ecommercebackoffice.common.PageResponse;
-import com.ecommercebackoffice.session.SessionAdminDto;
+import com.ecommercebackoffice.session.SessionAdmin;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -57,11 +57,11 @@ public class AdminController {
     public ResponseEntity<AdminProfileGetResponse> getProfileAPI(HttpServletRequest httpServletRequest) {
 
         // 1. 세션에서 내 id 가져오기
-        SessionAdminDto sessionAdminDto = (SessionAdminDto) httpServletRequest.getSession()
+        SessionAdmin sessionAdmin = (SessionAdmin) httpServletRequest.getSession()
                 .getAttribute("loginAdmin");
 
         // 2. 세션에서 꺼낸 id 조회
-        AdminProfileGetResponse profileGetResponseAPI = adminService.getProfile(sessionAdminDto.getId());
+        AdminProfileGetResponse profileGetResponseAPI = adminService.getProfile(sessionAdmin.getId());
         return ResponseEntity.status(HttpStatus.OK).body(profileGetResponseAPI);
     }
 
