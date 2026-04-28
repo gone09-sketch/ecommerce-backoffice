@@ -1,11 +1,20 @@
 package com.ecommercebackoffice.common;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Getter;
 import org.springframework.data.domain.Page;
 import java.util.List;
 
 @Getter
+@JsonPropertyOrder({
+        "content",
+        "page",
+        "size",
+        "totalElements",
+        "totalPages"
+})
 public class PageResponse<T> {
+
     private List<T> content;
     private int page;
     private int size;
