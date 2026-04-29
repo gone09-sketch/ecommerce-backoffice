@@ -1,5 +1,6 @@
 package com.ecommercebackoffice.common;
 
+import jakarta.validation.constraints.Min;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.domain.PageRequest;
@@ -9,7 +10,10 @@ import org.springframework.data.domain.Sort;
 @Getter
 @Setter
 public abstract class BasePageRequest {
+    @Min(value = 1, message = "페이지 번호는 1 이상이어야 합니다.")
     private int page = 1;      // 기본값: 1페이지
+
+    @Min(value = 1, message = "페이지 크기는 1 이상이어야 합니다.")
     private int size = 10;     // 기본값: 페이지당 10개
     private String sortBy ;   // 정렬 기준 (예: name, email, createdAt 등)
     private String sortOrder = "desc"; // 정렬 순서 (기본값: 내림차순)

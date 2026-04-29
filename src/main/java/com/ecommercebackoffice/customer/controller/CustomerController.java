@@ -22,9 +22,8 @@ public class CustomerController {
     @GetMapping
     //@ModelAttribute는 리퀘스트 파람을 여러개 묶어 쓸 수 있다.
     // page, size, sortBy, sortOrder 같은 query parameter를 요청 DTO로 바인딩한다.
-    // 고객 리스트 조회
     public ResponseEntity<CommonResponse<PageResponse<CustomerGetResponse>>> getCustomers(
-            @ModelAttribute CustomerGetListRequest request
+            @ModelAttribute @Valid CustomerGetRequest request
     ) {
         Page<CustomerGetResponse> customersPage = customerService.getCustomersList(request);
 
