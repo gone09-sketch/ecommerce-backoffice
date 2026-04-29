@@ -12,6 +12,7 @@ import com.ecommercebackoffice.order.enums.OrderStatus;
 import com.ecommercebackoffice.order.repository.OrderProductRepository;
 import com.ecommercebackoffice.order.repository.OrderRepository;
 import com.ecommercebackoffice.product.entity.Product;
+import com.ecommercebackoffice.product.enums.ProductStatus;
 import com.ecommercebackoffice.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -46,9 +47,9 @@ public class OrderService {
                 () -> new ProductNotFoundException("존재하지 않는 상품입니다.")
         );
 
-        if (product.getStatus().equals("단종"))
+        if (product.getStatus().equals(ProductStatus.DISCONTINUED))
             throw new BadRequestException("단종 상품은 주문할 수 없습니다.");
-        if (product.getStatus().equals("품절"))
+        if (product.getStatus().equals(ProductStatus.SOLD_OUT))
             throw new BadRequestException("품절 상품은 주문할 수 없습니다.");
         if (product.getStock() < request.getQuantity()) {
             throw new BadRequestException("재고가 부족합니다");
