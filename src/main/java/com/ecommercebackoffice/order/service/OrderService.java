@@ -40,7 +40,7 @@ public class OrderService {
                 () -> new AdminNotFoundException("존재하지 않는 관리자입니다.")
         );
         Customer customer = customerRepository.findById(request.getCustomerId()).orElseThrow(
-                () -> new IllegalStateException("존재하지 않는 고객입니다.")     // 예외 꼭 바꾸기
+                () -> new CustomerNotFoundException("존재하지 않는 고객입니다.")
         );
         Product product = productRepository.findById(request.getProductId()).orElseThrow(
                 () -> new ProductNotFoundException("존재하지 않는 상품입니다.")
@@ -112,11 +112,6 @@ public class OrderService {
             request.setSortBy("createdAt");
         }
 
-        // 정렬 순서 기본값 desc, 정렬 순서가 적혀있지 않으면 기본값으로 반환
-        if (request.getSortOrder() == null || request.getSortOrder().isBlank()) {
-            request.setSortOrder("desc");
-        }
-
         validateSortBy(request.getSortBy());
         validateSortOrder(request.getSortOrder());
 
@@ -126,7 +121,7 @@ public class OrderService {
         String keyword = request.getKeyword();
         OrderStatus status = request.getStatus();
 
-        // 정렬 조건에 맞는 조회를 실행하고 Page<Order>를 Page<OrderListResponse>로 바꾸는 메서드 실행
+        // 정렬 조건에 맞는 조회를 실행하고 만들어진 결과인 Page<Order>를 Page<OrderListResponse>로 바꾸는 메서드 실행
         return searchOrdersBySort(request, keyword, status, pageable)
                 .map(order -> toOrderListResponse(order));
     }
