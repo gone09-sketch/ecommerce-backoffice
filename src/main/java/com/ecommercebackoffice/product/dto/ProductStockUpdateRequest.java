@@ -2,8 +2,10 @@ package com.ecommercebackoffice.product.dto;
 
 import jakarta.validation.constraints.Min;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
 public class ProductStockUpdateRequest {
 
     @Min(0) // 최소값 0 설정

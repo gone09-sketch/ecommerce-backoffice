@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 public class AdminNotFoundException extends ServiceException {
 
     // 생성자
-    public AdminNotFoundException(String message) {
-        super(HttpStatus.NOT_FOUND, message);
+    public AdminNotFoundException() {
+        super(HttpStatus.NOT_FOUND, "존재하지 않는 관리자입니다.");
     }
 }

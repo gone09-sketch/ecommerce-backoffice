@@ -28,7 +28,7 @@ public class CustomerService {
     public Page<CustomerGetResponse> getCustomersList(CustomerGetRequest request) {
 
         // 클라이언트가 요청할 수 있는 정렬 필드만 허용하는 필드 만듬
-        Set<String> allowedSortFields = Set.of("createdAt", "updatedAt", "name");
+        Set<String> allowedSortFields = Set.of("createdAt", "name", "email");
 
         // 정렬 기준이 없거나 허용되지 않은 값이면 기본값(createdAt)으로 정렬한다.
         String sortBy = request.getSortBy();
@@ -60,7 +60,7 @@ public class CustomerService {
             try {
                 status = CustomerStatus.valueOf(request.getStatus().trim().toUpperCase());
             } catch (IllegalArgumentException e) {
-                throw new InvalidInputException("유효하지 않은 고객 상태입니다.");
+                throw new InvalidInputException();
             }
         }
 
@@ -72,7 +72,7 @@ public class CustomerService {
     @Transactional(readOnly = true)
     public CustomerGetResponse getByCustomerId(Long customerId) {
         Customer foundCustomer = customerRepository.findById(customerId).orElseThrow(
-                () -> new CustomerNotFoundException("존재하지 않는 고객입니다")
+                () -> new CustomerNotFoundException()
         );
 
         return CustomerGetResponse.from(foundCustomer);
@@ -82,14 +82,14 @@ public class CustomerService {
     @Transactional
     public CustomerUpdateResponse update(Long customerId, CustomerUpdateRequest request) {
         Customer foundCustomer = customerRepository.findById(customerId).orElseThrow(
-                () -> new CustomerNotFoundException("존재하지 않는 고객입니다")
+                () -> new CustomerNotFoundException()
         );
 
         if (customerRepository.existsByEmailAndIdNot(
                 request.getEmail(),
                 customerId
         )) {
-            throw new DuplicateEmailException("이미 사용 중인 이메일입니다.");
+            throw new DuplicateEmailException();
         }
 
         foundCustomer.update(
@@ -105,7 +105,7 @@ public class CustomerService {
     @Transactional
     public CustomerStatusUpdateResponse statusUpdate(Long customerId, CustomerStatusUpdateRequest request) {
         Customer foundCustomer = customerRepository.findById(customerId).orElseThrow(
-                () -> new CustomerNotFoundException("존재하지 않는 고객입니다")
+                () -> new CustomerNotFoundException()
         );
 
         foundCustomer.updateStatus(request.getStatus());
@@ -117,7 +117,7 @@ public class CustomerService {
     @Transactional
     public void deleteCustomer(Long customerId) {
         Customer foundCustomer = customerRepository.findById(customerId).orElseThrow(
-                () -> new CustomerNotFoundException("존재하지 않는 고객입니다")
+                () -> new CustomerNotFoundException()
         );
 
         // BaseEntity의 @SoftDelete 설정에 따라 실제 DB에서는 del_yn 값이 변경된다.

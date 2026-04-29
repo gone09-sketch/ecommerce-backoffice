@@ -29,7 +29,7 @@ public class ProductService {
     public ProductCreateResponse create(SessionAdmin sessionAdmin, ProductCreateRequest request) {
 
         Admin admin = adminRepository.findById(sessionAdmin.getId()).orElseThrow(
-                () -> new AdminNotFoundException("해당 관리자를 찾을 수 없습니다.")
+                () -> new AdminNotFoundException()
         );
 
         if (productRepository.existsByName(request.getName())) {
@@ -55,7 +55,7 @@ public class ProductService {
     public ProductGetOneResponse findOne(Long productId) {
 
         Product product = productRepository.findById(productId).orElseThrow(
-                () -> new ProductNotFoundException("해당하는 상품이 존재하지 않습니다.")
+                () -> new ProductNotFoundException()
         );
 
         return ProductGetOneResponse.from(product);
@@ -101,7 +101,7 @@ public class ProductService {
     public ProductUpdateResponse updateInfo(Long productId, ProductInfoUpdateRequest request) {
 
         Product product = productRepository.findById(productId).orElseThrow(
-                () -> new ProductNotFoundException("해당하는 상품이 존재하지 않습니다.")
+                () -> new ProductNotFoundException()
         );
 
         product.updateInfo(request.getName(), request.getCategory(), request.getPrice());
@@ -114,7 +114,7 @@ public class ProductService {
     public ProductUpdateResponse updateStock(Long productId, ProductStockUpdateRequest request) {
 
         Product product = productRepository.findById(productId).orElseThrow(
-                () -> new ProductNotFoundException("해당하는 상품이 존재하지 않습니다.")
+                () -> new ProductNotFoundException()
         );
 
         product.updateStock(request.getStock());
@@ -127,7 +127,7 @@ public class ProductService {
     public ProductUpdateResponse updateStatus(Long productId, ProductStatusUpdateRequest request) {
 
         Product product = productRepository.findById(productId).orElseThrow(
-                () -> new ProductNotFoundException("해당하는 상품이 존재하지 않습니다.")
+                () -> new ProductNotFoundException()
         );
 
         product.updateStatus(request.getStatus());
@@ -140,7 +140,7 @@ public class ProductService {
     public void delete(Long productId) {
 
         Product product = productRepository.findById(productId).orElseThrow(
-                () -> new ProductNotFoundException("해당하는 상품이 존재하지 않습니다.")
+                () -> new ProductNotFoundException()
         );
 
         productRepository.delete(product);
