@@ -108,7 +108,7 @@ public class CustomerService {
                 () -> new CustomerNotFoundException()
         );
 
-        CustomerOrderStats stats = orderProductRepository.findOrderStatsByCustomerId(customerId,OrderStatus.CANCELED)
+        CustomerOrderStats stats = orderProductRepository.findOrderStatsByCustomerId(customerId, OrderStatus.CANCELED)
                 .orElse(new CustomerOrderStats(customerId, 0L, 0L));
 
         return CustomerGetResponse.from(

@@ -32,7 +32,7 @@ public class CustomerGetResponse {
     private final Long totalPurchaseAmount;
 
 
-     private CustomerGetResponse(Long customerId, String name, String email, String phoneNumber, String status, LocalDateTime createdAt, LocalDateTime updatedAt, Long totalOrderCount, Long totalPurchaseAmount) {
+    private CustomerGetResponse(Long customerId, String name, String email, String phoneNumber, String status, LocalDateTime createdAt, LocalDateTime updatedAt, Long totalOrderCount, Long totalPurchaseAmount) {
         this.customerId = customerId;
         this.name = name;
         this.email = email;
