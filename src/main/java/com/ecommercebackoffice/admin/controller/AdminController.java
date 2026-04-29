@@ -70,10 +70,10 @@ public class AdminController {
     @PatchMapping("/{adminId}")
     public ResponseEntity<AdminPatchResponse> patchAPI(
             @PathVariable Long adminId,
-            @RequestBody @Valid AdminPatchRequest adminPatchRequest,
-            HttpSession httpSession) {
+            @RequestBody @Valid AdminPatchRequest adminPatchRequest) {
 
-        AdminPatchResponse adminPatchResponseAPI = adminService.patchAdmin(adminId, adminPatchRequest, httpSession);
+
+        AdminPatchResponse adminPatchResponseAPI = adminService.patchAdmin(adminId, adminPatchRequest);
         return ResponseEntity.status(HttpStatus.OK).body(adminPatchResponseAPI);
     }
 
@@ -84,9 +84,23 @@ public class AdminController {
             @RequestBody @Valid AdminProfilePatchRequest adminProfilePatchRequest,
             HttpSession httpSession) {
 
-        AdminProfilePatchResponse profilePatchResponseAPI = adminService.patchProfile(adminProfilePatchRequest, httpSession);
+        // 세션에서 adminId 가져오기
+        SessionAdmin sessionAdmin = (SessionAdmin) httpSession.getAttribute("loginAdmin");
+        Long adminId = sessionAdmin.getId();
+
+        // 프로필 수정
+        AdminProfilePatchResponse profilePatchResponseAPI = adminService.patchProfile(adminId, adminProfilePatchRequest);
+
+        // 세션 업데이트
+        httpSession.setAttribute("loginAdmin", new SessionAdmin(
+                profilePatchResponseAPI.getId(),
+                profilePatchResponseAPI.getEmail(),
+                profilePatchResponseAPI.getRole()
+        ));
+
         return ResponseEntity.status(HttpStatus.OK).body(profilePatchResponseAPI);
     }
+
 
     // 내 비밀번호 변경
     @PatchMapping("/profile/password")

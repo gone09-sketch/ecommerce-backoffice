@@ -11,13 +11,11 @@ import com.ecommercebackoffice.product.entity.Product;
 import com.ecommercebackoffice.product.repository.ProductRepository;
 import com.ecommercebackoffice.session.SessionAdmin;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.data.domain.PageImpl;
 
-import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -67,7 +65,26 @@ public class ProductService {
     @Transactional(readOnly = true)
     public PageResponse<ProductGetAllResponse> findAll(ProductGetAllRequest request) {
 
-        Pageable pageable = request.toPageable();
+        // 클라이언트가 요청할 수 있는 정렬 필드만 허용하는 필드 만듬
+        Set<String> allowedSortFields = Set.of("price", "stock", "createdAt");
+
+        // 정렬 기준이 없거나 허용되지 않은 값이면 기본값(createdAt)으로 정렬한다.
+        String sortBy = request.getSortBy();
+        if (sortBy == null || sortBy.isBlank() || !allowedSortFields.contains(sortBy)) {
+            sortBy = "createdAt";
+        }
+
+        // sortOrder가 asc면 오름차순, 그 외에는 기본적으로 내림차순 처리한다.
+        Sort.Direction direction = "asc".equalsIgnoreCase(request.getSortOrder())
+                ? Sort.Direction.ASC
+                : Sort.Direction.DESC;
+
+        // 클라이언트는 1페이지부터 요청하므로, JPA의 0-based 페이지 번호로 변환한다.
+        Pageable pageable = PageRequest.of(
+                Math.max(0, request.getPage() - 1),
+                request.getSize(),
+                Sort.by(direction, sortBy)
+        );
 
         Page<Product> productPage = productRepository.searchProducts(
                 request.getKeyword(),
@@ -76,19 +93,7 @@ public class ProductService {
                 pageable
         );
 
-        List<ProductGetAllResponse> dtoDatas = productPage.stream()
-                .map(ProductGetAllResponse::from)
-                .toList();
-
-        // 👉 PageResponse로 바로 감싸기
-        Page<ProductGetAllResponse> mappedPage =
-                new PageImpl<>(
-                        dtoDatas,
-                        pageable,
-                        productPage.getTotalElements()
-                );
-
-        return new PageResponse<>(mappedPage);
+        return new PageResponse<>(productPage.map(ProductGetAllResponse::from));
     }
 
     // 상품 정보 수정

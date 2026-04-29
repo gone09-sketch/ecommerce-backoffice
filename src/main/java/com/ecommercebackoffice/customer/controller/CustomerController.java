@@ -1,5 +1,6 @@
 package com.ecommercebackoffice.customer.controller;
 
+import com.ecommercebackoffice.common.CommonResponse;
 import com.ecommercebackoffice.common.PageResponse;
 import com.ecommercebackoffice.customer.dto.*;
 import com.ecommercebackoffice.customer.service.CustomerService;
@@ -21,51 +22,56 @@ public class CustomerController {
     @GetMapping
     //@ModelAttribute는 리퀘스트 파람을 여러개 묶어 쓸 수 있다.
     // page, size, sortBy, sortOrder 같은 query parameter를 요청 DTO로 바인딩한다.
-    public ResponseEntity<PageResponse<CustomerGetResponse>> getCustomers(
-            @ModelAttribute @Valid CustomerGetRequest request
+    public ResponseEntity<CommonResponse<PageResponse<CustomerGetResponse>>> getCustomers(
+            @ModelAttribute @Valid CustomerGetListRequest request
     ) {
         Page<CustomerGetResponse> customersPage = customerService.getCustomersList(request);
-        return ResponseEntity.ok(new PageResponse<>(customersPage));
+
+        PageResponse<CustomerGetResponse> pageResponse = new PageResponse<>(customersPage);
+
+        return ResponseEntity.ok(
+                CommonResponse.success("고객 리스트 조회 성공", pageResponse)
+        );
     }
 
     // 고객 단건 조회
     @GetMapping("/{customerId}")
-    public ResponseEntity<CustomerGetResponse> getOneCustomer(
+    public ResponseEntity<CommonResponse<CustomerGetResponse>> getOneCustomer(
             @PathVariable Long customerId
     ) {
         CustomerGetResponse result = customerService.getByCustomerId(customerId);
 
-        return ResponseEntity.status(HttpStatus.OK).body(result);
+        return ResponseEntity.ok(CommonResponse.success("고객 상세 조회 성공",result));
     }
 
     // 고객 수정
     @PatchMapping("/{customerId}")
-    public ResponseEntity<CustomerUpdateResponse> update(
+    public ResponseEntity<CommonResponse<CustomerUpdateResponse>> update(
             @PathVariable Long customerId,
             @RequestBody @Valid CustomerUpdateRequest request
     ) {
         CustomerUpdateResponse result = customerService.update(customerId, request);
 
-        return ResponseEntity.status(HttpStatus.OK).body(result);
+        return ResponseEntity.ok(CommonResponse.success("고객 정보 수정 성공",result));
     }
 
     // 고객 상태 수정
     @PatchMapping("/{customerId}/status")
-    public ResponseEntity<CustomerStatusUpdateResponse> statusUpdate(
+    public ResponseEntity<CommonResponse<CustomerStatusUpdateResponse>> statusUpdate(
             @PathVariable Long customerId,
             @RequestBody @Valid CustomerStatusUpdateRequest request
     ) {
         CustomerStatusUpdateResponse result = customerService.statusUpdate(customerId, request);
 
-        return ResponseEntity.status(HttpStatus.OK).body(result);
+        return ResponseEntity.ok(CommonResponse.success("고객 상태 변경 성공",result));
     }
 
     // 고객 삭제
     @DeleteMapping("/{customerId}")
-    public ResponseEntity<Void> deleteCustomer(@PathVariable Long customerId) {
+    public ResponseEntity<CommonResponse<Void>> deleteCustomer(@PathVariable Long customerId) {
 
         customerService.deleteCustomer(customerId);
 
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.ok(CommonResponse.success("고객 삭제 성공"));
     }
 }

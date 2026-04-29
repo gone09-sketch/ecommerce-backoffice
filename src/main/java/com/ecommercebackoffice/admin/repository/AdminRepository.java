@@ -36,5 +36,5 @@ public interface AdminRepository extends JpaRepository<Admin, Long> {
 
 
     // 이메일로 찾기
-    Optional<Object> findByEmail(String email);
+    Optional<Admin> findByEmail(String email);
 }

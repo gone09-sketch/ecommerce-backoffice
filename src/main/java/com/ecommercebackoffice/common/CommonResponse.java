@@ -1,9 +1,16 @@
 package com.ecommercebackoffice.common;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Getter;
 
 @Getter
-
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonPropertyOrder({
+        "httpStatus",
+        "message",
+        "data"
+})
 public class CommonResponse<T> {
     // 속성
     private int httpStatus;

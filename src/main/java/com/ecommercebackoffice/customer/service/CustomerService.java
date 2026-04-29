@@ -5,6 +5,7 @@ import com.ecommercebackoffice.customer.entity.Customer;
 import com.ecommercebackoffice.customer.enums.CustomerStatus;
 import com.ecommercebackoffice.customer.repository.CustomerRepository;
 import com.ecommercebackoffice.exception.CustomerNotFoundException;
+import com.ecommercebackoffice.exception.DuplicateEmailException;
 import com.ecommercebackoffice.exception.InvalidInputException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -24,7 +25,7 @@ public class CustomerService {
 
     // 고객 리스트 조회
     @Transactional(readOnly = true)
-    public Page<CustomerGetResponse> getCustomersList(CustomerGetRequest request) {
+    public Page<CustomerGetResponse> getCustomersList(CustomerGetListRequest request) {
 
         // 클라이언트가 요청할 수 있는 정렬 필드만 허용하는 필드 만듬
         Set<String> allowedSortFields = Set.of("createdAt", "updatedAt", "name");
@@ -83,6 +84,13 @@ public class CustomerService {
         Customer foundCustomer = customerRepository.findById(customerId).orElseThrow(
                 () -> new CustomerNotFoundException("존재하지 않는 고객입니다")
         );
+
+        if (customerRepository.existsByEmailAndIdNot(
+                request.getEmail(),
+                customerId
+        )) {
+            throw new DuplicateEmailException("이미 사용 중인 이메일입니다.");
+        }
 
         foundCustomer.update(
                 request.getName(),
