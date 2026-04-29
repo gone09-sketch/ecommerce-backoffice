@@ -1,10 +1,10 @@
 package com.ecommercebackoffice.product.controller;
 
-import com.ecommercebackoffice.common.CommonResponse;
-import com.ecommercebackoffice.common.PageResponse;
+import com.ecommercebackoffice.common.dto.CommonResponse;
+import com.ecommercebackoffice.common.dto.PageResponse;
 import com.ecommercebackoffice.product.dto.*;
 import com.ecommercebackoffice.product.service.ProductService;
-import com.ecommercebackoffice.session.SessionAdmin;
+import com.ecommercebackoffice.auth.session.SessionAdmin;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

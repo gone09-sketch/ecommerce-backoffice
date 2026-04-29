@@ -1,4 +1,4 @@
-package com.ecommercebackoffice.common;
+package com.ecommercebackoffice.common.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;

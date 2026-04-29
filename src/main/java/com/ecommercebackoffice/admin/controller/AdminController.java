@@ -2,10 +2,9 @@ package com.ecommercebackoffice.admin.controller;
 
 import com.ecommercebackoffice.admin.dto.*;
 import com.ecommercebackoffice.admin.service.AdminService;
-import com.ecommercebackoffice.common.CommonResponse;
-import com.ecommercebackoffice.common.PageResponse;
-import com.ecommercebackoffice.session.SessionAdmin;
-import jakarta.servlet.http.HttpServletRequest;
+import com.ecommercebackoffice.common.dto.CommonResponse;
+import com.ecommercebackoffice.common.dto.PageResponse;
+import com.ecommercebackoffice.auth.session.SessionAdmin;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;

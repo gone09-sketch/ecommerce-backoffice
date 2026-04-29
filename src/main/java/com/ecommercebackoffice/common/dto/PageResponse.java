@@ -1,4 +1,4 @@
-package com.ecommercebackoffice.common;
+package com.ecommercebackoffice.common.dto;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Getter;

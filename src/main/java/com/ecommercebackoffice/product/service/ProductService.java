@@ -2,14 +2,14 @@ package com.ecommercebackoffice.product.service;
 
 import com.ecommercebackoffice.admin.entity.Admin;
 import com.ecommercebackoffice.admin.repository.AdminRepository;
-import com.ecommercebackoffice.common.PageResponse;
+import com.ecommercebackoffice.common.dto.PageResponse;
 import com.ecommercebackoffice.exception.AdminNotFoundException;
 import com.ecommercebackoffice.exception.ProductDuplicateException;
 import com.ecommercebackoffice.exception.ProductNotFoundException;
 import com.ecommercebackoffice.product.dto.*;
 import com.ecommercebackoffice.product.entity.Product;
 import com.ecommercebackoffice.product.repository.ProductRepository;
-import com.ecommercebackoffice.session.SessionAdmin;
+import com.ecommercebackoffice.auth.session.SessionAdmin;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;

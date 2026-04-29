@@ -1,7 +1,7 @@
 package com.ecommercebackoffice.admin.dto;
 import com.ecommercebackoffice.admin.enums.AdminRole;
 import com.ecommercebackoffice.admin.enums.AdminStatus;
-import com.ecommercebackoffice.common.BasePageRequest;
+import com.ecommercebackoffice.common.dto.BasePageRequest;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

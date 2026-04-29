@@ -1,8 +1,8 @@
-package com.ecommercebackoffice.session;
+package com.ecommercebackoffice.auth.service;
 
 import com.ecommercebackoffice.admin.entity.Admin;
 import com.ecommercebackoffice.admin.repository.AdminRepository;
-import com.ecommercebackoffice.config.PasswordEncoder; // PasswordEncoder 임포트
+import com.ecommercebackoffice.auth.encoder.PasswordEncoder; // PasswordEncoder 임포트
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

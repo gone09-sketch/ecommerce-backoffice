@@ -2,7 +2,7 @@ package com.ecommercebackoffice.admin.entity;
 
 import com.ecommercebackoffice.admin.enums.AdminRole;
 import com.ecommercebackoffice.admin.enums.AdminStatus;
-import com.ecommercebackoffice.config.BaseEntity;
+import com.ecommercebackoffice.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package com.ecommercebackoffice.config;
+package com.ecommercebackoffice.auth.interceptor;
 
 /**
  * NOTE: 로그인 여부 확인 (Authentication)
@@ -12,7 +12,7 @@ package com.ecommercebackoffice.config;
  */
 
 import com.ecommercebackoffice.exception.UnauthorizedException;
-import com.ecommercebackoffice.session.SessionAdmin;
+import com.ecommercebackoffice.auth.session.SessionAdmin;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;

@@ -1,6 +1,6 @@
 package com.ecommercebackoffice.product.dto;
 
-import com.ecommercebackoffice.common.BasePageRequest;
+import com.ecommercebackoffice.common.dto.BasePageRequest;
 import com.ecommercebackoffice.product.enums.ProductStatus;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
