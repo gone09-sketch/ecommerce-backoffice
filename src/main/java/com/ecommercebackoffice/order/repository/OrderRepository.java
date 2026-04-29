@@ -1,5 +1,6 @@
 package com.ecommercebackoffice.order.repository;
 
+import com.ecommercebackoffice.customer.dto.CustomerOrderStats;
 import com.ecommercebackoffice.order.entity.Order;
 import com.ecommercebackoffice.order.enums.OrderStatus;
 import org.springframework.data.domain.Page;
@@ -7,6 +8,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import java.util.List;
+import java.util.Optional;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
@@ -86,5 +90,40 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             @Param("status") OrderStatus status,
             Pageable pageable
     );
+
+    @Query("""
+            SELECT new com.ecommercebackoffice.customer.dto.CustomerOrderStats(
+                o.customer.id,
+                COUNT(o),
+                COALESCE(SUM(o.totalPrice), 0L)
+            )
+            FROM Order o
+            WHERE o.customer.id IN :customerIds
+              AND o.status <> :excludedStatus
+            GROUP BY o.customer.id
+            """)
+    List<CustomerOrderStats> findOrderStatsByCustomerIds(
+            @Param("customerIds") List<Long> customerIds,
+            @Param("excludedStatus") OrderStatus excludedStatus
+    );
+
+
+    @Query("""
+            SELECT new com.ecommercebackoffice.customer.dto.CustomerOrderStats(
+                o.customer.id,
+                COUNT(o),
+                COALESCE(SUM(o.totalPrice), 0L)
+            )
+            FROM Order o
+            WHERE o.customer.id = :customerId
+              AND o.status <> :excludedStatus
+            GROUP BY o.customer.id
+            """)
+    Optional<CustomerOrderStats> findOrderStatsByCustomerId(
+            @Param("customerId") Long customerId,
+            @Param("excludedStatus") OrderStatus excludedStatus
+    );
+
+
 }
 

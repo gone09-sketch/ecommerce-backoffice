@@ -7,6 +7,8 @@ import com.ecommercebackoffice.customer.repository.CustomerRepository;
 import com.ecommercebackoffice.exception.CustomerNotFoundException;
 import com.ecommercebackoffice.exception.DuplicateEmailException;
 import com.ecommercebackoffice.exception.InvalidInputException;
+import com.ecommercebackoffice.order.enums.OrderStatus;
+import com.ecommercebackoffice.order.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,20 +17,26 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class CustomerService {
 
     private final CustomerRepository customerRepository;
+    private final OrderRepository orderRepository;
+
 
     // 고객 리스트 조회
     @Transactional(readOnly = true)
     public Page<CustomerGetResponse> getCustomersList(CustomerGetRequest request) {
 
         // 클라이언트가 요청할 수 있는 정렬 필드만 허용하는 필드 만듬
-        Set<String> allowedSortFields = Set.of("createdAt", "updatedAt", "name");
+        Set<String> allowedSortFields = Set.of("createdAt", "name", "email");
 
         // 정렬 기준이 없거나 허용되지 않은 값이면 기본값(createdAt)으로 정렬한다.
         String sortBy = request.getSortBy();
@@ -51,7 +59,7 @@ public class CustomerService {
         // 검색어가 비어 있으면 null로 보내고, 값이 있으면 그 값을 그대로 보냄 (전체 조회)
         String keyword = null;
         if (request.getKeyword() != null && !request.getKeyword().isBlank()) {
-            keyword = request.getKeyword();
+            keyword = request.getKeyword().trim();
         }
 
         // 문자열 "ACTIVE"를 enum CustomerStatus.ACTIVE로 바꿈
@@ -64,8 +72,33 @@ public class CustomerService {
             }
         }
 
-        return customerRepository.searchCustomers(keyword, status, pageable)
-                .map(CustomerGetResponse::from);
+        Page<Customer> customersPage = customerRepository.searchCustomers(keyword, status, pageable);
+
+        List<Long> customerIds = customersPage.getContent().stream()
+                .map(Customer::getId)
+                .toList();
+
+        if (customerIds.isEmpty()) {
+            return customersPage.map(customer -> CustomerGetResponse.from(customer, 0L, 0L));
+        }
+
+        Map<Long, CustomerOrderStats> statsMap = orderRepository.findOrderStatsByCustomerIds(customerIds, OrderStatus.CANCELED)
+
+                .stream()
+                .collect(Collectors.toMap(
+                        CustomerOrderStats::getCustomerId,
+                        Function.identity()
+                ));
+
+        return customersPage.map(customer -> {
+            CustomerOrderStats stats = statsMap.get(customer.getId());
+
+            long totalOrderCount = stats == null ? 0L : stats.getTotalOrderCount();
+            long totalPurchaseAmount = stats == null ? 0L : stats.getTotalPurchaseAmount();
+
+            return CustomerGetResponse.from(customer, totalOrderCount, totalPurchaseAmount);
+        });
+
     }
 
     // 고객 단 건 조회
@@ -75,7 +108,14 @@ public class CustomerService {
                 () -> new CustomerNotFoundException("존재하지 않는 고객입니다")
         );
 
-        return CustomerGetResponse.from(foundCustomer);
+        CustomerOrderStats stats = orderRepository.findOrderStatsByCustomerId(customerId,OrderStatus.CANCELED)
+                .orElse(new CustomerOrderStats(customerId, 0L, 0L));
+
+        return CustomerGetResponse.from(
+                foundCustomer,
+                stats.getTotalOrderCount(),
+                stats.getTotalPurchaseAmount()
+        );
     }
 
     // 고객 수정
