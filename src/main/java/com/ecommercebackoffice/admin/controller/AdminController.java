@@ -2,6 +2,7 @@ package com.ecommercebackoffice.admin.controller;
 
 import com.ecommercebackoffice.admin.dto.*;
 import com.ecommercebackoffice.admin.service.AdminService;
+import com.ecommercebackoffice.auth.session.SessionConst;
 import com.ecommercebackoffice.common.CommonResponse;
 import com.ecommercebackoffice.common.PageResponse;
 import com.ecommercebackoffice.auth.session.SessionAdmin;
@@ -57,13 +58,14 @@ public class AdminController {
 
     // 내 프로필 조회
     @GetMapping("/profile")
-    public ResponseEntity<CommonResponse<AdminResponse>> getProfileAPI(HttpSession httpSession) {
+    public ResponseEntity<CommonResponse<AdminResponse>> getProfileAPI(
+            @RequestAttribute(SessionConst.CURRENT_ADMIN) SessionAdmin sessionAdminDto) {
 
-        // 1. 세션에서 내 id 가져오기
-        SessionAdmin sessionAdmin = (SessionAdmin) httpSession.getAttribute("loginAdmin");
+        // 1. Interceptor가 request에 담아준 로그인 관리자 id 사용
+        Long loginAdminId = sessionAdminDto.getId();
 
-        // 2. 세션에서 꺼낸 id 조회
-        AdminResponse getProfileResponseAPI = adminService.getProfile(sessionAdmin.getId());
+        // 2. 내 프로필 조회
+        AdminResponse getProfileResponseAPI = adminService.getProfile(loginAdminId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CommonResponse.success("내 프로필 조회 성공", getProfileResponseAPI));
     }
@@ -75,7 +77,6 @@ public class AdminController {
             @PathVariable Long adminId,
             @RequestBody @Valid AdminPatchRequest adminPatchRequest) {
 
-
         AdminResponse updateAdminResponseAPI = adminService.updateAdmin(adminId, adminPatchRequest);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CommonResponse.success("관리자 정보 수정 성공", updateAdminResponseAPI));
@@ -86,22 +87,23 @@ public class AdminController {
     @PatchMapping("/profile")
     public ResponseEntity<CommonResponse<AdminResponse>> updateProfileAPI(
             @RequestBody @Valid AdminProfilePatchRequest adminProfilePatchRequest,
+            @RequestAttribute(SessionConst.CURRENT_ADMIN) SessionAdmin sessionAdminDto,
             HttpSession httpSession) {
 
-        // 세션에서 adminId 가져오기
-        SessionAdmin sessionAdmin = (SessionAdmin) httpSession.getAttribute("loginAdmin");
-        Long adminId = sessionAdmin.getId();
+        // 1. Interceptor가 request에 담아준 로그인 관리자 id 사용
+        Long loginAdminId = sessionAdminDto.getId();
 
-        // 프로필 수정
-        AdminResponse updateProfileResponseAPI = adminService.updateProfile(adminId, adminProfilePatchRequest);
+        // 2. 프로필 수정
+        AdminResponse updateProfileResponseAPI = adminService.updateProfile(loginAdminId, adminProfilePatchRequest);
 
-        // 세션 업데이트
+        // 3. 세션 업데이트
         httpSession.setAttribute("loginAdmin", new SessionAdmin(
                 updateProfileResponseAPI.getId(),
                 updateProfileResponseAPI.getEmail(),
                 updateProfileResponseAPI.getRole()
         ));
 
+        // 4. 반환
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CommonResponse.success("프로필 정보 수정 성공", updateProfileResponseAPI));
     }
@@ -111,13 +113,13 @@ public class AdminController {
     @PatchMapping("/profile/password")
     public ResponseEntity<CommonResponse<Void>> updatePasswordAPI(
             @RequestBody @Valid AdminPasswordPatchRequest adminPasswordPatchRequest,
-            HttpSession httpSession) {
+            @RequestAttribute(SessionConst.CURRENT_ADMIN) SessionAdmin sessionAdminDto) {
 
-        // 세션에서 adminId 가져오기
-        SessionAdmin sessionAdmin = (SessionAdmin) httpSession.getAttribute("loginAdmin");
-        Long adminId = sessionAdmin.getId();
+        // 1. Interceptor가 request에 담아준 로그인 관리자 id 사용
+        Long loginAdminId = sessionAdminDto.getId();
 
-        adminService.updatePassword(adminId, adminPasswordPatchRequest);
+        // 2. 비밀번호 변경
+        adminService.updatePassword(loginAdminId, adminPasswordPatchRequest);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CommonResponse.success("비밀번호 변경 성공"));
     }

@@ -104,9 +104,9 @@ public class AdminService {
 
     // 내 프로필 조회
     @Transactional(readOnly = true)
-    public AdminResponse getProfile(Long adminId) {
+    public AdminResponse getProfile(Long loginAdminId) {
         // 1. 관리자 조회
-        Admin admin = adminRepository.findById(adminId).orElseThrow(
+        Admin admin = adminRepository.findById(loginAdminId).orElseThrow(
                 () -> new AdminNotFoundException());
 
         // 2. 반환
@@ -137,10 +137,10 @@ public class AdminService {
 
     // 내 프로필 수정
     @Transactional
-    public AdminResponse updateProfile(Long adminId, AdminProfilePatchRequest profilePatchRequest) {
+    public AdminResponse updateProfile(Long loginAdminId, AdminProfilePatchRequest profilePatchRequest) {
 
         // 1. 관리자 조회
-        Admin admin = findAdminById(adminId);
+        Admin admin = findAdminById(loginAdminId);
 
         // 2. 이메일 변경 시 중복 체크 (null이면 변경 안 하는 것으로 간주)
         validateEmail(profilePatchRequest.getEmail(), admin.getEmail());
@@ -172,13 +172,12 @@ public class AdminService {
 
     // 내 비밀번호 변경
     @Transactional
-    public void updatePassword(Long adminId, AdminPasswordPatchRequest adminPasswordPatchRequest) {
+    public void updatePassword(Long loginAdminId, AdminPasswordPatchRequest adminPasswordPatchRequest) {
 
-        // 1. 해당 관리자 조회
-        Admin foundAdmin = adminRepository.findById(adminId).orElseThrow(
-                () -> new AdminNotFoundException());
+        // 1. 관리자 조회
+        Admin foundAdmin = findAdminById(loginAdminId);
 
-        // 2. 기존 비밀번호 일치 확인
+        // 2. 입력한 현재 비밀번호가 DB에 저장된 기존 비밀번호와 일치하는지 확인
         if (!passwordEncoder.matches(
                 adminPasswordPatchRequest.getCurrentPassword(),
                 foundAdmin.getPassword())) {
@@ -186,12 +185,12 @@ public class AdminService {
             throw new InvalidPasswordException();
         }
 
-        // 3. 새 비밀번호와 다시 입력받은 비밀번호 일치 검증
+        // 3. 새 비밀번호와 새 비밀번호 확인 값이 같은지 검증
         if (!adminPasswordPatchRequest.getNewPassword().equals(adminPasswordPatchRequest.getConfirmPassword())) {
             throw new PasswordMismatchException();
         }
 
-        // 4. 새 비밀번호 암호화
+        // 4. 새 비밀번호 암호화하여 저장
         String encodedPassword = passwordEncoder.encode(adminPasswordPatchRequest.getNewPassword());
 
         // 5. 새 비밀번호 업데이트
