@@ -112,11 +112,6 @@ public class OrderService {
             request.setSortBy("createdAt");
         }
 
-        // 정렬 순서 기본값 desc, 정렬 순서가 적혀있지 않으면 기본값으로 반환
-        if (request.getSortOrder() == null || request.getSortOrder().isBlank()) {
-            request.setSortOrder("desc");
-        }
-
         validateSortBy(request.getSortBy());
         validateSortOrder(request.getSortOrder());
 
