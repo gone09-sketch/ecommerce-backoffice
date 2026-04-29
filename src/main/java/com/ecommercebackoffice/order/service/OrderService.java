@@ -40,7 +40,7 @@ public class OrderService {
                 () -> new AdminNotFoundException("존재하지 않는 관리자입니다.")
         );
         Customer customer = customerRepository.findById(request.getCustomerId()).orElseThrow(
-                () -> new IllegalStateException("존재하지 않는 고객입니다.")     // 예외 꼭 바꾸기
+                () -> new CustomerNotFoundException("존재하지 않는 고객입니다.")
         );
         Product product = productRepository.findById(request.getProductId()).orElseThrow(
                 () -> new ProductNotFoundException("존재하지 않는 상품입니다.")
