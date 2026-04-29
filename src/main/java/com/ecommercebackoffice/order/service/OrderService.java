@@ -12,6 +12,7 @@ import com.ecommercebackoffice.order.enums.OrderStatus;
 import com.ecommercebackoffice.order.repository.OrderProductRepository;
 import com.ecommercebackoffice.order.repository.OrderRepository;
 import com.ecommercebackoffice.product.entity.Product;
+import com.ecommercebackoffice.product.enums.ProductStatus;
 import com.ecommercebackoffice.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -37,28 +38,26 @@ public class OrderService {
     public OrderCreateResponse save(OrderCreateRequest request, Long adminId) {
 
         Admin admin = adminRepository.findById(adminId).orElseThrow(
-                () -> new AdminNotFoundException("존재하지 않는 관리자입니다.")
+                () -> new AdminNotFoundException()
         );
         Customer customer = customerRepository.findById(request.getCustomerId()).orElseThrow(
-                () -> new CustomerNotFoundException("존재하지 않는 고객입니다.")
+                () -> new CustomerNotFoundException()
         );
         Product product = productRepository.findById(request.getProductId()).orElseThrow(
-                () -> new ProductNotFoundException("존재하지 않는 상품입니다.")
+                () -> new ProductNotFoundException()
         );
 
-        if (product.getStatus().equals("단종"))
-            throw new BadRequestException("단종 상품은 주문할 수 없습니다.");
-        if (product.getStatus().equals("품절"))
-            throw new BadRequestException("품절 상품은 주문할 수 없습니다.");
+        if (product.getStatus().equals(ProductStatus.DISCONTINUED))
+            throw new DiscontinuedProductException();
+        if (product.getStatus().equals(ProductStatus.SOLD_OUT))
+            throw new OutOfStockException();
         if (product.getStock() < request.getQuantity()) {
-            throw new BadRequestException("재고가 부족합니다");
+            throw new InsufficientStockException();
         }
-        Long orderPrice = product.getPrice();
+
         Order order = new Order(
                 admin,
                 customer,
-                request.getQuantity(),
-                orderPrice,
                 request.getReceiverName(),
                 request.getReceiverPhone(),
                 request.getDeliveryAddress()
@@ -87,13 +86,13 @@ public class OrderService {
     public OrderGetResponse findOne(Long orderId) {
 
         Order order = orderRepository.findById(orderId).orElseThrow(
-                () -> new OrderNotFoundException("존재하지 않는 주문입니다.")
+                () -> new OrderNotFoundException()
         );
 
         List<OrderProduct> orderProducts = orderProductRepository.findAllByOrder_Id(orderId);
 
         if (orderProducts.isEmpty()) {
-            throw new OrderProductNotFoundException("주문 상품 정보가 없습니다.");
+            throw new OrderProductNotFoundException();
         }
 
         List<OrderProductResponse> products = orderProducts.stream()
@@ -133,7 +132,7 @@ public class OrderService {
         List<OrderProduct> orderProducts = orderProductRepository.findAllByOrder_Id(order.getId());
 
         if (orderProducts.isEmpty()) {
-            throw new OrderProductNotFoundException("주문 상품 정보가 없습니다.");
+            throw new OrderProductNotFoundException();
         }
         return OrderListResponse.from(order, orderProducts);
     }
@@ -178,7 +177,7 @@ public class OrderService {
         boolean isTotalPriceSort = "totalPrice".equals(sortBy);
 
         if (!isCreatedAtSort && !isQuantitySort && !isTotalPriceSort) {
-            throw new BadRequestException("지원하지 않는 정렬 기준입니다.");
+            throw new BadRequestException();
         }
     }
 
@@ -188,7 +187,7 @@ public class OrderService {
         boolean isDescSort = "desc".equalsIgnoreCase(sortOrder);
 
         if (!isAscSort && !isDescSort) {
-            throw new BadRequestException("지원하지 않는 정렬 순서입니다.");
+            throw new BadRequestException();
         }
     }
 
@@ -196,12 +195,12 @@ public class OrderService {
     public OrderUpdateResponse update(Long orderId, OrderStatus orderStatus) {
 
         Order order = orderRepository.findById(orderId).orElseThrow(
-                () -> new OrderNotFoundException("존재하지 않는 주문입니다.")
+                () -> new OrderNotFoundException()
         );
 
         // 현재 주문 상태가 배송완료면 예외
         if (order.getStatus().equals(OrderStatus.DELIVERED))
-            throw new InvalidOrderStatusException("배송완료 상태의 주문은 변경할 수 없습니다.");
+            throw new OrderAlreadyCompletedException();
 
         // && 앞은 현재 주문 상태
         // && 뒤는 요청 주문 상태
@@ -210,13 +209,13 @@ public class OrderService {
         } else if (order.getStatus().equals(OrderStatus.SHIPPING) && orderStatus.equals(OrderStatus.DELIVERED)) {
             order.updateStatus(OrderStatus.DELIVERED);
         } else {
-            throw new InvalidOrderStatusException("주문 상태는 준비중 -> 배송중 -> 배송완료 순서로만 변경할 수 있습니다.");
+            throw new InvalidOrderStatusException();
         }
 
         List<OrderProduct> orderProducts = orderProductRepository.findAllByOrder_Id(order.getId());
 
         if (orderProducts.isEmpty()) {
-            throw new OrderProductNotFoundException("주문 상품 정보가 없습니다.");
+            throw new OrderProductNotFoundException();
         }
 
         // 응답으로 엔티티가 아닌 Response로 내보내기 위해 주문 상품 하나씩 Response로 바꿔 다시 리스트로 만들기
@@ -230,17 +229,17 @@ public class OrderService {
     @Transactional
     public OrderCancelResponse cancel(Long orderId, OrderCancelRequest request) {
         Order order = orderRepository.findById(orderId).orElseThrow(
-                () -> new OrderNotFoundException("존재하지 않는 주문입니다.")
+                () -> new OrderNotFoundException()
         );
 
         List<OrderProduct> orderProducts = orderProductRepository.findAllByOrder_Id(order.getId());
 
         if (orderProducts.isEmpty()) {
-            throw new OrderProductNotFoundException("주문 상품 정보가 없습니다.");
+            throw new OrderProductNotFoundException();
         }
 
         if (!order.getStatus().equals(OrderStatus.READY)) {
-            throw new InvalidOrderStatusException("준비중 상태의 주문만 취소할 수 있습니다.");
+            throw new OrderCancellationNotAllowedException();
         }
 
         order.cancel(request.getCancelReason());
@@ -248,7 +247,7 @@ public class OrderService {
         // 주문 취소 후 재고 원복 메서드
         for (OrderProduct orderProduct : orderProducts) {
             Product product = productRepository.findById(orderProduct.getProductId()).orElseThrow(
-                    () -> new ProductNotFoundException("존재하지 않는 상품입니다.")
+                    () -> new ProductNotFoundException()
             );
             product.revertStock(orderProduct.getQuantity());
         }

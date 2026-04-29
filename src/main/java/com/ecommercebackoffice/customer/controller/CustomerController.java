@@ -29,19 +29,21 @@ public class CustomerController {
 
         PageResponse<CustomerGetResponse> pageResponse = new PageResponse<>(customersPage);
 
-        return ResponseEntity.ok(
-                CommonResponse.success("고객 리스트 조회 성공", pageResponse)
-        );
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(CommonResponse.success("고객 리스트 조회 성공", pageResponse));
     }
 
-    // 고객 단건 조회
+    // 고객 상세 조회
     @GetMapping("/{customerId}")
     public ResponseEntity<CommonResponse<CustomerGetResponse>> getOneCustomer(
             @PathVariable Long customerId
     ) {
         CustomerGetResponse result = customerService.getByCustomerId(customerId);
 
-        return ResponseEntity.ok(CommonResponse.success("고객 상세 조회 성공",result));
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(CommonResponse.success("고객 상세 조회 성공", result));
     }
 
     // 고객 수정
@@ -52,7 +54,9 @@ public class CustomerController {
     ) {
         CustomerUpdateResponse result = customerService.update(customerId, request);
 
-        return ResponseEntity.ok(CommonResponse.success("고객 정보 수정 성공",result));
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(CommonResponse.success("고객 정보 수정 성공", result));
     }
 
     // 고객 상태 수정
@@ -63,7 +67,9 @@ public class CustomerController {
     ) {
         CustomerStatusUpdateResponse result = customerService.statusUpdate(customerId, request);
 
-        return ResponseEntity.ok(CommonResponse.success("고객 상태 변경 성공",result));
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(CommonResponse.success("고객 상태 변경 성공", result));
     }
 
     // 고객 삭제
@@ -72,6 +78,8 @@ public class CustomerController {
 
         customerService.deleteCustomer(customerId);
 
-        return ResponseEntity.ok(CommonResponse.success("고객 삭제 성공"));
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(CommonResponse.success("고객 삭제 성공"));
     }
 }
