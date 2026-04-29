@@ -5,6 +5,7 @@ import com.ecommercebackoffice.customer.entity.Customer;
 import com.ecommercebackoffice.customer.enums.CustomerStatus;
 import com.ecommercebackoffice.customer.repository.CustomerRepository;
 import com.ecommercebackoffice.exception.CustomerNotFoundException;
+import com.ecommercebackoffice.exception.DuplicateEmailException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -78,6 +79,13 @@ public class CustomerService {
         Customer foundCustomer = customerRepository.findById(customerId).orElseThrow(
                 () -> new CustomerNotFoundException("존재하지 않는 고객입니다")
         );
+
+        if (customerRepository.existsByEmailAndIdNot(
+                request.getEmail(),
+                customerId
+        )) {
+            throw new DuplicateEmailException("이미 사용 중인 이메일입니다.");
+        }
 
         foundCustomer.update(
                 request.getName(),

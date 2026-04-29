@@ -14,6 +14,7 @@ import com.ecommercebackoffice.product.entity.Product;
 import com.ecommercebackoffice.product.enums.ProductStatus;
 import com.ecommercebackoffice.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NonNull;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -36,7 +37,7 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     @Transactional
-    public void run(String... args) {
+    public void run(String @NonNull ... args) {
         if (adminRepository.count() > 0
                 || customerRepository.count() > 0
                 || productRepository.count() > 0
@@ -87,20 +88,52 @@ public class DataInitializer implements CommandLineRunner {
         adminRepository.save(operationAdmin);
     }
 
+//    private void initCustomers() {
+//        IntStream.rangeClosed(1, 4).forEach(i -> {
+//            Customer customer = new Customer(
+//                    "고객" + i,
+//                    "customer" + i + "@test.com",
+//                    "010-1234-" + String.format("%04d", i)
+//            );
+//
+//            if (i % 3 == 0) {
+//                customer.updateStatus(CustomerStatus.INACTIVE);
+//            }
+//
+//            customerRepository.save(customer);
+//        });
+//    }
+
     private void initCustomers() {
-        IntStream.rangeClosed(1, 20).forEach(i -> {
-            Customer customer = new Customer(
-                    "고객" + i,
-                    "customer" + i + "@test.com",
-                    "010-1234-" + String.format("%04d", i)
-            );
+        if (customerRepository.count() > 0) {
+            return;
+        }
 
-            if (i % 3 == 0) {
-                customer.updateStatus(CustomerStatus.INACTIVE);
-            }
+        Customer customer1 = new Customer(
+                "고객1",
+                "customer1@test.com",
+                "010-1234-0001"
+        );
 
-            customerRepository.save(customer);
-        });
+        Customer customer2 = new Customer(
+                "고객2",
+                "customer2@test.com",
+                "010-1234-0002"
+        );
+        customer2.updateStatus(CustomerStatus.INACTIVE);
+
+        Customer customer3 = new Customer(
+                "고객3",
+                "customer3@test.com",
+                "010-1234-0003"
+        );
+        customer3.updateStatus(CustomerStatus.SUSPENDED);
+
+        customerRepository.saveAll(List.of(
+                customer1,
+                customer2,
+                customer3
+        ));
     }
 
     private void initProducts() {
@@ -130,10 +163,10 @@ public class DataInitializer implements CommandLineRunner {
         List<Product> products = productRepository.findAll();
 
         IntStream.rangeClosed(1, 10).forEach(i -> {
-            Customer customer = customers.get(i - 1);
-            Product product = products.get(i - 1);
+            Customer customer = customers.get((i - 1) % customers.size());
+            Product product = products.get((i - 1) % products.size());
             int quantity = i % 3 + 1;
-            Admin orderAdmin = i % 2 == 0 ? admins.get(0) : null;
+            Admin orderAdmin = i % 2 == 0 ? admins.get((i - 1) % admins.size()) : null;
 
             Order order = new Order(
                     orderAdmin,
