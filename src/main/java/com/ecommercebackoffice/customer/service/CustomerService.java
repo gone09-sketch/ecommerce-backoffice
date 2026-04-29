@@ -5,6 +5,7 @@ import com.ecommercebackoffice.customer.entity.Customer;
 import com.ecommercebackoffice.customer.enums.CustomerStatus;
 import com.ecommercebackoffice.customer.repository.CustomerRepository;
 import com.ecommercebackoffice.exception.CustomerNotFoundException;
+import com.ecommercebackoffice.exception.InvalidInputException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -55,7 +56,11 @@ public class CustomerService {
         // 문자열 "ACTIVE"를 enum CustomerStatus.ACTIVE로 바꿈
         CustomerStatus status = null;
         if (request.getStatus() != null && !request.getStatus().isBlank()) {
-            status = CustomerStatus.valueOf(request.getStatus().toUpperCase());
+            try {
+                status = CustomerStatus.valueOf(request.getStatus().trim().toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new InvalidInputException("유효하지 않은 고객 상태입니다.");
+            }
         }
 
         return customerRepository.searchCustomers(keyword, status, pageable)
