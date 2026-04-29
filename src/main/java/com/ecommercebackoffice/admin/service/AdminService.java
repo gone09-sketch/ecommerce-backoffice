@@ -5,9 +5,7 @@ import com.ecommercebackoffice.admin.entity.Admin;
 import com.ecommercebackoffice.admin.repository.AdminRepository;
 import com.ecommercebackoffice.common.PageResponse;
 import com.ecommercebackoffice.config.PasswordEncoder;
-import com.ecommercebackoffice.exception.AdminNotFoundException;
-import com.ecommercebackoffice.exception.DuplicateEmailException;
-import com.ecommercebackoffice.exception.InvalidInputException;
+import com.ecommercebackoffice.exception.*;
 import com.ecommercebackoffice.session.SessionAdmin;
 import jakarta.servlet.http.HttpSession;
 import lombok.Getter;
@@ -38,7 +36,7 @@ public class AdminService {
     public AdminCreateResponse signUp(AdminCreateRequest adminCreateRequest) {
         // 1. 이메일 중복 체크
         if (adminRepository.existsByEmail(adminCreateRequest.getEmail())) {
-            throw new DuplicateEmailException("이미 사용 중인 이메일입니다.");
+            throw new DuplicateEmailException();
         }
 
         // 2. 엔티티 생성(+데이터 담기)
@@ -95,7 +93,7 @@ public class AdminService {
     public AdminResponse getOne(Long adminId) {
         // 1. 관리자 조회
         Admin admin = adminRepository.findById(adminId).orElseThrow(
-                () -> new AdminNotFoundException("해당 관리자를 찾을 수 없습니다."));
+                () -> new AdminNotFoundException());
 
         // 2. 반환
         return AdminResponse.from(admin);
@@ -107,7 +105,7 @@ public class AdminService {
     public AdminResponse getProfile(Long adminId) {
         // 1. 관리자 조회
         Admin admin = adminRepository.findById(adminId).orElseThrow(
-                () -> new AdminNotFoundException("해당 관리자를 찾을 수 없습니다."));
+                () -> new AdminNotFoundException());
 
         // 2. 반환
         return AdminResponse.from(admin);
@@ -159,13 +157,13 @@ public class AdminService {
     // 관리자 UPDATE 통합 메서드(내부용)
     private Admin findAdminById(Long adminId) {
         return adminRepository.findById(adminId)
-                .orElseThrow(() -> new AdminNotFoundException("해당 관리자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new AdminNotFoundException());
     }
 
     private void validateEmail(String newEmail, String currentEmail) {
         if (newEmail == null) return;
         if (!newEmail.equals(currentEmail) && adminRepository.existsByEmail(newEmail)) {
-            throw new DuplicateEmailException("이미 사용 중인 이메일입니다.");
+            throw new DuplicateEmailException();
         }
     }
 
@@ -180,16 +178,16 @@ public class AdminService {
 
         // 2. 해당 관리자 조회
         Admin foundAdmin = adminRepository.findById(adminId).orElseThrow(
-                () -> new AdminNotFoundException("해당 관리자를 찾을 수 없습니다."));
+                () -> new AdminNotFoundException());
 
         // 3. 기존 비밀번호 일치 확인
         if (!passwordEncoder.matches(adminPasswordPatchRequest.getCurrentPassword(), foundAdmin.getPassword())) {
-            throw new InvalidInputException("현재 비밀번호와 일치하지 않습니다.");
+            throw new InvalidPasswordException();
         }
 
         // 4. 새 비밀번호와 다시 입력받은 비밀번호 일치 검증
         if (!adminPasswordPatchRequest.getNewPassword().equals(adminPasswordPatchRequest.getConfirmPassword())) {
-            throw new InvalidInputException("새 비밀번화와 일치하지 않습니다.");
+            throw new PasswordMismatchException();
         }
 
         // 5. 새 비밀번호 암호화
@@ -205,7 +203,7 @@ public class AdminService {
     public AdminResponse updateRole(Long adminId, AdminRolePatchRequest adminRolePatchRequest) {
         // 1. 관리자 조회
         Admin admin = adminRepository.findById(adminId).orElseThrow(
-                () -> new AdminNotFoundException("해당 관리자를 찾을 수 없습니다."));
+                () -> new AdminNotFoundException());
 
         // 2. 수정 내용 업데이트
         admin.updateRole(adminRolePatchRequest.getRole());
@@ -220,7 +218,7 @@ public class AdminService {
     public AdminResponse updateStatus(Long adminId, AdminStatusPatchRequest adminStatusPatchRequest) {
         // 1. 관리자 조회
         Admin admin = adminRepository.findById(adminId).orElseThrow(
-                () -> new AdminNotFoundException("해당 관리자를 찾을 수 없습니다."));
+                () -> new AdminNotFoundException());
 
         // 2. 수정 내용 업데이트
         admin.updateStatus(adminStatusPatchRequest.getStatus());
@@ -235,7 +233,7 @@ public class AdminService {
     public void deleteAdmin(Long adminId) {
         // 1. 관리자 조회
         Admin foundAdmin = adminRepository.findById(adminId).orElseThrow(
-                () -> new AdminNotFoundException("해당 관리자를 찾을 수 없습니다."));
+                () -> new AdminNotFoundException());
 
         // 2. 삭제 업데이트
         adminRepository.delete(foundAdmin);
@@ -246,7 +244,7 @@ public class AdminService {
     public AdminResponse adminApprove(Long adminId) {
         // 1. 관리자 조회
         Admin admin = adminRepository.findById(adminId).orElseThrow(
-                () -> new AdminNotFoundException("해당 관리자를 찾을 수 없습니다."));
+                () -> new AdminNotFoundException());
 
         // 2. 승인 처리
         admin.approve();
@@ -261,7 +259,7 @@ public class AdminService {
     public AdminResponse adminReject(Long adminId, AdminRejectCreateRequest adminRejectCreateRequest) {
         // 1. 관리자 조회
         Admin admin = adminRepository.findById(adminId).orElseThrow(
-                () -> new AdminNotFoundException("해당 관리자를 찾을 수 없습니다."));
+                () -> new AdminNotFoundException());
 
         // 2. 거부 처리
         admin.reject(adminRejectCreateRequest.getRejectedReason());
