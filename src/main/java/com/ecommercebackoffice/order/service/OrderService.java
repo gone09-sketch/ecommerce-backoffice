@@ -65,7 +65,7 @@ public class OrderService {
         );
 
         // 주문 차감 메서드
-        product.updateStock(request.getQuantity());
+        product.descStock(request.getQuantity());
 
         Order savedOrder = orderRepository.save(order);
 
@@ -112,10 +112,22 @@ public class OrderService {
             request.setSortBy("createdAt");
         }
 
+        // 정렬 순서 기본값 desc, 정렬 순서가 적혀있지 않으면 기본값으로 반환
+        if (request.getSortOrder() == null || request.getSortOrder().isBlank()) {
+            request.setSortOrder("desc");
+        }
+
+        validateSortBy(request.getSortBy());
+        validateSortOrder(request.getSortOrder());
+
         Pageable pageable = request.toPageable();
 
-        // 반환타입이 Page<Order>여서 Response로 바꾸기 위해 메서드를 넣음
-        return orderRepository.findAll(pageable)
+        // 검색 키워드, 상태 필터
+        String keyword = request.getKeyword();
+        OrderStatus status = request.getStatus();
+
+        // 정렬 조건에 맞는 조회를 실행하고 Page<Order>를 Page<OrderListResponse>로 바꾸는 메서드 실행
+        return searchOrdersBySort(request, keyword, status, pageable)
                 .map(order -> toOrderListResponse(order));
     }
 
@@ -129,6 +141,60 @@ public class OrderService {
             throw new OrderProductNotFoundException("주문 상품 정보가 없습니다.");
         }
         return OrderListResponse.from(order, orderProducts);
+    }
+
+    // 정렬 조건에 따라 어떤 repository 메서드 호출할지 결정하는 메서드
+    private Page<Order> searchOrdersBySort(
+            OrderListRequest request,
+            String keyword,
+            OrderStatus status,
+            Pageable pageable
+    ) {
+        // 정렬 기준 및 순서 변수로 선언
+        // equalsIgnoreCase는 대소문자 구분없이 비교함
+        boolean isQuantitySort = "quantity".equals(request.getSortBy());
+        boolean isTotalPriceSort = "totalPrice".equals(request.getSortBy());
+        boolean isDescSort = "desc".equalsIgnoreCase(request.getSortOrder());
+        boolean isAscSort = "asc".equalsIgnoreCase(request.getSortOrder());
+
+        if (isQuantitySort && isDescSort) {
+            return orderRepository.searchOrdersOrderByQuantityDesc(keyword, status, pageable);
+        }
+
+        if (isQuantitySort && isAscSort) {
+            return orderRepository.searchOrdersOrderByQuantityAsc(keyword, status, pageable);
+        }
+
+        if (isTotalPriceSort && isDescSort) {
+            return orderRepository.searchOrdersOrderByTotalPriceDesc(keyword, status, pageable);
+        }
+
+        if (isTotalPriceSort && isAscSort) {
+            return orderRepository.searchOrdersOrderByTotalPriceAsc(keyword, status, pageable);
+        }
+
+        return orderRepository.searchOrders(keyword, status, pageable);
+    }
+
+    // 정렬 기준이 허용된 값인지 검사
+    private void validateSortBy(String sortBy) {
+        boolean isCreatedAtSort = "createdAt".equals(sortBy);
+        boolean isQuantitySort = "quantity".equals(sortBy);
+        boolean isTotalPriceSort = "totalPrice".equals(sortBy);
+
+        if (!isCreatedAtSort && !isQuantitySort && !isTotalPriceSort) {
+            throw new BadRequestException("지원하지 않는 정렬 기준입니다.");
+        }
+    }
+
+    // 정렬 순서가 허용된 값인지 검사
+    private void validateSortOrder(String sortOrder) {
+        boolean isAscSort = "asc".equalsIgnoreCase(sortOrder);
+        boolean isDescSort = "desc".equalsIgnoreCase(sortOrder);
+
+        if (!isAscSort && !isDescSort) {
+            throw new BadRequestException("지원하지 않는 정렬 순서입니다.");
+        }
     }
 
     @Transactional
@@ -184,11 +250,12 @@ public class OrderService {
 
         order.cancel(request.getCancelReason());
 
+        // 주문 취소 후 재고 원복 메서드
         for (OrderProduct orderProduct : orderProducts) {
             Product product = productRepository.findById(orderProduct.getProductId()).orElseThrow(
                     () -> new ProductNotFoundException("존재하지 않는 상품입니다.")
             );
-            product.updateStock(orderProduct.getQuantity());
+            product.revertStock(orderProduct.getQuantity());
         }
         return OrderCancelResponse.from(order);
     }

@@ -2,6 +2,7 @@ package com.ecommercebackoffice.session;
 
 import com.ecommercebackoffice.admin.entity.Admin;
 import com.ecommercebackoffice.admin.repository.AdminRepository;
+import com.ecommercebackoffice.config.PasswordEncoder; // PasswordEncoder 임포트
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -10,38 +11,28 @@ import org.springframework.stereotype.Service;
 public class AuthService {
 
     private final AdminRepository adminRepository;
+    private final PasswordEncoder passwordEncoder; // 암호화 클래스 주입
 
+    /**
+     * DB를 조회하여 관리자 인증을 수행합니다.
+     */
     public Admin authenticate(String email, String password) {
-        // 1. 이메일로 관리자 조회
-        Admin admin = (Admin) adminRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("이메일 또는 비밀번호가 일치하지 않습니다."));
 
-        // 2. 비밀번호 검증
-        if (!admin.getPassword().equals(password)) {
-            throw new IllegalArgumentException("이메일 또는 비밀번호가 일치하지 않습니다.");
+        // 1. 이메일로 DB에서 관리자 정보를 찾습니다.
+        Admin admin = adminRepository.findByEmail(email).orElse(null);
+
+        // 해당 이메일을 가진 관리자가 없으면 인증 실패
+        if (admin == null) {
+            return null;
         }
 
-        // 3. 상태 검증 (요구사항 반영: 활성 상태만 통과, 나머지는 구체적인 에러 메시지 반환)
-        String status = admin.getStatus().name();
-
-        if (!"ACTIVE".equals(status)) {
-            switch (status) {
-                case "PENDING":
-                    throw new IllegalStateException("계정 승인대기 중입니다.");
-                case "REJECTED":
-                    // 거부 사유가 있다면 함께 보여주면 더 좋습니다.
-                    String reason = admin.getRejectedReason() != null ? " 사유: " + admin.getRejectedReason() : "";
-                    throw new IllegalStateException("계정 신청이 거부되었습니다." + reason);
-                case "SUSPENDED": // (참고: AdminStatus Enum에 SUSPENDED가 추가되어야 합니다)
-                    throw new IllegalStateException("계정이 정지되었습니다.");
-                case "INACTIVE":  // (참고: AdminStatus Enum에 INACTIVE가 추가되어야 합니다)
-                    throw new IllegalStateException("계정이 비활성화되었습니다.");
-                default:
-                    throw new IllegalStateException("로그인할 수 없는 계정 상태입니다.");
-            }
+        // 2. 비밀번호 검증 (PasswordEncoder의 matches 메서드 사용!)
+        // 입력받은 평문 비밀번호(password)와 DB에 저장된 암호화된 비밀번호(admin.getPassword())를 비교합니다.
+        if (!passwordEncoder.matches(password, admin.getPassword())) {
+            return null; // 비밀번호가 일치하지 않으면 인증 실패
         }
 
-        // 모든 검증을 통과한 '활성(ACTIVE)' 관리자만 반환
+        // 3. 인증 성공 시 Admin 객체 반환
         return admin;
     }
 }
