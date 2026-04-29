@@ -5,7 +5,7 @@ import com.ecommercebackoffice.common.PageResponse;
 import com.ecommercebackoffice.order.dto.*;
 import com.ecommercebackoffice.order.enums.OrderStatus;
 import com.ecommercebackoffice.order.service.OrderService;
-import com.ecommercebackoffice.session.SessionAdmin;
+import com.ecommercebackoffice.auth.session.SessionAdmin;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

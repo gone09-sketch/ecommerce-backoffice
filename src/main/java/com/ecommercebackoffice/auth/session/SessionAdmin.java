@@ -1,4 +1,4 @@
-package com.ecommercebackoffice.session;
+package com.ecommercebackoffice.auth.session;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

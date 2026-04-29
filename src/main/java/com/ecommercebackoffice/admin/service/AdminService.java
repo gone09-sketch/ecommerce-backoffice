@@ -4,7 +4,7 @@ import com.ecommercebackoffice.admin.dto.*;
 import com.ecommercebackoffice.admin.entity.Admin;
 import com.ecommercebackoffice.admin.repository.AdminRepository;
 import com.ecommercebackoffice.common.PageResponse;
-import com.ecommercebackoffice.config.PasswordEncoder;
+import com.ecommercebackoffice.auth.encoder.PasswordEncoder;
 import com.ecommercebackoffice.exception.*;
 import lombok.Getter;
 import org.springframework.data.domain.Page;

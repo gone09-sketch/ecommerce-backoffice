@@ -1,4 +1,4 @@
-package com.ecommercebackoffice.session;
+package com.ecommercebackoffice.auth.session;
 
 public class SessionConst {
     public static final String LOGIN_ADMIN = "loginAdmin";

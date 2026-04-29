@@ -1,4 +1,4 @@
-package com.ecommercebackoffice.config;
+package com.ecommercebackoffice.common.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
