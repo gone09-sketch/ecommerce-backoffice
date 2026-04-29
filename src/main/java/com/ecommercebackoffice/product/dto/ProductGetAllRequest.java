@@ -3,10 +3,12 @@ package com.ecommercebackoffice.product.dto;
 import com.ecommercebackoffice.common.BasePageRequest;
 import com.ecommercebackoffice.product.enums.ProductStatus;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class ProductGetAllRequest extends BasePageRequest {
 
     private String keyword;   // 상품명 검색

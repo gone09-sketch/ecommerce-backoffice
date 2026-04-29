@@ -40,15 +40,6 @@ public class Order {
     private String orderNumber;
 
     @Column(nullable = false)
-    private Integer quantity;
-
-    @Column(nullable = false)
-    private Long orderPrice;
-
-    @Column(nullable = false)
-    private Long totalPrice;
-
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
@@ -71,17 +62,12 @@ public class Order {
 
     public Order(Admin admin
             , Customer customer
-            , Integer quantity
-            , Long orderPrice
             , String receiverName
             , String receiverPhone
             , String deliveryAddress) {
         this.admin = admin;
         this.customer = customer;
         this.orderNumber = createOrderNumber(customer.getId());
-        this.quantity = quantity;
-        this.orderPrice = orderPrice;
-        this.totalPrice = orderPrice * quantity;
         this.status = OrderStatus.READY;
         this.receiverName = receiverName;
         this.receiverPhone = receiverPhone;
