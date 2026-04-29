@@ -16,7 +16,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.ModelAttribute;
 
 
 @Service
@@ -62,30 +61,30 @@ public class AdminService {
 
     // 관리자 리스트 조회
     @Transactional(readOnly = true)
-    public PageResponse<AdminPageListResponse> getList(AdminPageRequest pageRequest) {
-        // 1. JPA pageable로 변환
-        Pageable pageable = pageRequest.toPageable();
+    public PageResponse<AdminPageListResponse> getList(AdminPageRequest adminPageRequest) {
+        // 1. JPA pageable로 변환 (정렬순서, 정렬컬럼, 페이지 로직)
+        Pageable pageable = adminPageRequest.toPageable();
 
-        // 2. 검색 시, 빈 문자열 → null
+        // 2. 검색어가 공백인 경우 전체 조회를 위해 null 처리
         String keyword;
-        if (StringUtils.hasText(pageRequest.getKeyword())) {
+        if (StringUtils.hasText(adminPageRequest.getKeyword())) {
             // 값이 있으면 → 앞뒤 공백 제거해서 저장
-            keyword = pageRequest.getKeyword().trim();
+            keyword = adminPageRequest.getKeyword().trim();
         } else {
             // null이거나 빈 문자열이면 → null로 저장
             keyword = null;
         }
 
         // 3. DB에서 Admin 엔티티 목록 조회
-        Page<Admin> adminPage = adminRepository.findAllWithFilters(
+        Page<Admin> adminPages = adminRepository.findAllWithFilters(
                 keyword,
-                pageRequest.getRole(),
-                pageRequest.getStatus(),
+                adminPageRequest.getRole(),
+                adminPageRequest.getStatus(),
                 pageable
         );
 
         // 4. dto 변환
-        Page<AdminPageListResponse> responsePage = adminPage.map(AdminPageListResponse::from);
+        Page<AdminPageListResponse> responsePage = adminPages.map(AdminPageListResponse::from);
 
         // 5. 최종반환
         return new PageResponse<>(responsePage);
@@ -118,7 +117,7 @@ public class AdminService {
 
     // 관리자 정보 수정
     @Transactional
-    public AdminPatchResponse patchAdmin(Long adminId, AdminPatchRequest adminPatchRequest) {
+    public AdminPatchResponse updateAdmin(Long adminId, AdminPatchRequest adminPatchRequest) {
 
         // 1. 관리자 조회
         Admin admin = findAdminById(adminId);
@@ -139,7 +138,7 @@ public class AdminService {
 
     // 내 프로필 수정
     @Transactional
-    public AdminProfilePatchResponse patchProfile(Long adminId, AdminProfilePatchRequest profilePatchRequest) {
+    public AdminProfilePatchResponse updateProfile(Long adminId, AdminProfilePatchRequest profilePatchRequest) {
 
         // 1. 관리자 조회
         Admin admin = findAdminById(adminId);
@@ -174,7 +173,7 @@ public class AdminService {
 
     // 내 비밀번호 변경
     @Transactional
-    public void patchPassword(AdminPasswordPatchRequest adminPasswordPatchRequest,
+    public void updatePassword(AdminPasswordPatchRequest adminPasswordPatchRequest,
                               HttpSession httpSession) {
         // 1. 세션에서 adminId 가져오기
         SessionAdmin sessionAdmin = (SessionAdmin) httpSession.getAttribute("loginAdmin");
@@ -198,19 +197,19 @@ public class AdminService {
         String encodedPassword = passwordEncoder.encode(adminPasswordPatchRequest.getNewPassword());
 
         // 6. 새 비밀번호 업데이트
-        foundAdmin.passwordUpdate(encodedPassword);
+        foundAdmin.updatePassword(encodedPassword);
     }
 
 
     // 관리자 역할 변경
     @Transactional
-    public AdminRolePatchResponse patchRole(Long adminId, AdminRolePatchRequest adminRolePatchRequest) {
+    public AdminRolePatchResponse updateRole(Long adminId, AdminRolePatchRequest adminRolePatchRequest) {
         // 1. 관리자 조회
         Admin admin = adminRepository.findById(adminId).orElseThrow(
                 () -> new AdminNotFoundException("해당 관리자를 찾을 수 없습니다."));
 
         // 2. 수정 내용 업데이트
-        admin.roleUpdate(adminRolePatchRequest.getRole());
+        admin.updateRole(adminRolePatchRequest.getRole());
 
         // 3. 반환
         return AdminRolePatchResponse.from(admin);
@@ -219,13 +218,13 @@ public class AdminService {
 
     // 관리자 상태 변경
     @Transactional
-    public AdminStatusPatchResponse patchStatus(Long adminId, AdminStatusPatchRequest adminStatusPatchRequest) {
+    public AdminStatusPatchResponse updateStatus(Long adminId, AdminStatusPatchRequest adminStatusPatchRequest) {
         // 1. 관리자 조회
         Admin admin = adminRepository.findById(adminId).orElseThrow(
                 () -> new AdminNotFoundException("해당 관리자를 찾을 수 없습니다."));
 
         // 2. 수정 내용 업데이트
-        admin.statusUpdate(adminStatusPatchRequest.getStatus());
+        admin.updateStatus(adminStatusPatchRequest.getStatus());
 
         // 3. 반환
         return AdminStatusPatchResponse.from(admin);
