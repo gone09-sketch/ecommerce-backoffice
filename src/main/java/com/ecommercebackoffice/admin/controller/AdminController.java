@@ -27,9 +27,9 @@ public class AdminController {
     // 관리자 등록(회원가입)
     @PostMapping("/signUp")
     public ResponseEntity<CommonResponse<AdminCreateResponse>> signUpAPI(
-            @RequestBody @Valid AdminCreateRequest signUpRequest) {
+            @RequestBody @Valid AdminCreateRequest adminCreateRequest) {
 
-        AdminCreateResponse signUpResponseAPI = adminService.signUp(signUpRequest);
+        AdminCreateResponse signUpResponseAPI = adminService.signUp(adminCreateRequest);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(CommonResponse.created("관리자 등록 요청 성공", signUpResponseAPI));
     }
@@ -38,9 +38,9 @@ public class AdminController {
     // 관리자 리스트 조회(전체조회)
     @GetMapping
     public ResponseEntity<CommonResponse<PageResponse<AdminPageListResponse>>> getListAPI(
-            @ModelAttribute AdminPageListRequest pageRequest) {
+            @ModelAttribute AdminPageListRequest adminPageListRequest) {
 
-        PageResponse<AdminPageListResponse> getListResponseAPI = adminService.getList(pageRequest);
+        PageResponse<AdminPageListResponse> getListResponseAPI = adminService.getList(adminPageListRequest);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CommonResponse.success("관리자 리스트 조회 성공", getListResponseAPI));
     }
@@ -58,11 +58,10 @@ public class AdminController {
 
     // 내 프로필 조회
     @GetMapping("/profile")
-    public ResponseEntity<CommonResponse<AdminResponse>> getProfileAPI(HttpServletRequest httpServletRequest) {
+    public ResponseEntity<CommonResponse<AdminResponse>> getProfileAPI(HttpSession httpSession) {
 
         // 1. 세션에서 내 id 가져오기
-        SessionAdmin sessionAdmin = (SessionAdmin) httpServletRequest.getSession()
-                .getAttribute("loginAdmin");
+        SessionAdmin sessionAdmin = (SessionAdmin) httpSession.getAttribute("loginAdmin");
 
         // 2. 세션에서 꺼낸 id 조회
         AdminResponse getProfileResponseAPI = adminService.getProfile(sessionAdmin.getId());
@@ -115,7 +114,11 @@ public class AdminController {
             @RequestBody @Valid AdminPasswordPatchRequest adminPasswordPatchRequest,
             HttpSession httpSession) {
 
-        adminService.updatePassword(adminPasswordPatchRequest, httpSession);
+        // 세션에서 adminId 가져오기
+        SessionAdmin sessionAdmin = (SessionAdmin) httpSession.getAttribute("loginAdmin");
+        Long adminId = sessionAdmin.getId();
+
+        adminService.updatePassword(adminId, adminPasswordPatchRequest);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(CommonResponse.success("비밀번호 변경 성공"));
     }

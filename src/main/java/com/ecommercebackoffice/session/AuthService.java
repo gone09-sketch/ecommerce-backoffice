@@ -2,7 +2,8 @@ package com.ecommercebackoffice.session;
 
 import com.ecommercebackoffice.admin.entity.Admin;
 import com.ecommercebackoffice.admin.repository.AdminRepository;
-import com.ecommercebackoffice.config.PasswordEncoder; // PasswordEncoder 임포트
+import com.ecommercebackoffice.config.PasswordEncoder;
+import com.ecommercebackoffice.exception.InvalidCredentialsException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -11,28 +12,21 @@ import org.springframework.stereotype.Service;
 public class AuthService {
 
     private final AdminRepository adminRepository;
-    private final PasswordEncoder passwordEncoder; // 암호화 클래스 주입
+    private final PasswordEncoder passwordEncoder;
 
-    /**
-     * DB를 조회하여 관리자 인증을 수행합니다.
-     */
     public Admin authenticate(String email, String password) {
 
-        // 1. 이메일로 DB에서 관리자 정보를 찾습니다.
-        Admin admin = adminRepository.findByEmail(email).orElse(null);
+        // 1. 이메일이 없을 때 예외 발생 (메시지 없이 기본 생성자 호출)
+        //  예외 객체를 새로 생성(new)해서 던지는구나"라고 더 빠르고 직관적으로 읽을 수 있도록 줄여 쓴 것뿐
 
-        // 해당 이메일을 가진 관리자가 없으면 인증 실패
-        if (admin == null) {
-            return null;
-        }
+        Admin admin = adminRepository.findByEmail(email)
+                .orElseThrow(InvalidCredentialsException::new); //
 
-        // 2. 비밀번호 검증 (PasswordEncoder의 matches 메서드 사용!)
-        // 입력받은 평문 비밀번호(password)와 DB에 저장된 암호화된 비밀번호(admin.getPassword())를 비교합니다.
+        // 2. 비밀번호가 틀렸을 때 예외 발생 (마찬가지로 기본 생성자 호출)
         if (!passwordEncoder.matches(password, admin.getPassword())) {
-            return null; // 비밀번호가 일치하지 않으면 인증 실패
+            throw new InvalidCredentialsException();
         }
 
-        // 3. 인증 성공 시 Admin 객체 반환
         return admin;
     }
 }
