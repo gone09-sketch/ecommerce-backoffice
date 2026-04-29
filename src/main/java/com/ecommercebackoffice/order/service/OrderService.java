@@ -76,9 +76,9 @@ public class OrderService {
                 request.getQuantity(),
                 product.getPrice()
         );
-        orderProductRepository.save(orderProduct);
+        OrderProduct savedOrderProduct = orderProductRepository.save(orderProduct);
 
-        return OrderCreateResponse.from(savedOrder);
+        return OrderCreateResponse.from(savedOrder,orderProduct);
     }
 
     // 주문 상세 조회
