@@ -126,7 +126,7 @@ public class OrderService {
         String keyword = request.getKeyword();
         OrderStatus status = request.getStatus();
 
-        // 정렬 조건에 맞는 조회를 실행하고 Page<Order>를 Page<OrderListResponse>로 바꾸는 메서드 실행
+        // 정렬 조건에 맞는 조회를 실행하고 만들어진 결과인 Page<Order>를 Page<OrderListResponse>로 바꾸는 메서드 실행
         return searchOrdersBySort(request, keyword, status, pageable)
                 .map(order -> toOrderListResponse(order));
     }
