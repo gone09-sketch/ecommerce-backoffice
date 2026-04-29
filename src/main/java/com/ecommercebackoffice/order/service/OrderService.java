@@ -54,12 +54,10 @@ public class OrderService {
         if (product.getStock() < request.getQuantity()) {
             throw new BadRequestException("재고가 부족합니다");
         }
-        Long orderPrice = product.getPrice();
+
         Order order = new Order(
                 admin,
                 customer,
-                request.getQuantity(),
-                orderPrice,
                 request.getReceiverName(),
                 request.getReceiverPhone(),
                 request.getDeliveryAddress()

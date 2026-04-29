@@ -171,8 +171,6 @@ public class DataInitializer implements CommandLineRunner {
             Order order = new Order(
                     orderAdmin,
                     customer,
-                    quantity,
-                    product.getPrice(),
                     "수령인" + i,
                     "010-5000-" + String.format("%04d", i),
                     "서울시 테스트구 테스트로 " + i
