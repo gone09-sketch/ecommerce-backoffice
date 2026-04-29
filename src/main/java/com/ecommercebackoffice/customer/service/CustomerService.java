@@ -8,7 +8,7 @@ import com.ecommercebackoffice.exception.CustomerNotFoundException;
 import com.ecommercebackoffice.exception.DuplicateEmailException;
 import com.ecommercebackoffice.exception.InvalidInputException;
 import com.ecommercebackoffice.order.enums.OrderStatus;
-import com.ecommercebackoffice.order.repository.OrderRepository;
+import com.ecommercebackoffice.order.repository.OrderProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 public class CustomerService {
 
     private final CustomerRepository customerRepository;
-    private final OrderRepository orderRepository;
+    private final OrderProductRepository orderProductRepository;
 
 
     // 고객 리스트 조회
@@ -82,7 +82,7 @@ public class CustomerService {
             return customersPage.map(customer -> CustomerGetResponse.from(customer, 0L, 0L));
         }
 
-        Map<Long, CustomerOrderStats> statsMap = orderRepository.findOrderStatsByCustomerIds(customerIds, OrderStatus.CANCELED)
+        Map<Long, CustomerOrderStats> statsMap = orderProductRepository.findOrderStatsByCustomerIds(customerIds, OrderStatus.CANCELED)
 
                 .stream()
                 .collect(Collectors.toMap(
@@ -108,7 +108,7 @@ public class CustomerService {
                 () -> new CustomerNotFoundException()
         );
 
-        CustomerOrderStats stats = orderRepository.findOrderStatsByCustomerId(customerId,OrderStatus.CANCELED)
+        CustomerOrderStats stats = orderProductRepository.findOrderStatsByCustomerId(customerId,OrderStatus.CANCELED)
                 .orElse(new CustomerOrderStats(customerId, 0L, 0L));
 
         return CustomerGetResponse.from(
