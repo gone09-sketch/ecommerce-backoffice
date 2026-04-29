@@ -28,7 +28,7 @@ public class CustomerService {
     public Page<CustomerGetResponse> getCustomersList(CustomerGetRequest request) {
 
         // 클라이언트가 요청할 수 있는 정렬 필드만 허용하는 필드 만듬
-        Set<String> allowedSortFields = Set.of("createdAt", "updatedAt", "name");
+        Set<String> allowedSortFields = Set.of("createdAt", "name", "email");
 
         // 정렬 기준이 없거나 허용되지 않은 값이면 기본값(createdAt)으로 정렬한다.
         String sortBy = request.getSortBy();
