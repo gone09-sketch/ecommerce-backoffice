@@ -1,6 +1,7 @@
 package com.ecommercebackoffice.order.dto;
 
 import com.ecommercebackoffice.order.entity.Order;
+import com.ecommercebackoffice.order.entity.OrderProduct;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -28,15 +29,15 @@ public class OrderCreateResponse {
         this.adminId = adminId;
     }
 
-    public static OrderCreateResponse from(Order order) {
+    public static OrderCreateResponse from(Order order, OrderProduct orderProduct) {
         return new OrderCreateResponse(
                 order.getId(),
                 order.getCreatedAt(),
                 order.getOrderNumber(),
                 order.getStatus().getDescription(),
-                order.getQuantity(),
-                order.getOrderPrice(),
-                order.getTotalPrice(),
+                orderProduct.getQuantity(),
+                orderProduct.getOrderPrice(),
+                orderProduct.getTotalPrice(),
                 order.getAdmin().getId()
         );
     }
