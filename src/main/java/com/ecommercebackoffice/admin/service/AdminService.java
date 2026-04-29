@@ -6,8 +6,6 @@ import com.ecommercebackoffice.admin.repository.AdminRepository;
 import com.ecommercebackoffice.common.PageResponse;
 import com.ecommercebackoffice.config.PasswordEncoder;
 import com.ecommercebackoffice.exception.*;
-import com.ecommercebackoffice.session.SessionAdmin;
-import jakarta.servlet.http.HttpSession;
 import lombok.Getter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,9 +17,10 @@ import org.springframework.util.StringUtils;
 @Service
 @Getter
 public class AdminService {
-    private final PasswordEncoder passwordEncoder;
+
     // 속성
     private final AdminRepository adminRepository;
+    private final PasswordEncoder passwordEncoder;
 
     // 생성자
     public AdminService(AdminRepository adminRepository, PasswordEncoder passwordEncoder) {
@@ -39,11 +38,14 @@ public class AdminService {
             throw new DuplicateEmailException();
         }
 
+        // 비밀번호 암호화 저장
+        String encodedPassword = passwordEncoder.encode(adminCreateRequest.getPassword());
+
         // 2. 엔티티 생성(+데이터 담기)
         Admin newAdmin = new Admin(
                 adminCreateRequest.getName(),
                 adminCreateRequest.getEmail(),
-                adminCreateRequest.getPassword(),
+                encodedPassword,
                 adminCreateRequest.getPhoneNumber(),
                 adminCreateRequest.getRole()
         );
@@ -141,7 +143,7 @@ public class AdminService {
         Admin admin = findAdminById(adminId);
 
         // 2. 이메일 변경 시 중복 체크 (null이면 변경 안 하는 것으로 간주)
-       validateEmail(profilePatchRequest.getEmail(), admin.getEmail());
+        validateEmail(profilePatchRequest.getEmail(), admin.getEmail());
 
         // 3. 수정 내용 업데이트
         admin.update(
@@ -170,30 +172,29 @@ public class AdminService {
 
     // 내 비밀번호 변경
     @Transactional
-    public void updatePassword(AdminPasswordPatchRequest adminPasswordPatchRequest,
-                              HttpSession httpSession) {
-        // 1. 세션에서 adminId 가져오기
-        SessionAdmin sessionAdmin = (SessionAdmin) httpSession.getAttribute("loginAdmin");
-        Long adminId = sessionAdmin.getId();
+    public void updatePassword(Long adminId, AdminPasswordPatchRequest adminPasswordPatchRequest) {
 
-        // 2. 해당 관리자 조회
+        // 1. 해당 관리자 조회
         Admin foundAdmin = adminRepository.findById(adminId).orElseThrow(
                 () -> new AdminNotFoundException());
 
-        // 3. 기존 비밀번호 일치 확인
-        if (!passwordEncoder.matches(adminPasswordPatchRequest.getCurrentPassword(), foundAdmin.getPassword())) {
+        // 2. 기존 비밀번호 일치 확인
+        if (!passwordEncoder.matches(
+                adminPasswordPatchRequest.getCurrentPassword(),
+                foundAdmin.getPassword())) {
+
             throw new InvalidPasswordException();
         }
 
-        // 4. 새 비밀번호와 다시 입력받은 비밀번호 일치 검증
+        // 3. 새 비밀번호와 다시 입력받은 비밀번호 일치 검증
         if (!adminPasswordPatchRequest.getNewPassword().equals(adminPasswordPatchRequest.getConfirmPassword())) {
             throw new PasswordMismatchException();
         }
 
-        // 5. 새 비밀번호 암호화
+        // 4. 새 비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(adminPasswordPatchRequest.getNewPassword());
 
-        // 6. 새 비밀번호 업데이트
+        // 5. 새 비밀번호 업데이트
         foundAdmin.updatePassword(encodedPassword);
     }
 
