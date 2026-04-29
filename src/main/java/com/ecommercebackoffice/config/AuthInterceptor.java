@@ -33,7 +33,7 @@ public class AuthInterceptor implements HandlerInterceptor {
 
         // 2. 로그인 상태가 아닐 시 예외처리
         if (sessionAdmin == null) {
-            throw new UnauthorizedException("로그인이 필요합니다.");
+            throw new UnauthorizedException();
         }
 
         // 3. 로그인 상태일 시, Controller로 진행

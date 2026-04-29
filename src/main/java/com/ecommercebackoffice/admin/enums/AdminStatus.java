@@ -30,14 +30,14 @@ public enum AdminStatus {
     // 승인 가능 여부
     public void validateApprovable() {
         if (this != PENDING && this != REJECTED) {
-            throw new InvalidAdminStatusException("승인 가능한 상태가 아닙니다.");
+            throw new InvalidAdminStatusException();
         }
     }
 
     // 거부 가능 여부
     public void validateRejectable() {
         if (this != PENDING) {
-            throw new InvalidAdminStatusException("거부 가능한 상태가 아닙니다.");
+            throw new InvalidAdminStatusException();
         }
     }
 }
