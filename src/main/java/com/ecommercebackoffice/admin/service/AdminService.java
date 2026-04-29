@@ -21,9 +21,10 @@ import org.springframework.util.StringUtils;
 @Service
 @Getter
 public class AdminService {
-    private final PasswordEncoder passwordEncoder;
+
     // 속성
     private final AdminRepository adminRepository;
+    private final PasswordEncoder passwordEncoder;
 
     // 생성자
     public AdminService(AdminRepository adminRepository, PasswordEncoder passwordEncoder) {
@@ -41,11 +42,14 @@ public class AdminService {
             throw new DuplicateEmailException("이미 사용 중인 이메일입니다.");
         }
 
+        // 비밀번호 암호화 저장
+        String encodedPassword = passwordEncoder.encode(adminCreateRequest.getPassword());
+
         // 2. 엔티티 생성(+데이터 담기)
         Admin newAdmin = new Admin(
                 adminCreateRequest.getName(),
                 adminCreateRequest.getEmail(),
-                adminCreateRequest.getPassword(),
+                encodedPassword,
                 adminCreateRequest.getPhoneNumber(),
                 adminCreateRequest.getRole()
         );
