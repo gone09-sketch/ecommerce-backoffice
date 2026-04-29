@@ -52,7 +52,7 @@ public class AdminController {
 
         AdminResponse getOneResponseAPI = adminService.getOne(adminId);
         return ResponseEntity.status(HttpStatus.OK)
-                .body(CommonResponse.success("관리제 상세 조회 성공", getOneResponseAPI));
+                .body(CommonResponse.success("관리자 상세 조회 성공", getOneResponseAPI));
     }
 
 
