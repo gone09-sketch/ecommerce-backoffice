@@ -176,30 +176,29 @@ public class AdminService {
 
     // 내 비밀번호 변경
     @Transactional
-    public void updatePassword(AdminPasswordPatchRequest adminPasswordPatchRequest,
-                              HttpSession httpSession) {
-        // 1. 세션에서 adminId 가져오기
-        SessionAdmin sessionAdmin = (SessionAdmin) httpSession.getAttribute("loginAdmin");
-        Long adminId = sessionAdmin.getId();
+    public void updatePassword(Long adminId, AdminPasswordPatchRequest adminPasswordPatchRequest) {
 
-        // 2. 해당 관리자 조회
+        // 1. 해당 관리자 조회
         Admin foundAdmin = adminRepository.findById(adminId).orElseThrow(
                 () -> new AdminNotFoundException("해당 관리자를 찾을 수 없습니다."));
 
-        // 3. 기존 비밀번호 일치 확인
-        if (!passwordEncoder.matches(adminPasswordPatchRequest.getCurrentPassword(), foundAdmin.getPassword())) {
+        // 2. 기존 비밀번호 일치 확인
+        if (!passwordEncoder.matches(
+                adminPasswordPatchRequest.getCurrentPassword(),
+                foundAdmin.getPassword())) {
+
             throw new InvalidInputException("현재 비밀번호와 일치하지 않습니다.");
         }
 
-        // 4. 새 비밀번호와 다시 입력받은 비밀번호 일치 검증
+        // 3. 새 비밀번호와 다시 입력받은 비밀번호 일치 검증
         if (!adminPasswordPatchRequest.getNewPassword().equals(adminPasswordPatchRequest.getConfirmPassword())) {
-            throw new InvalidInputException("새 비밀번화와 일치하지 않습니다.");
+            throw new InvalidInputException("새 비밀번호와 일치하지 않습니다.");
         }
 
-        // 5. 새 비밀번호 암호화
+        // 4. 새 비밀번호 암호화
         String encodedPassword = passwordEncoder.encode(adminPasswordPatchRequest.getNewPassword());
 
-        // 6. 새 비밀번호 업데이트
+        // 5. 새 비밀번호 업데이트
         foundAdmin.updatePassword(encodedPassword);
     }
 
