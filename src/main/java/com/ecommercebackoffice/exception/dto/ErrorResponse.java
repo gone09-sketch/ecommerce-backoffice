@@ -4,11 +4,12 @@ import lombok.Getter;
 
 @Getter
 public class ErrorResponse {
-    // 속성
-    private final String message;
 
-    // 생성자
-    public ErrorResponse(String message) {
+    private int httpStatus;
+    private String message;
+
+    public ErrorResponse(int httpStatus, String message) {
+        this.httpStatus = httpStatus;
         this.message = message;
     }
 }
