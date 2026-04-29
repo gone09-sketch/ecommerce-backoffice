@@ -25,7 +25,7 @@ public class CustomerService {
 
     // 고객 리스트 조회
     @Transactional(readOnly = true)
-    public Page<CustomerGetResponse> getCustomersList(CustomerGetListRequest request) {
+    public Page<CustomerGetResponse> getCustomersList(CustomerGetRequest request) {
 
         // 클라이언트가 요청할 수 있는 정렬 필드만 허용하는 필드 만듬
         Set<String> allowedSortFields = Set.of("createdAt", "updatedAt", "name");
