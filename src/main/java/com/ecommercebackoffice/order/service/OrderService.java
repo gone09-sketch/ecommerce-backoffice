@@ -109,18 +109,24 @@ public class OrderService {
             request.setSortBy("createdAt");
         }
 
+        // 정렬 검증
         orderSortValidator.validateSortBy(request.getSortBy());
         orderSortValidator.validateSortOrder(request.getSortOrder());
 
-        Pageable pageable = request.toPageable();
+        Pageable pageable = request.toPageable(request.getSortBy());
 
         // 검색 키워드, 상태 필터
         String keyword = request.getKeyword();
         OrderStatus status = request.getStatus();
 
-        // 정렬 조건에 맞는 조회를 실행하고 만들어진 결과인 Page<Order>를 Page<OrderListResponse>로 바꾸는 메서드 실행
-        return orderQueryService.searchOrdersBySort(request, keyword, status, pageable)
-                .map(order -> toOrderListResponse(order));
+        //조회
+        Page<Order> orderPage = orderQueryService.searchOrdersBySort(request, keyword, status, pageable);
+
+        // 페이지 범위 검증
+        request.validatePageRange(orderPage.getTotalPages());
+
+        // DTO 반환
+        return orderPage.map(this::toOrderListResponse);
     }
 
     // Order를 OrderListResponse로 바꾸는 메서드
