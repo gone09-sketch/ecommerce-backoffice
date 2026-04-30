@@ -1,9 +1,11 @@
 package com.ecommercebackoffice.session;
 
 import com.ecommercebackoffice.admin.entity.Admin;
+import com.ecommercebackoffice.common.CommonResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,7 +17,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(
+    public ResponseEntity<CommonResponse<String>> login(
             @RequestBody LoginRequest request,
             HttpServletRequest httpRequest
     ) {
@@ -33,7 +35,8 @@ public class AuthController {
         HttpSession session = httpRequest.getSession(true);
         session.setAttribute(SessionConst.LOGIN_ADMIN, sessionAdmin);
 
-        return ResponseEntity.ok("로그인에 성공했습니다.");
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(CommonResponse.success("로그인에 성공했습니다."));
     }
 
     @PostMapping("/logout")
