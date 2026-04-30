@@ -34,7 +34,7 @@ public class AuthInterceptor implements HandlerInterceptor {
         }
 
         // 5. Controller에서 사용할 수 있도록 request에 로그인 관리자 정보 담기
-        request.setAttribute(SessionConst.CURRENT_ADMIN, sessionAdmin);
+        request.setAttribute(SessionConst.LOGIN_ADMIN, sessionAdmin);
 
         // 6. 로그인 상태이므로 Controller로 요청 진행
         return true;

@@ -6,6 +6,7 @@ import com.ecommercebackoffice.order.dto.*;
 import com.ecommercebackoffice.order.enums.OrderStatus;
 import com.ecommercebackoffice.order.service.OrderService;
 import com.ecommercebackoffice.session.SessionAdmin;
+import com.ecommercebackoffice.session.SessionConst;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,10 +25,9 @@ public class OrderController {
     @PostMapping
     public ResponseEntity<CommonResponse<OrderCreateResponse>> save(
             @Valid @RequestBody OrderCreateRequest request,
-            HttpSession session
+            @RequestAttribute(SessionConst.LOGIN_ADMIN) SessionAdmin sessionAdminDto
     ) {
-        SessionAdmin sessionAdmin = (SessionAdmin) session.getAttribute("loginAdmin");
-        Long adminId = sessionAdmin.getId();
+        Long adminId = sessionAdminDto.getId();
 
         OrderCreateResponse result = orderService.save(request, adminId);
 
