@@ -82,16 +82,16 @@ public class CustomerService {
             return customersPage.map(customer -> CustomerGetResponse.from(customer, 0L, 0L));
         }
 
-        Map<Long, CustomerOrderStats> statsMap = orderProductRepository.findOrderStatsByCustomerIds(customerIds, OrderStatus.CANCELED)
+        Map<Long, CustomerOrderStatus> statsMap = orderProductRepository.findOrderStatsByCustomerIds(customerIds, OrderStatus.CANCELED)
 
                 .stream()
                 .collect(Collectors.toMap(
-                        CustomerOrderStats::getCustomerId,
+                        CustomerOrderStatus::getCustomerId,
                         Function.identity()
                 ));
 
         return customersPage.map(customer -> {
-            CustomerOrderStats stats = statsMap.get(customer.getId());
+            CustomerOrderStatus stats = statsMap.get(customer.getId());
 
             long totalOrderCount = stats == null ? 0L : stats.getTotalOrderCount();
             long totalPurchaseAmount = stats == null ? 0L : stats.getTotalPurchaseAmount();
@@ -108,8 +108,8 @@ public class CustomerService {
                 () -> new CustomerNotFoundException()
         );
 
-        CustomerOrderStats stats = orderProductRepository.findOrderStatsByCustomerId(customerId, OrderStatus.CANCELED)
-                .orElse(new CustomerOrderStats(customerId, 0L, 0L));
+        CustomerOrderStatus stats = orderProductRepository.findOrderStatsByCustomerId(customerId, OrderStatus.CANCELED)
+                .orElse(new CustomerOrderStatus(customerId, 0L, 0L));
 
         return CustomerGetResponse.from(
                 foundCustomer,

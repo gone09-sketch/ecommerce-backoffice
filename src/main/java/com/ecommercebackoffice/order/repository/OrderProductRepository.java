@@ -1,6 +1,6 @@
 package com.ecommercebackoffice.order.repository;
 
-import com.ecommercebackoffice.customer.dto.CustomerOrderStats;
+import com.ecommercebackoffice.customer.dto.CustomerOrderStatus;
 import com.ecommercebackoffice.order.entity.OrderProduct;
 import com.ecommercebackoffice.order.enums.OrderStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,7 +15,7 @@ public interface OrderProductRepository extends JpaRepository<OrderProduct, Long
     List<OrderProduct> findAllByOrder_Id(Long orderId);
 
     @Query("""
-        SELECT new com.ecommercebackoffice.customer.dto.CustomerOrderStats(
+        SELECT new com.ecommercebackoffice.customer.dto.CustomerOrderStatus(
             op.order.customer.id,
             COUNT(DISTINCT op.order),
             COALESCE(SUM(op.totalPrice), 0)
@@ -25,13 +25,13 @@ public interface OrderProductRepository extends JpaRepository<OrderProduct, Long
           AND op.order.status <> :excludedStatus
         GROUP BY op.order.customer.id
     """)
-    List<CustomerOrderStats> findOrderStatsByCustomerIds(
+    List<CustomerOrderStatus> findOrderStatsByCustomerIds(
             @Param("customerIds") List<Long> customerIds,
             @Param("excludedStatus") OrderStatus excludedStatus
     );
 
     @Query("""
-        SELECT new com.ecommercebackoffice.customer.dto.CustomerOrderStats(
+        SELECT new com.ecommercebackoffice.customer.dto.CustomerOrderStatus(
             op.order.customer.id,
             COUNT(DISTINCT op.order),
             COALESCE(SUM(op.totalPrice), 0)
@@ -41,7 +41,7 @@ public interface OrderProductRepository extends JpaRepository<OrderProduct, Long
           AND op.order.status <> :excludedStatus
         GROUP BY op.order.customer.id
     """)
-    Optional<CustomerOrderStats> findOrderStatsByCustomerId(
+    Optional<CustomerOrderStatus> findOrderStatsByCustomerId(
             @Param("customerId") Long customerId,
             @Param("excludedStatus") OrderStatus excludedStatus
     );
