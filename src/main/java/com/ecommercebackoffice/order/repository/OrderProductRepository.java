@@ -11,8 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface OrderProductRepository extends JpaRepository<OrderProduct, Long> {
-
-    List<OrderProduct> findAllByOrder_Id(Long orderId);
+    List<OrderProduct> findByOrder_Id(Long orderId);
 
     /**
      * 주문 상품(OrderProduct) 데이터를 기반으로 여러 고객의 주문 통계 정보를 조회한다.
@@ -76,4 +75,5 @@ public interface OrderProductRepository extends JpaRepository<OrderProduct, Long
             @Param("customerId") Long customerId,
             @Param("excludedStatus") OrderStatus excludedStatus
     );
+
 }

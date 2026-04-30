@@ -125,10 +125,8 @@ public class CustomerService {
                 () -> new CustomerNotFoundException()
         );
 
-        if (customerRepository.existsByEmailAndIdNot(
-                request.getEmail(),
-                customerId
-        )) {
+        if (!foundCustomer.getEmail().equals(request.getEmail())
+                && customerRepository.existsByEmail(request.getEmail())) {
             throw new DuplicateEmailException();
         }
 
