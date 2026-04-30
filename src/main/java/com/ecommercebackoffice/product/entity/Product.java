@@ -103,7 +103,7 @@ public class Product extends BaseEntity {
     }
 
     // 상품 재고 및 상태에 따른 주문 가능 여부 판단
-    private void validateOrderable(int quantity) {
+    public void validateOrderable(int quantity) {
         if (this.status == ProductStatus.DISCONTINUED) {
             throw new DiscontinuedProductException();
         }
