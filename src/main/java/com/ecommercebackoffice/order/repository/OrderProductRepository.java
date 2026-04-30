@@ -76,5 +76,4 @@ public interface OrderProductRepository extends JpaRepository<OrderProduct, Long
             @Param("customerId") Long customerId,
             @Param("excludedStatus") OrderStatus excludedStatus
     );
-
 }
