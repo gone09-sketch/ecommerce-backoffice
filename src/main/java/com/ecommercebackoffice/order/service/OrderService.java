@@ -51,13 +51,7 @@ public class OrderService {
                 () -> new ProductNotFoundException()
         );
 
-        if (product.getStatus().equals(ProductStatus.DISCONTINUED))
-            throw new DiscontinuedProductException();
-        if (product.getStatus().equals(ProductStatus.SOLD_OUT))
-            throw new OutOfStockException();
-        if (product.getStock() < request.getQuantity()) {
-            throw new InsufficientStockException();
-        }
+        product.validateOrderable(request.getQuantity());
 
         Order order = new Order(
                 admin,
