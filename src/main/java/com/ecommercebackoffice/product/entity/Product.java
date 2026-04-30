@@ -1,7 +1,7 @@
 package com.ecommercebackoffice.product.entity;
 
 import com.ecommercebackoffice.admin.entity.Admin;
-import com.ecommercebackoffice.config.BaseEntity;
+import com.ecommercebackoffice.common.base.BaseEntity;
 import com.ecommercebackoffice.exception.DiscontinuedProductException;
 import com.ecommercebackoffice.exception.InsufficientStockException;
 import com.ecommercebackoffice.exception.OutOfStockException;

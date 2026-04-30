@@ -1,13 +1,12 @@
 package com.ecommercebackoffice.order.controller;
 
-import com.ecommercebackoffice.common.CommonResponse;
-import com.ecommercebackoffice.common.PageResponse;
+import com.ecommercebackoffice.common.dto.CommonResponse;
+import com.ecommercebackoffice.common.dto.PageResponse;
 import com.ecommercebackoffice.order.dto.*;
 import com.ecommercebackoffice.order.enums.OrderStatus;
 import com.ecommercebackoffice.order.service.OrderService;
-import com.ecommercebackoffice.session.SessionAdmin;
-import com.ecommercebackoffice.session.SessionConst;
-import jakarta.servlet.http.HttpSession;
+import com.ecommercebackoffice.auth.session.SessionAdmin;
+import com.ecommercebackoffice.auth.session.SessionConst;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

@@ -1,6 +1,6 @@
 package com.ecommercebackoffice.order.dto;
 
-import com.ecommercebackoffice.common.BasePageRequest;
+import com.ecommercebackoffice.common.dto.BasePageRequest;
 import com.ecommercebackoffice.order.enums.OrderStatus;
 import lombok.Getter;
 import lombok.Setter;

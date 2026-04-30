@@ -1,4 +1,4 @@
-package com.ecommercebackoffice.exception;
+package com.ecommercebackoffice.exception.base;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
