@@ -13,7 +13,10 @@ import java.time.LocalDateTime;
         "phoneNumber",
         "status",
         "createdAt",
-        "updatedAt"
+        "updatedAt",
+        "totalOrderCount",
+        "totalPurchaseAmount",
+
 })
 @Getter
 public class CustomerGetResponse {
@@ -25,10 +28,11 @@ public class CustomerGetResponse {
     private final String status;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
+    private final Long totalOrderCount;
+    private final Long totalPurchaseAmount;
 
 
-    private CustomerGetResponse(Long customerId, String name, String email, String phoneNumber,
-                                String status, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    private CustomerGetResponse(Long customerId, String name, String email, String phoneNumber, String status, LocalDateTime createdAt, LocalDateTime updatedAt, Long totalOrderCount, Long totalPurchaseAmount) {
         this.customerId = customerId;
         this.name = name;
         this.email = email;
@@ -36,9 +40,14 @@ public class CustomerGetResponse {
         this.status = status;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.totalOrderCount = totalOrderCount;
+        this.totalPurchaseAmount = totalPurchaseAmount;
     }
 
-    public static CustomerGetResponse from(Customer customer) {
+    public static CustomerGetResponse from(
+            Customer customer,
+            Long totalOrderCount,
+            Long totalPurchaseAmount) {
         return new CustomerGetResponse(
                 customer.getId(),
                 customer.getName(),
@@ -46,7 +55,9 @@ public class CustomerGetResponse {
                 customer.getPhoneNumber(),
                 customer.getStatus().getDescription(),
                 customer.getCreatedAt(),
-                customer.getUpdatedAt()
+                customer.getUpdatedAt(),
+                totalOrderCount,
+                totalPurchaseAmount
         );
     }
 }

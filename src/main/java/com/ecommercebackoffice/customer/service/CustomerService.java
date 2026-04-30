@@ -7,6 +7,8 @@ import com.ecommercebackoffice.customer.repository.CustomerRepository;
 import com.ecommercebackoffice.exception.CustomerNotFoundException;
 import com.ecommercebackoffice.exception.DuplicateEmailException;
 import com.ecommercebackoffice.exception.InvalidInputException;
+import com.ecommercebackoffice.order.enums.OrderStatus;
+import com.ecommercebackoffice.order.repository.OrderProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,13 +17,19 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class CustomerService {
 
     private final CustomerRepository customerRepository;
+    private final OrderProductRepository orderProductRepository;
+
 
     // 고객 리스트 조회
     @Transactional(readOnly = true)
@@ -51,7 +59,7 @@ public class CustomerService {
         // 검색어가 비어 있으면 null로 보내고, 값이 있으면 그 값을 그대로 보냄 (전체 조회)
         String keyword = null;
         if (request.getKeyword() != null && !request.getKeyword().isBlank()) {
-            keyword = request.getKeyword();
+            keyword = request.getKeyword().trim();
         }
 
         // 문자열 "ACTIVE"를 enum CustomerStatus.ACTIVE로 바꿈
@@ -64,8 +72,33 @@ public class CustomerService {
             }
         }
 
-        return customerRepository.searchCustomers(keyword, status, pageable)
-                .map(CustomerGetResponse::from);
+        Page<Customer> customersPage = customerRepository.searchCustomers(keyword, status, pageable);
+
+        List<Long> customerIds = customersPage.getContent().stream()
+                .map(Customer::getId)
+                .toList();
+
+        if (customerIds.isEmpty()) {
+            return customersPage.map(customer -> CustomerGetResponse.from(customer, 0L, 0L));
+        }
+
+        Map<Long, CustomerOrderStatus> statsMap = orderProductRepository.findOrderStatsByCustomerIds(customerIds, OrderStatus.CANCELED)
+
+                .stream()
+                .collect(Collectors.toMap(
+                        CustomerOrderStatus::getCustomerId,
+                        Function.identity()
+                ));
+
+        return customersPage.map(customer -> {
+            CustomerOrderStatus stats = statsMap.get(customer.getId());
+
+            long totalOrderCount = stats == null ? 0L : stats.getTotalOrderCount();
+            long totalPurchaseAmount = stats == null ? 0L : stats.getTotalPurchaseAmount();
+
+            return CustomerGetResponse.from(customer, totalOrderCount, totalPurchaseAmount);
+        });
+
     }
 
     // 고객 단 건 조회
@@ -75,7 +108,14 @@ public class CustomerService {
                 () -> new CustomerNotFoundException()
         );
 
-        return CustomerGetResponse.from(foundCustomer);
+        CustomerOrderStatus stats = orderProductRepository.findOrderStatsByCustomerId(customerId, OrderStatus.CANCELED)
+                .orElse(new CustomerOrderStatus(customerId, 0L, 0L));
+
+        return CustomerGetResponse.from(
+                foundCustomer,
+                stats.getTotalOrderCount(),
+                stats.getTotalPurchaseAmount()
+        );
     }
 
     // 고객 수정
