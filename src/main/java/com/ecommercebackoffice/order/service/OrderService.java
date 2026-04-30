@@ -11,6 +11,7 @@ import com.ecommercebackoffice.order.entity.OrderProduct;
 import com.ecommercebackoffice.order.enums.OrderStatus;
 import com.ecommercebackoffice.order.repository.OrderProductRepository;
 import com.ecommercebackoffice.order.repository.OrderRepository;
+import com.ecommercebackoffice.order.service.query.OrderQueryService;
 import com.ecommercebackoffice.order.service.validator.OrderSortValidator;
 import com.ecommercebackoffice.product.entity.Product;
 import com.ecommercebackoffice.product.enums.ProductStatus;
@@ -34,6 +35,7 @@ public class OrderService {
     private final ProductRepository productRepository;
     private final OrderProductRepository orderProductRepository;
     private final OrderSortValidator orderSortValidator;
+    private final OrderQueryService orderQueryService;
 
     // 주문 생성
     @Transactional
@@ -123,7 +125,7 @@ public class OrderService {
         OrderStatus status = request.getStatus();
 
         // 정렬 조건에 맞는 조회를 실행하고 만들어진 결과인 Page<Order>를 Page<OrderListResponse>로 바꾸는 메서드 실행
-        return searchOrdersBySort(request, keyword, status, pageable)
+        return orderQueryService.searchOrdersBySort(request, keyword, status, pageable)
                 .map(order -> toOrderListResponse(order));
     }
 
@@ -139,43 +141,7 @@ public class OrderService {
         return OrderListResponse.from(order, orderProducts);
     }
 
-    // 정렬 조건에 따라 어떤 repository 메서드 호출할지 결정하는 메서드
-    private Page<Order> searchOrdersBySort(
-            OrderListRequest request,
-            String keyword,
-            OrderStatus status,
-            Pageable pageable
-    ) {
-        // 정렬 기준 및 순서 변수로 선언
-        // equalsIgnoreCase는 대소문자 구분없이 비교함
-        boolean isQuantitySort = "quantity".equals(request.getSortBy());
-        boolean isTotalPriceSort = "totalPrice".equals(request.getSortBy());
-        boolean isDescSort = "desc".equalsIgnoreCase(request.getSortOrder());
-        boolean isAscSort = "asc".equalsIgnoreCase(request.getSortOrder());
-
-        if (isQuantitySort && isDescSort) {
-            return orderRepository.searchOrdersOrderByQuantityDesc(keyword, status, pageable);
-        }
-
-        if (isQuantitySort && isAscSort) {
-            return orderRepository.searchOrdersOrderByQuantityAsc(keyword, status, pageable);
-        }
-
-        if (isTotalPriceSort && isDescSort) {
-            return orderRepository.searchOrdersOrderByTotalPriceDesc(keyword, status, pageable);
-        }
-
-        if (isTotalPriceSort && isAscSort) {
-            return orderRepository.searchOrdersOrderByTotalPriceAsc(keyword, status, pageable);
-        }
-
-        return orderRepository.searchOrders(keyword, status, pageable);
-    }
-
-
-
-
-
+    // 주문 상태 변경
     @Transactional
     public OrderUpdateResponse update(Long orderId, OrderStatus orderStatus) {
 
@@ -211,6 +177,7 @@ public class OrderService {
         return OrderUpdateResponse.from(order, products);
     }
 
+    // 주문 취소
     @Transactional
     public OrderCancelResponse cancel(Long orderId, OrderCancelRequest request) {
         Order order = orderRepository.findById(orderId).orElseThrow(
@@ -218,10 +185,6 @@ public class OrderService {
         );
 
         List<OrderProduct> orderProducts = orderProductRepository.findAllByOrder_Id(order.getId());
-
-        if (orderProducts.isEmpty()) {
-            throw new OrderProductNotFoundException();
-        }
 
         if (!order.getStatus().equals(OrderStatus.READY)) {
             throw new OrderCancellationNotAllowedException();
