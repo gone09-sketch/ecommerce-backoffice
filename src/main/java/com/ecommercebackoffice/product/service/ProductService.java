@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.Set;
 
@@ -63,35 +64,38 @@ public class ProductService {
     // 상품 전체 조회
     @Transactional(readOnly = true)
     public PageResponse<ProductGetAllResponse> findAll(ProductGetAllRequest request) {
+        // JPA pageable로 변환(정렬순서, 정렬기준, 페이지 로직)
+        Pageable pageable = request.toPageable();
 
-        // 클라이언트가 요청할 수 있는 정렬 필드만 허용하는 필드 만듬
-        Set<String> allowedSortFields = Set.of("price", "stock", "createdAt");
-
-        // 정렬 기준이 없거나 허용되지 않은 값이면 기본값(createdAt)으로 정렬한다.
-        String sortBy = request.getSortBy();
-        if (sortBy == null || sortBy.isBlank() || !allowedSortFields.contains(sortBy)) {
-            sortBy = "createdAt";
+        // 검색어가 공백인 경우 전체 조회를 위해 null 처리
+        String keyword;
+        if (StringUtils.hasText(request.getKeyword())) {
+            // 값이 있으면 앞뒤 공백 제거해서 저장
+            keyword = request.getKeyword().trim();
+        } else {
+            // null이거나 빈 문자열이면 null로 저장
+            keyword = null;
         }
 
-        // sortOrder가 asc면 오름차순, 그 외에는 기본적으로 내림차순 처리한다.
-        Sort.Direction direction = "asc".equalsIgnoreCase(request.getSortOrder())
-                ? Sort.Direction.ASC
-                : Sort.Direction.DESC;
+        // 카테고리가 공백인 경우 전체 조회를 위해 null 처리
+        String category;
+        if (StringUtils.hasText(request.getCategory())) {
+            // 값이 있으면 앞뒤 공백 제거해서 저장
+            category = request.getCategory().trim();
+        } else {
+            // null이거나 빈 문자열이면 null로 저장
+            category = null;
+        }
 
-        // 클라이언트는 1페이지부터 요청하므로, JPA의 0-based 페이지 번호로 변환한다.
-        Pageable pageable = PageRequest.of(
-                Math.max(0, request.getPage() - 1),
-                request.getSize(),
-                Sort.by(direction, sortBy)
-        );
-
+        // DB에서 Product 엔티티 목록 조회
         Page<Product> productPage = productRepository.searchProducts(
-                request.getKeyword(),
-                request.getCategory(),
+                keyword,
+                category,
                 request.getStatus(),
                 pageable
         );
 
+        // 최종 반환
         return new PageResponse<>(productPage.map(ProductGetAllResponse::from));
     }
 
