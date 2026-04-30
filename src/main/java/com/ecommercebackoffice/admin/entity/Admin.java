@@ -3,6 +3,7 @@ package com.ecommercebackoffice.admin.entity;
 import com.ecommercebackoffice.admin.enums.AdminRole;
 import com.ecommercebackoffice.admin.enums.AdminStatus;
 import com.ecommercebackoffice.config.BaseEntity;
+import com.ecommercebackoffice.exception.InvalidAdminStatusException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -14,7 +15,6 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "admins")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-
 public class Admin extends BaseEntity {
     // 속성
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -103,6 +103,9 @@ public class Admin extends BaseEntity {
 
     // 관리자 상태 update
     public void updateStatus(AdminStatus newStatus) {
+        if (this.status == AdminStatus.PENDING) {
+            throw new InvalidAdminStatusException("승인대기(PENDING)상태는 승인/거부를 통해서만 상태 변경이 가능합니다.");
+        }
         this.status = newStatus;
     }
 
