@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
+    // 기본값으로 설정된 조회
     @Query("""
             SELECT o 
             FROM Order o          
@@ -22,6 +23,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             Pageable pageable
     );
 
+    // 키워드 수량이고 내림차순으로 조회
     @Query("""
             SELECT o
             FROM Order o
@@ -37,6 +39,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             Pageable pageable
     );
 
+    // 키워드 수량이고 오름차순으로 조회
     @Query("""
             SELECT o
             FROM Order o
@@ -52,6 +55,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             Pageable pageable
     );
 
+    // 키워드 총금액이고 내림차순으로 조회
     @Query("""
             SELECT o
             FROM Order o
@@ -67,6 +71,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
             Pageable pageable
     );
 
+    // 키워드 총금액이고 오름차순으로 조회
     @Query("""
             SELECT o
             FROM Order o

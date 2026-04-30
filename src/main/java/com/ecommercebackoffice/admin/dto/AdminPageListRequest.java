@@ -3,6 +3,7 @@ import com.ecommercebackoffice.admin.enums.AdminRole;
 import com.ecommercebackoffice.admin.enums.AdminStatus;
 import com.ecommercebackoffice.common.BasePageRequest;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.domain.PageRequest; // JPA에게 조회 방법을 전달하는 객체 (페이지 번호, 크기, 정렬 정보를 담고 있다)
 import org.springframework.data.domain.Pageable;
@@ -11,8 +12,8 @@ import org.springframework.data.domain.Sort;
 
 @Getter
 @Setter
-
-public class AdminPageRequest extends BasePageRequest {
+@NoArgsConstructor
+public class AdminPageListRequest extends BasePageRequest {
     // 속성
     private String keyword; // 이름 또는 이메일 검색
     private AdminRole role; // 역할 필터 (슈퍼 관리자, 운영 관리자, CS 관리자)

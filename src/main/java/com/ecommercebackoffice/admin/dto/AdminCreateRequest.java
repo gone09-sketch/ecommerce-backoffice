@@ -3,9 +3,10 @@ package com.ecommercebackoffice.admin.dto;
 import com.ecommercebackoffice.admin.enums.AdminRole;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
-
+@NoArgsConstructor
 public class AdminCreateRequest {
     // 속성
     @NotBlank(message = "이름을 입력해주세요.")
@@ -25,7 +26,4 @@ public class AdminCreateRequest {
 
     @NotNull(message = "관리자 역할을 선택해주세요.")
     private AdminRole role;
-
-    // 생성자
-    public AdminCreateRequest() {}
 }
