@@ -88,53 +88,53 @@ public class DataInitializer implements CommandLineRunner {
         adminRepository.save(operationAdmin);
     }
 
-//    private void initCustomers() {
-//        IntStream.rangeClosed(1, 4).forEach(i -> {
-//            Customer customer = new Customer(
-//                    "고객" + i,
-//                    "customer" + i + "@test.com",
-//                    "010-1234-" + String.format("%04d", i)
-//            );
-//
-//            if (i % 3 == 0) {
-//                customer.updateStatus(CustomerStatus.INACTIVE);
-//            }
-//
-//            customerRepository.save(customer);
-//        });
-//    }
-
     private void initCustomers() {
-        if (customerRepository.count() > 0) {
-            return;
-        }
+        IntStream.rangeClosed(1, 20).forEach(i -> {
+            Customer customer = new Customer(
+                    "고객" + i,
+                    "customer" + i + "@test.com",
+                    "010-1234-" + String.format("%04d", i)
+            );
 
-        Customer customer1 = new Customer(
-                "고객1",
-                "customer1@test.com",
-                "010-1234-0001"
-        );
+            if (i % 3 == 0) {
+                customer.updateStatus(CustomerStatus.INACTIVE);
+            }
 
-        Customer customer2 = new Customer(
-                "고객2",
-                "customer2@test.com",
-                "010-1234-0002"
-        );
-        customer2.updateStatus(CustomerStatus.INACTIVE);
-
-        Customer customer3 = new Customer(
-                "고객3",
-                "customer3@test.com",
-                "010-1234-0003"
-        );
-        customer3.updateStatus(CustomerStatus.SUSPENDED);
-
-        customerRepository.saveAll(List.of(
-                customer1,
-                customer2,
-                customer3
-        ));
+            customerRepository.save(customer);
+        });
     }
+
+//    private void initCustomers() {
+//        if (customerRepository.count() > 0) {
+//            return;
+//        }
+//
+//        Customer customer1 = new Customer(
+//                "고객1",
+//                "customer1@test.com",
+//                "010-1234-0001"
+//        );
+//
+//        Customer customer2 = new Customer(
+//                "고객2",
+//                "customer2@test.com",
+//                "010-1234-0002"
+//        );
+//        customer2.updateStatus(CustomerStatus.INACTIVE);
+//
+//        Customer customer3 = new Customer(
+//                "고객3",
+//                "customer3@test.com",
+//                "010-1234-0003"
+//        );
+//        customer3.updateStatus(CustomerStatus.SUSPENDED);
+//
+//        customerRepository.saveAll(List.of(
+//                customer1,
+//                customer2,
+//                customer3
+//        ));
+//    }
 
     private void initProducts() {
         String[] categories = {"전자기기", "의류", "식품", "도서", "생활용품"};
