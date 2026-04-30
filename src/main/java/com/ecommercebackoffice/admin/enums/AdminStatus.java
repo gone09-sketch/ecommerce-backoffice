@@ -33,11 +33,4 @@ public enum AdminStatus {
             throw new InvalidAdminStatusException();
         }
     }
-
-    // updateStatus() 전용 (PENDING 상태에서 직접 상태 변경 불가)
-    public void validateDirectlyUpdatable() {
-        if (this == PENDING) {
-            throw new InvalidAdminStatusException("승인대기(PENDING)상태는 승인/거부를 통해서만 상태 변경이 가능합니다.");
-        }
-    }
 }
