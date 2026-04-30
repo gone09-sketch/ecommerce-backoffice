@@ -3,8 +3,9 @@ package com.ecommercebackoffice.exception;
 import org.springframework.http.HttpStatus;
 
 public class InvalidAdminStatusException extends ServiceException {
-    // 생성자
-    public InvalidAdminStatusException() {
-        super(HttpStatus.BAD_REQUEST, "승인/거부 가능한 상태가 아닙니다.");
+
+    // 외부(AuthService)에서 던져주는 구체적인 메시지를 받아 부모에게 전달합니다.
+    public InvalidAdminStatusException(String message) {
+        super(HttpStatus.FORBIDDEN, message);
     }
 }
