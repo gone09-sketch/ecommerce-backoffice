@@ -63,7 +63,7 @@ public class ProductService {
     @Transactional(readOnly = true)
     public PageResponse<ProductGetAllResponse> findAll(ProductGetAllRequest request) {
         // JPA pageable로 변환(정렬순서, 정렬기준, 페이지 로직)
-        Pageable pageable = request.toPageable();
+        Pageable pageable = request.toPageable("createdAt");
 
         // 검색어가 공백인 경우 전체 조회를 위해 null 처리
         String keyword;
@@ -92,6 +92,8 @@ public class ProductService {
                 request.getStatus(),
                 pageable
         );
+
+        request.validatePageRange(productPage.getTotalPages());
 
         // 최종 반환
         return new PageResponse<>(productPage.map(ProductGetAllResponse::from));

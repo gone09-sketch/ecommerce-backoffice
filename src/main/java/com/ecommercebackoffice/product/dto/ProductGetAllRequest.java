@@ -20,7 +20,7 @@ public class ProductGetAllRequest extends BasePageRequest {
     private ProductStatus status;    // 상태 필터
 
     @Override
-    public Pageable toPageable() {
+    public Pageable toPageable(String defaultSortBy) {
         // 클라이언트의 1-based 페이지를 JPA의 0-based 페이지로 변환
         int pageNumber = Math.max(0, getPage() - 1);
 
@@ -47,8 +47,8 @@ public class ProductGetAllRequest extends BasePageRequest {
             }
         }
 
-        // 정렬 기준: null이거나 빈 값이면 기본값 createdAt으로 처리
-        sortBy = (sortBy == null || sortBy.isBlank()) ? "createdAt" : sortBy;
+        // 정렬 기준: null이거나 빈 값이면 기본값 defaultSortBy인 createdAt으로 처리
+        sortBy = (sortBy == null || sortBy.isBlank()) ? defaultSortBy : sortBy;
 
         // 몇 번째 페이지인지, 한 페이지에 몇 개를 가져올건지, 어떤 기준으로 정렬할지
         return PageRequest.of(pageNumber, getSize(), Sort.by(direction, sortBy));
