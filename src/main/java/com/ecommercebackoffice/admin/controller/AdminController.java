@@ -59,7 +59,7 @@ public class AdminController {
     // 내 프로필 조회
     @GetMapping("/profile")
     public ResponseEntity<CommonResponse<AdminResponse>> getProfileAPI(
-            @RequestAttribute(SessionConst.CURRENT_ADMIN) SessionAdmin sessionAdminDto) {
+            @RequestAttribute(SessionConst.LOGIN_ADMIN) SessionAdmin sessionAdminDto) {
 
         // 1. Interceptor가 request에 담아준 로그인 관리자 id 사용
         Long loginAdminId = sessionAdminDto.getId();
@@ -87,7 +87,7 @@ public class AdminController {
     @PatchMapping("/profile")
     public ResponseEntity<CommonResponse<AdminResponse>> updateProfileAPI(
             @RequestBody @Valid AdminProfilePatchRequest adminProfilePatchRequest,
-            @RequestAttribute(SessionConst.CURRENT_ADMIN) SessionAdmin sessionAdminDto,
+            @RequestAttribute(SessionConst.LOGIN_ADMIN) SessionAdmin sessionAdminDto,
             HttpSession httpSession) {
 
         // 1. Interceptor가 request에 담아준 로그인 관리자 id 사용
@@ -113,7 +113,7 @@ public class AdminController {
     @PatchMapping("/profile/password")
     public ResponseEntity<CommonResponse<Void>> updatePasswordAPI(
             @RequestBody @Valid AdminPasswordPatchRequest adminPasswordPatchRequest,
-            @RequestAttribute(SessionConst.CURRENT_ADMIN) SessionAdmin sessionAdminDto) {
+            @RequestAttribute(SessionConst.LOGIN_ADMIN) SessionAdmin sessionAdminDto) {
 
         // 1. Interceptor가 request에 담아준 로그인 관리자 id 사용
         Long loginAdminId = sessionAdminDto.getId();
