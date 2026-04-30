@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "admins")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-
 public class Admin extends BaseEntity {
     // 속성
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -103,6 +102,7 @@ public class Admin extends BaseEntity {
 
     // 관리자 상태 update
     public void updateStatus(AdminStatus newStatus) {
+        this.status.validateDirectlyUpdatable();
         this.status = newStatus;
     }
 

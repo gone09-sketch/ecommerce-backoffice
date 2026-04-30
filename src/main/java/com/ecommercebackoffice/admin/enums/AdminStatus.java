@@ -4,7 +4,6 @@ import com.ecommercebackoffice.exception.InvalidAdminStatusException;
 import lombok.Getter;
 
 @Getter
-
 public enum AdminStatus {
     // 속성
     ACTIVE("활성"),
@@ -21,23 +20,24 @@ public enum AdminStatus {
     }
 
     // 기능
-    /*
-     * 상태 변경 규칙
-     * - PENDING  -> ACTIVE, REJECTED 가능
-     * - REJECTED -> ACTIVE 가능
-     * - ACTIVE   -> REJECTED 불가능
-     */
-    // 승인 가능 여부
+    // 승인 가능 여부 (PENDING, REJECTED → ACTIVE)
     public void validateApprovable() {
         if (this != PENDING && this != REJECTED) {
             throw new InvalidAdminStatusException();
         }
     }
 
-    // 거부 가능 여부
+    // 거부 가능 여부 (PENDING → REJECTED)
     public void validateRejectable() {
         if (this != PENDING) {
             throw new InvalidAdminStatusException();
+        }
+    }
+
+    // updateStatus() 전용 (PENDING 상태에서 직접 상태 변경 불가)
+    public void validateDirectlyUpdatable() {
+        if (this == PENDING) {
+            throw new InvalidAdminStatusException("승인대기(PENDING)상태는 승인/거부를 통해서만 상태 변경이 가능합니다.");
         }
     }
 }
