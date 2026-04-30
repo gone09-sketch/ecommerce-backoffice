@@ -85,10 +85,8 @@ public class CustomerService {
                 () -> new CustomerNotFoundException("존재하지 않는 고객입니다")
         );
 
-        if (customerRepository.existsByEmailAndIdNot(
-                request.getEmail(),
-                customerId
-        )) {
+        if (!foundCustomer.getEmail().equals(request.getEmail())
+                && customerRepository.existsByEmail(request.getEmail())) {
             throw new DuplicateEmailException("이미 사용 중인 이메일입니다.");
         }
 
