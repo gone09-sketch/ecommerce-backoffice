@@ -1,6 +1,6 @@
 package com.ecommercebackoffice.customer.dto;
 
-import com.ecommercebackoffice.common.BasePageRequest;
+import com.ecommercebackoffice.common.dto.BasePageRequest;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

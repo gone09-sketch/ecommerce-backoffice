@@ -1,7 +1,7 @@
 package com.ecommercebackoffice.customer.controller;
 
-import com.ecommercebackoffice.common.CommonResponse;
-import com.ecommercebackoffice.common.PageResponse;
+import com.ecommercebackoffice.common.dto.CommonResponse;
+import com.ecommercebackoffice.common.dto.PageResponse;
 import com.ecommercebackoffice.customer.dto.*;
 import com.ecommercebackoffice.customer.service.CustomerService;
 import jakarta.validation.Valid;

@@ -2,7 +2,7 @@ package com.ecommercebackoffice.product.service;
 
 import com.ecommercebackoffice.admin.entity.Admin;
 import com.ecommercebackoffice.admin.repository.AdminRepository;
-import com.ecommercebackoffice.common.PageResponse;
+import com.ecommercebackoffice.common.dto.PageResponse;
 import com.ecommercebackoffice.exception.AdminNotFoundException;
 import com.ecommercebackoffice.exception.ProductDuplicateException;
 import com.ecommercebackoffice.exception.ProductNotFoundException;
@@ -14,8 +14,6 @@ import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor

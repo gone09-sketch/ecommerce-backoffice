@@ -1,4 +1,4 @@
-package com.ecommercebackoffice.common;
+package com.ecommercebackoffice.common.dto;
 
 import jakarta.validation.constraints.Min;
 import lombok.Getter;
