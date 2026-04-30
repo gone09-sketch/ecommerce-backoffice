@@ -2,6 +2,9 @@ package com.ecommercebackoffice.product.entity;
 
 import com.ecommercebackoffice.admin.entity.Admin;
 import com.ecommercebackoffice.config.BaseEntity;
+import com.ecommercebackoffice.exception.DiscontinuedProductException;
+import com.ecommercebackoffice.exception.InsufficientStockException;
+import com.ecommercebackoffice.exception.OutOfStockException;
 import com.ecommercebackoffice.product.enums.ProductStatus;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -9,8 +12,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
-
-import static com.ecommercebackoffice.product.enums.ProductStatus.*;
 
 @Getter
 @Entity
@@ -51,6 +52,7 @@ public class Product extends BaseEntity {
         this.admin = admin;
     }
 
+    // 상품 정보 수정 메서드
     public void updateInfo(String name, String category, Long price) {
         if (name != null) {
             this.name = name;
@@ -63,37 +65,60 @@ public class Product extends BaseEntity {
         }
     }
 
+    // 상품 재고 수정 메서드
     public void updateStock(int stock) {
         this.stock = stock;
 
-        if (!this.status.equals("단종")) {
+        // 해당 상품의 상태가 단종이 아니고, 수정된 재고 상태가 1 이상이라면 ON_SALE, 아니라면 SOLD_OUT으로 변경
+        if (this.status != ProductStatus.DISCONTINUED) {
             if (this.stock >= 1) {
-                this.status = ON_SALE;
+                this.status = ProductStatus.ON_SALE;
             } else {
-                this.status = SOLD_OUT;
+                this.status = ProductStatus.SOLD_OUT;
             }
         }
     }
 
+    // 상품 재고 차감 메서드
     public void descStock(int quantity) {
         this.stock -= quantity;
 
+        // order에서 주문 수량을 매개변수로 전해주면, 재고를 차감하고, 재고가 0이면, 상품 상태를 SOLD_OUT으로 변경
         if (stock <= 0) {
             stock = 0;
-            this.status = SOLD_OUT;
+            this.status = ProductStatus.SOLD_OUT;
         }
     }
 
+    // 상품 재고 복구 메서드
     public void revertStock(int quantity) {
         this.stock += quantity;
 
-        if (this.status != DISCONTINUED) {
+        // order에서 주문 수량을 매개변수로 전해주면, 해당 수량만큼 재고를 복구하고, 상품 상태가 단종이 아니고, 재고가 0보다 크다면 상품 상태를 ON_SALE로 변경
+        if (this.status != ProductStatus.DISCONTINUED) {
             if (stock > 0) {
-                this.status = ON_SALE;
+                this.status = ProductStatus.ON_SALE;
             }
         }
     }
 
+    // 상품 재고 및 상태에 따른 주문 가능 여부 판단
+    private void validateOrderable(int quantity) {
+        if (this.status == ProductStatus.DISCONTINUED) {
+            throw new DiscontinuedProductException();
+        }
+
+        if (this.status == ProductStatus.SOLD_OUT) {
+            throw new OutOfStockException();
+        }
+
+        if (this.stock < quantity) {
+            throw new InsufficientStockException();
+        }
+    }
+
+
+    // 상품 상태 수정 메서드
     public void updateStatus(ProductStatus status) {
         this.status = status;
     }
