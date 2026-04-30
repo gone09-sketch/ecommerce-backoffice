@@ -5,7 +5,7 @@ import com.ecommercebackoffice.common.PageResponse;
 import com.ecommercebackoffice.product.dto.*;
 import com.ecommercebackoffice.product.service.ProductService;
 import com.ecommercebackoffice.session.SessionAdmin;
-import jakarta.servlet.http.HttpServletRequest;
+import com.ecommercebackoffice.session.SessionConst;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,13 +22,13 @@ public class ProductController {
     // 상품 등록 API
     @PostMapping
     public ResponseEntity<CommonResponse<ProductCreateResponse>> productCreate(
-            @RequestBody @Valid ProductCreateRequest request,
-            HttpServletRequest httpServletRequest
+            @RequestAttribute(SessionConst.LOGIN_ADMIN) SessionAdmin sessionAdminDto,
+            @RequestBody @Valid ProductCreateRequest request
     ) {
-        SessionAdmin sessionAdmin = (SessionAdmin) httpServletRequest.getSession()
-                .getAttribute("loginAdmin");
+        // Interceptor가 request에 담아준 로그인 관리자 id 사용
+        Long loginAdminId = sessionAdminDto.getId();
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(CommonResponse.created("상품 등록 성공", productService.create(sessionAdmin, request)));
+        return ResponseEntity.status(HttpStatus.CREATED).body(CommonResponse.created("상품 등록 성공", productService.create(loginAdminId, request)));
     }
 
     // 상품 단 건 조회 API

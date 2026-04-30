@@ -9,7 +9,6 @@ import com.ecommercebackoffice.exception.ProductNotFoundException;
 import com.ecommercebackoffice.product.dto.*;
 import com.ecommercebackoffice.product.entity.Product;
 import com.ecommercebackoffice.product.repository.ProductRepository;
-import com.ecommercebackoffice.session.SessionAdmin;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
@@ -26,9 +25,9 @@ public class ProductService {
 
     // 상품 등록
     @Transactional
-    public ProductCreateResponse create(SessionAdmin sessionAdmin, ProductCreateRequest request) {
+    public ProductCreateResponse create(Long loginAdminId, ProductCreateRequest request) {
 
-        Admin admin = adminRepository.findById(sessionAdmin.getId()).orElseThrow(
+        Admin admin = adminRepository.findById(loginAdminId).orElseThrow(
                 () -> new AdminNotFoundException()
         );
 
