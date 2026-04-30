@@ -1,8 +1,7 @@
 package com.ecommercebackoffice.exception.handler;
 
-import com.ecommercebackoffice.common.CommonResponse;
-import com.ecommercebackoffice.exception.InvalidPageException;
-import com.ecommercebackoffice.exception.ServiceException;
+import com.ecommercebackoffice.common.dto.CommonResponse;
+import com.ecommercebackoffice.exception.base.ServiceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
