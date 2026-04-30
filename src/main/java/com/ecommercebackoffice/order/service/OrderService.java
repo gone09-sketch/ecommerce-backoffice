@@ -11,6 +11,7 @@ import com.ecommercebackoffice.order.entity.OrderProduct;
 import com.ecommercebackoffice.order.enums.OrderStatus;
 import com.ecommercebackoffice.order.repository.OrderProductRepository;
 import com.ecommercebackoffice.order.repository.OrderRepository;
+import com.ecommercebackoffice.order.service.validator.OrderSortValidator;
 import com.ecommercebackoffice.product.entity.Product;
 import com.ecommercebackoffice.product.enums.ProductStatus;
 import com.ecommercebackoffice.product.repository.ProductRepository;
@@ -32,6 +33,7 @@ public class OrderService {
     private final AdminRepository adminRepository;
     private final ProductRepository productRepository;
     private final OrderProductRepository orderProductRepository;
+    private final OrderSortValidator orderSortValidator;
 
     // 주문 생성
     @Transactional
@@ -111,8 +113,8 @@ public class OrderService {
             request.setSortBy("createdAt");
         }
 
-        validateSortBy(request.getSortBy());
-        validateSortOrder(request.getSortOrder());
+        orderSortValidator.validateSortBy(request.getSortBy());
+        orderSortValidator.validateSortOrder(request.getSortOrder());
 
         Pageable pageable = request.toPageable();
 
@@ -170,26 +172,9 @@ public class OrderService {
         return orderRepository.searchOrders(keyword, status, pageable);
     }
 
-    // 정렬 기준이 허용된 값인지 검사
-    private void validateSortBy(String sortBy) {
-        boolean isCreatedAtSort = "createdAt".equals(sortBy);
-        boolean isQuantitySort = "quantity".equals(sortBy);
-        boolean isTotalPriceSort = "totalPrice".equals(sortBy);
 
-        if (!isCreatedAtSort && !isQuantitySort && !isTotalPriceSort) {
-            throw new BadRequestException();
-        }
-    }
 
-    // 정렬 순서가 허용된 값인지 검사
-    private void validateSortOrder(String sortOrder) {
-        boolean isAscSort = "asc".equalsIgnoreCase(sortOrder);
-        boolean isDescSort = "desc".equalsIgnoreCase(sortOrder);
 
-        if (!isAscSort && !isDescSort) {
-            throw new BadRequestException();
-        }
-    }
 
     @Transactional
     public OrderUpdateResponse update(Long orderId, OrderStatus orderStatus) {
