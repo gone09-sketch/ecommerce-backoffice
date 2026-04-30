@@ -104,43 +104,11 @@ public class DataInitializer implements CommandLineRunner {
         });
     }
 
-//    private void initCustomers() {
-//        if (customerRepository.count() > 0) {
-//            return;
-//        }
-//
-//        Customer customer1 = new Customer(
-//                "고객1",
-//                "customer1@test.com",
-//                "010-1234-0001"
-//        );
-//
-//        Customer customer2 = new Customer(
-//                "고객2",
-//                "customer2@test.com",
-//                "010-1234-0002"
-//        );
-//        customer2.updateStatus(CustomerStatus.INACTIVE);
-//
-//        Customer customer3 = new Customer(
-//                "고객3",
-//                "customer3@test.com",
-//                "010-1234-0003"
-//        );
-//        customer3.updateStatus(CustomerStatus.SUSPENDED);
-//
-//        customerRepository.saveAll(List.of(
-//                customer1,
-//                customer2,
-//                customer3
-//        ));
-//    }
-
     private void initProducts() {
         String[] categories = {"전자기기", "의류", "식품", "도서", "생활용품"};
         List<Admin> admins = adminRepository.findAll();
 
-        IntStream.rangeClosed(1, 20).forEach(i -> {
+        IntStream.rangeClosed(1, 40).forEach(i -> {
             int stock = i % 5 == 0 ? 0 : i * 10;
             ProductStatus status = stock == 0 ? ProductStatus.SOLD_OUT : ProductStatus.ON_SALE;
 
@@ -162,7 +130,7 @@ public class DataInitializer implements CommandLineRunner {
         List<Customer> customers = customerRepository.findAll();
         List<Product> products = productRepository.findAll();
 
-        IntStream.rangeClosed(1, 10).forEach(i -> {
+        IntStream.rangeClosed(1, 20).forEach(i -> {
             Customer customer = customers.get((i - 1) % customers.size());
             Product product = products.get((i - 1) % products.size());
             int quantity = i % 3 + 1;
