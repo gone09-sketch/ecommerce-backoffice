@@ -93,7 +93,7 @@ public class OrderService {
                 () -> new OrderNotFoundException()
         );
 
-        List<OrderProduct> orderProducts = orderProductRepository.findAllByOrder_Id(orderId);
+        List<OrderProduct> orderProducts = orderProductRepository.findByOrder_Id(orderId);
 
         if (orderProducts.isEmpty()) {
             throw new OrderProductNotFoundException();
@@ -133,7 +133,7 @@ public class OrderService {
     private OrderListResponse toOrderListResponse(Order order) {
 
         // 해당 주문의 상품 목록 조회
-        List<OrderProduct> orderProducts = orderProductRepository.findAllByOrder_Id(order.getId());
+        List<OrderProduct> orderProducts = orderProductRepository.findByOrder_Id(order.getId());
 
         if (orderProducts.isEmpty()) {
             throw new OrderProductNotFoundException();
@@ -163,7 +163,7 @@ public class OrderService {
             throw new InvalidOrderStatusException();
         }
 
-        List<OrderProduct> orderProducts = orderProductRepository.findAllByOrder_Id(order.getId());
+        List<OrderProduct> orderProducts = orderProductRepository.findByOrder_Id(order.getId());
 
         if (orderProducts.isEmpty()) {
             throw new OrderProductNotFoundException();
@@ -184,7 +184,7 @@ public class OrderService {
                 () -> new OrderNotFoundException()
         );
 
-        List<OrderProduct> orderProducts = orderProductRepository.findAllByOrder_Id(order.getId());
+        List<OrderProduct> orderProducts = orderProductRepository.findByOrder_Id(order.getId());
 
         if (!order.getStatus().equals(OrderStatus.READY)) {
             throw new OrderCancellationNotAllowedException();
