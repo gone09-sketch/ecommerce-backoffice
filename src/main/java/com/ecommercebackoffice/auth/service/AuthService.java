@@ -1,8 +1,8 @@
-package com.ecommercebackoffice.session;
+package com.ecommercebackoffice.auth.service;
 
 import com.ecommercebackoffice.admin.entity.Admin;
 import com.ecommercebackoffice.admin.repository.AdminRepository;
-import com.ecommercebackoffice.config.PasswordEncoder;;
+import com.ecommercebackoffice.auth.encoder.PasswordEncoder;;
 import com.ecommercebackoffice.exception.InvalidAdminStatusException;
 import com.ecommercebackoffice.exception.InvalidCredentialsException;
 import lombok.RequiredArgsConstructor;

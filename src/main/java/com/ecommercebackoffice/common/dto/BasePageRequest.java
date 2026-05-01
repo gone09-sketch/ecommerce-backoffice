@@ -1,4 +1,4 @@
-package com.ecommercebackoffice.common;
+package com.ecommercebackoffice.common.dto;
 
 import com.ecommercebackoffice.exception.InvalidInputException;
 import com.ecommercebackoffice.exception.InvalidPageException;

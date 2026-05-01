@@ -1,5 +1,6 @@
 package com.ecommercebackoffice.config;
 
+import com.ecommercebackoffice.auth.interceptor.AuthInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;

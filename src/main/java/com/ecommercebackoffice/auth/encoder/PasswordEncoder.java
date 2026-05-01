@@ -1,4 +1,4 @@
-package com.ecommercebackoffice.config;
+package com.ecommercebackoffice.auth.encoder;
 
 
 import at.favre.lib.crypto.bcrypt.BCrypt;

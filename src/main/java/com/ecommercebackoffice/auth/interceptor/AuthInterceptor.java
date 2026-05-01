@@ -1,8 +1,8 @@
-package com.ecommercebackoffice.config;
+package com.ecommercebackoffice.auth.interceptor;
 
 import com.ecommercebackoffice.exception.UnauthorizedException;
-import com.ecommercebackoffice.session.SessionAdmin;
-import com.ecommercebackoffice.session.SessionConst;
+import com.ecommercebackoffice.auth.session.SessionAdmin;
+import com.ecommercebackoffice.auth.session.SessionConst;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;

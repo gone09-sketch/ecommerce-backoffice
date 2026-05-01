@@ -3,6 +3,7 @@ package com.ecommercebackoffice.config;
 import com.ecommercebackoffice.admin.entity.Admin;
 import com.ecommercebackoffice.admin.enums.AdminRole;
 import com.ecommercebackoffice.admin.repository.AdminRepository;
+import com.ecommercebackoffice.auth.encoder.PasswordEncoder;
 import com.ecommercebackoffice.customer.entity.Customer;
 import com.ecommercebackoffice.customer.enums.CustomerStatus;
 import com.ecommercebackoffice.customer.repository.CustomerRepository;

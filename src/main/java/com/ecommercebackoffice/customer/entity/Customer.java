@@ -1,7 +1,6 @@
 package com.ecommercebackoffice.customer.entity;
 
-import com.ecommercebackoffice.config.BaseEntity;
-import com.ecommercebackoffice.customer.dto.CustomerUpdateRequest;
+import com.ecommercebackoffice.common.base.BaseEntity;
 import com.ecommercebackoffice.customer.enums.CustomerStatus;
 import jakarta.persistence.*;
 import lombok.AccessLevel;

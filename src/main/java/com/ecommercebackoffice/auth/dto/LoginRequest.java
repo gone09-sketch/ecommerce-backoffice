@@ -1,4 +1,4 @@
-package com.ecommercebackoffice.session;
+package com.ecommercebackoffice.auth.dto;
 
 import lombok.Getter;
 import lombok.Setter;
