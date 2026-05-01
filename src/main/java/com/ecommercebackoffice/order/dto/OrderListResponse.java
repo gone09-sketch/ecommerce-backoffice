@@ -18,8 +18,11 @@ public class OrderListResponse {
     private final LocalDateTime createdAt;
     private final String status;
     private final String adminName;
+    private final String receiverName;
+    private final String receiverPhone;
+    private final String deliveryAddress;
 
-    public OrderListResponse(Long id, String orderNumber, String customerName, String productName, Integer quantity, Long totalPrice, LocalDateTime createdAt, String status, String adminName) {
+    public OrderListResponse(Long id, String orderNumber, String customerName, String productName, Integer quantity, Long totalPrice, LocalDateTime createdAt, String status, String adminName, String receiverName, String receiverPhone, String deliveryAddress) {
         this.id = id;
         this.orderNumber = orderNumber;
         this.customerName = customerName;
@@ -29,6 +32,9 @@ public class OrderListResponse {
         this.createdAt = createdAt;
         this.status = status;
         this.adminName = adminName;
+        this.receiverName = receiverName;
+        this.receiverPhone = receiverPhone;
+        this.deliveryAddress = deliveryAddress;
     }
 
     public static OrderListResponse from(Order order, List<OrderProduct> orderProducts) {
@@ -68,7 +74,10 @@ public class OrderListResponse {
                 totalPrice,
                 order.getCreatedAt(),
                 order.getStatus().getDescription(),
-                adminName
+                adminName,
+                order.getReceiverName(),
+                order.getReceiverPhone(),
+                order.getDeliveryAddress()
         );
     }
 }

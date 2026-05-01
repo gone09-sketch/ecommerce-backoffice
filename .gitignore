@@ -35,3 +35,8 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### Local / agent artifacts ###
+.DS_Store
+.claude/
+package-lock.json
