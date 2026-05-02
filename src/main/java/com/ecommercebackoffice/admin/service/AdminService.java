@@ -2,6 +2,7 @@ package com.ecommercebackoffice.admin.service;
 
 import com.ecommercebackoffice.admin.dto.*;
 import com.ecommercebackoffice.admin.entity.Admin;
+import com.ecommercebackoffice.admin.enums.AdminRole;
 import com.ecommercebackoffice.admin.repository.AdminRepository;
 import com.ecommercebackoffice.common.dto.PageResponse;
 import com.ecommercebackoffice.auth.encoder.PasswordEncoder;
@@ -33,7 +34,12 @@ public class AdminService {
     // 관리자 등록(회원가입)
     @Transactional
     public AdminCreateResponse signUp(AdminCreateRequest adminCreateRequest) {
-        // 1. 이메일 중복 체크
+        // 1. SUPER_ADMIN 역할로 회원가입 불가
+        if (AdminRole.SUPER_ADMIN.equals(adminCreateRequest.getRole())) {
+            throw new InvalidInputException();
+        }
+
+        // 2. 이메일 중복 체크
         if (adminRepository.existsByEmail(adminCreateRequest.getEmail())) {
             throw new DuplicateEmailException();
         }
@@ -62,7 +68,7 @@ public class AdminService {
     @Transactional(readOnly = true)
     public PageResponse<AdminPageListResponse> getList(AdminPageListRequest adminPageRequest) {
         // 1. JPA pageable로 변환 (정렬순서, 정렬기준, 페이지 로직)
-        Pageable pageable = adminPageRequest.toPageable();
+        Pageable pageable = adminPageRequest.toPageable("createdAt");
 
         // 2. 검색어가 공백인 경우 전체 조회를 위해 null 처리
         String keyword;
@@ -84,6 +90,9 @@ public class AdminService {
 
         // 4. dto 변환
         Page<AdminPageListResponse> responsePage = adminPages.map(AdminPageListResponse::from);
+
+        // 페이지 범위 검증
+        adminPageRequest.validatePageRange(adminPages.getTotalPages());
 
         // 5. 최종반환
         return new PageResponse<>(responsePage);

@@ -33,55 +33,52 @@ public class CustomerService {
 
     // 고객 리스트 조회
     @Transactional(readOnly = true)
-    public Page<CustomerGetResponse> getCustomersList(CustomerGetRequest request) {
+    public Page<CustomerGetResponse> getCustomersList(CustomerGetRequest customerPageRequest) {
 
         // 클라이언트가 요청할 수 있는 정렬 필드만 허용하는 필드 만듬
         Set<String> allowedSortFields = Set.of("createdAt", "name", "email");
 
         // 정렬 기준이 없거나 허용되지 않은 값이면 기본값(createdAt)으로 정렬한다.
-        String sortBy = request.getSortBy();
+        String sortBy = customerPageRequest.getSortBy();
         if (sortBy == null || sortBy.isBlank() || !allowedSortFields.contains(sortBy)) {
             sortBy = "createdAt";
         }
 
-        // sortOrder가 asc면 오름차순, 그 외에는 기본적으로 내림차순 처리한다.
-        Sort.Direction direction = "asc".equalsIgnoreCase(request.getSortOrder())
-                ? Sort.Direction.ASC
-                : Sort.Direction.DESC;
-
-        // 클라이언트는 1페이지부터 요청하므로, JPA의 0-based 페이지 번호로 변환한다.
-        Pageable pageable = PageRequest.of(
-                Math.max(0, request.getPage() - 1),
-                request.getSize(),
-                Sort.by(direction, sortBy)
-        );
+        // 2. pageable 생성 (공통화)
+        Pageable pageable = customerPageRequest.toPageable(sortBy);
 
         // 검색어가 비어 있으면 null로 보내고, 값이 있으면 그 값을 그대로 보냄 (전체 조회)
         String keyword = null;
-        if (request.getKeyword() != null && !request.getKeyword().isBlank()) {
-            keyword = request.getKeyword().trim();
+        if (customerPageRequest.getKeyword() != null && !customerPageRequest.getKeyword().isBlank()) {
+            keyword = customerPageRequest.getKeyword().trim();
         }
 
-        // 문자열 "ACTIVE"를 enum CustomerStatus.ACTIVE로 바꿈
+        // 상태처리: 문자열 "ACTIVE"를 enum CustomerStatus.ACTIVE로 바꿈
         CustomerStatus status = null;
-        if (request.getStatus() != null && !request.getStatus().isBlank()) {
+        if (customerPageRequest.getStatus() != null && !customerPageRequest.getStatus().isBlank()) {
             try {
-                status = CustomerStatus.valueOf(request.getStatus().trim().toUpperCase());
+                status = CustomerStatus.valueOf(customerPageRequest.getStatus().trim().toUpperCase());
             } catch (IllegalArgumentException e) {
                 throw new InvalidInputException();
             }
         }
-
+        // 고객 조회
         Page<Customer> customersPage = customerRepository.searchCustomers(keyword, status, pageable);
 
+        // 페이지 범위 검증
+        customerPageRequest.validatePageRange(customersPage.getTotalPages());
+
+        // 고객 ID 추출
         List<Long> customerIds = customersPage.getContent().stream()
                 .map(Customer::getId)
                 .toList();
 
+        // 주문 통계 없을 경우
         if (customerIds.isEmpty()) {
             return customersPage.map(customer -> CustomerGetResponse.from(customer, 0L, 0L));
         }
 
+        // 주문 통계 조회
         Map<Long, CustomerOrderStatus> statsMap = orderProductRepository.findOrderStatsByCustomerIds(customerIds, OrderStatus.CANCELED)
 
                 .stream()
@@ -90,6 +87,7 @@ public class CustomerService {
                         Function.identity()
                 ));
 
+        // 응답 매핑
         return customersPage.map(customer -> {
             CustomerOrderStatus stats = statsMap.get(customer.getId());
 

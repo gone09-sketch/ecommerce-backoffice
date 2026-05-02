@@ -21,14 +21,16 @@ public class AdminPageListRequest extends BasePageRequest {
     private AdminStatus status; // 상태 필터 (활성, 비활성, 승인대기, 정지, 거부)
 
     @Override
-    public Pageable toPageable() {
+    public Pageable toPageable(String defaultSortBy) {
         // 1. 클라이언트의 1-based 페이지를 JPA의 0-based 페이지로 변환
         int pageNumber = Math.max(0, getPage() - 1);
 
         // 2. 정렬 순서 검증
         String sortOrder = getSortOrder();
         if (sortOrder != null && !sortOrder.isBlank()) {
-            boolean isValidSortOrder = "asc".equalsIgnoreCase(sortOrder) || "desc".equalsIgnoreCase(sortOrder);
+            boolean isValidSortOrder =
+                    "asc".equalsIgnoreCase(sortOrder) || "desc".equalsIgnoreCase(sortOrder);
+
             if (!isValidSortOrder) {
                 throw new BadRequestException();
             }
@@ -43,6 +45,7 @@ public class AdminPageListRequest extends BasePageRequest {
         String sortBy = getSortBy();
         if (sortBy != null && !sortBy.isBlank()) {
             boolean isValidSortBy = "name".equals(sortBy) || "email".equals(sortBy) || "createdAt".equals(sortBy);
+
             if (!isValidSortBy) {
                 throw new BadRequestException();
             }

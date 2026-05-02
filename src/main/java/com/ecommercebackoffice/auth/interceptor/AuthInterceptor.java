@@ -15,21 +15,30 @@ public class AuthInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
 
+        // CORS Preflight 요청은 세션 체크 없이 통과
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            return true;
+        }
+
         // 1. 현재 요청에 연결된 세션 가져오기
         // 세션이 없으면 새로 만들지 않고 null 반환을 합니다.
         HttpSession session = request.getSession(false);
 
+        System.out.println("디버그1");
 
         // 2. 세션이 없으면 로그인 하지 않은 사용자
         if (session == null) {
+            System.out.println("디버그2");
             throw new UnauthorizedException();
         }
+
 
         // 3. 세션에서 로그인 관리자 정보 꺼내기
         SessionAdmin sessionAdmin = (SessionAdmin) session.getAttribute(SessionConst.LOGIN_ADMIN);
 
         // 4. 로그인 관리자 정보가 없으면 로그인하지 않은 사용자
         if (sessionAdmin == null) {
+            System.out.println("디버그3");
             throw new UnauthorizedException();
         }
 

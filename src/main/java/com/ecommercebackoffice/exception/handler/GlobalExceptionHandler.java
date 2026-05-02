@@ -1,6 +1,7 @@
 package com.ecommercebackoffice.exception.handler;
 
 import com.ecommercebackoffice.common.dto.CommonResponse;
+import com.ecommercebackoffice.exception.InvalidPageException;
 import com.ecommercebackoffice.exception.base.ServiceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -76,6 +77,20 @@ public class GlobalExceptionHandler {
         CommonResponse<Void> body = CommonResponse.fail(
                 HttpStatus.BAD_REQUEST.value(),
                 "잘못된 요청입니다."
+        );
+
+        return new ResponseEntity<>(body, status);
+    }
+
+    @ExceptionHandler(InvalidPageException.class)
+    public ResponseEntity<CommonResponse<Void>> handleInvalidPageException(
+            InvalidPageException e
+    ) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+
+        CommonResponse<Void> body = CommonResponse.fail(
+                status.value(),
+                e.getMessage()
         );
 
         return new ResponseEntity<>(body, status);
