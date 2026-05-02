@@ -22,6 +22,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,12 +48,6 @@ public class OrderService {
         Customer customer = customerRepository.findById(request.getCustomerId()).orElseThrow(
                 () -> new CustomerNotFoundException()
         );
-        Product product = productRepository.findById(request.getProductId()).orElseThrow(
-                () -> new ProductNotFoundException()
-        );
-
-        product.validateOrderable(request.getQuantity());
-
         Order order = new Order(
                 admin,
                 customer,
@@ -61,22 +56,33 @@ public class OrderService {
                 request.getDeliveryAddress()
         );
 
-        // 주문 차감 메서드
-        product.descStock(request.getQuantity());
-
+        // 요청이 들어온 주문을 주문 레포에 저장
         Order savedOrder = orderRepository.save(order);
 
-        // orderProduct 저장
-        OrderProduct orderProduct = new OrderProduct(
-                savedOrder,
-                product.getId(),
-                product.getName(),
-                request.getQuantity(),
-                product.getPrice()
-        );
-        OrderProduct savedOrderProduct = orderProductRepository.save(orderProduct);
+        List<OrderProduct> orderProducts = new ArrayList<>();
+        // 요청에 들어온 상품들 하나씩 꺼내서 검증
+        for (OrderProductCreateRequest productRequest : request.getProducts()) {
+            Product product = productRepository.findById(productRequest.getProductId()).orElseThrow(
+                    () -> new ProductNotFoundException()
+            );
+            // 상품 하나씩 주문가능한지 검사하고 재고 차감
+            product.validateOrderable(productRequest.getQuantity());
+            product.descStock(productRequest.getQuantity());
 
-        return OrderCreateResponse.from(savedOrder,orderProduct);
+            OrderProduct orderProduct = new OrderProduct(
+                    savedOrder,
+                    product.getId(),
+                    product.getName(),
+                    productRequest.getQuantity(),
+                    product.getPrice()
+            );
+            // 주문상품 레포에 주문 상품 저장
+            OrderProduct savedOrderProduct = orderProductRepository.save(orderProduct);
+            // 선언해놓은 주문상품 리스트에 주문상품 넣기
+            orderProducts.add(savedOrderProduct);
+        }
+
+        return OrderCreateResponse.from(savedOrder, orderProducts);
     }
 
     // 주문 상세 조회
