@@ -6,6 +6,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 
+import java.util.List;
+
 @Getter
 public class OrderCreateRequest {
 
@@ -13,11 +15,7 @@ public class OrderCreateRequest {
     private Long customerId;
 
     @NotNull(message = "상품 ID는 필수입니다.")
-    private Long productId;
-
-    @NotNull(message = "주문 수량은 필수입니다.")
-    @Min(1)
-    private Integer quantity;
+    private List<OrderProductCreateRequest> products;
 
     @NotBlank(message = "수령인 이름은 필수입니다.")
     private String receiverName;
