@@ -55,14 +55,58 @@ let state = {
   role: '',
   synced: false,
   syncing: false,
+  currentPage: 1,
+  sortKey: '',
+  sortOrder: 'asc',
 }
 
 const app = document.getElementById('app')
+let sessionCheckTimer = null
 
 function inferRole(email) {
   if (email.includes('super')) return 'SUPER_ADMIN'
   if (email.includes('operation')) return 'OPERATION_ADMIN'
   return 'CS_ADMIN'
+}
+
+function resetData() {
+  db.admins = []
+  db.customers = []
+  db.products = []
+  db.orders = []
+}
+
+function isPublicEndpoint(endpoint) {
+  return endpoint === '/auth/login' || endpoint === '/admins/signUp'
+}
+
+function isSessionLost(endpoint, response) {
+  if (isPublicEndpoint(endpoint)) return false
+  if ([401, 403].includes(response?.httpStatus)) return true
+  return response?.httpStatus === 500 && response?.message === '백엔드 연결 실패'
+}
+
+function moveToLogin(message = '서버 연결이 끊겼습니다. 다시 로그인해주세요.') {
+  localStorage.removeItem('staticAdmin')
+  resetData()
+  closeDialog()
+  state = {
+    admin: null,
+    authView: 'login',
+    page: 'dashboard',
+    keyword: '',
+    status: '',
+    category: '',
+    role: '',
+    synced: false,
+    syncing: false,
+    currentPage: 1,
+    sortKey: '',
+    sortOrder: 'asc',
+    loginMessage: message,
+  }
+  stopSessionCheck()
+  render()
 }
 
 async function apiRequest(endpoint, options = {}) {
@@ -76,14 +120,24 @@ async function apiRequest(endpoint, options = {}) {
       },
     })
     const text = await response.text()
-    if (!text) return { httpStatus: response.status, message: response.ok ? '성공' : response.statusText }
+    if (!text) {
+      const result = { httpStatus: response.status, message: response.ok ? '성공' : response.statusText }
+      if (isSessionLost(endpoint, result)) moveToLogin(result.message)
+      return result
+    }
     try {
-      return JSON.parse(text)
+      const result = JSON.parse(text)
+      if (isSessionLost(endpoint, result)) moveToLogin(result.message)
+      return result
     } catch {
-      return { httpStatus: response.status, message: text }
+      const result = { httpStatus: response.status, message: text }
+      if (isSessionLost(endpoint, result)) moveToLogin(result.message)
+      return result
     }
   } catch {
-    return { httpStatus: 500, message: '백엔드 연결 실패' }
+    const result = { httpStatus: 500, message: '백엔드 연결 실패' }
+    if (isSessionLost(endpoint, result)) moveToLogin()
+    return result
   }
 }
 
@@ -245,6 +299,7 @@ async function login(email, password) {
     localStorage.setItem('staticAdmin', JSON.stringify(state.admin))
     await syncFromBackend()
     state.synced = true
+    startSessionCheck()
     render()
     return
   }
@@ -295,7 +350,9 @@ async function signup(form) {
 
 function logout() {
   localStorage.removeItem('staticAdmin')
-  state = { admin: null, authView: 'login', page: 'dashboard', keyword: '', status: '', category: '', role: '', synced: false, syncing: false, currentPage: 1 }
+  stopSessionCheck()
+  resetData()
+  state = { admin: null, authView: 'login', page: 'dashboard', keyword: '', status: '', category: '', role: '', synced: false, syncing: false, currentPage: 1, sortKey: '', sortOrder: 'asc' }
   apiRequest('/auth/logout', { method: 'POST' })
   render()
 }
@@ -319,6 +376,23 @@ function isValidExactPhone(value) {
 
 function isBackendError(response) {
   return response?.httpStatus >= 400
+}
+
+function startSessionCheck() {
+  if (sessionCheckTimer) return
+  sessionCheckTimer = window.setInterval(async () => {
+    if (!state.admin) return
+    const response = await apiRequest('/admins/profile')
+    if (isSessionLost('/admins/profile', response)) {
+      moveToLogin(response.message)
+    }
+  }, 10000)
+}
+
+function stopSessionCheck() {
+  if (!sessionCheckTimer) return
+  window.clearInterval(sessionCheckTimer)
+  sessionCheckTimer = null
 }
 
 function showFormError(message) {
@@ -492,6 +566,8 @@ function renderShell(content) {
       state.category = ''
       state.role = ''
       state.currentPage = 1
+      state.sortKey = ''
+      state.sortOrder = 'asc'
       render()
     })
   })
@@ -519,12 +595,40 @@ function statCard(title, value) {
   return `<div class="card stat"><span>${title}</span><strong>${value.toLocaleString('ko-KR')}</strong></div>`
 }
 
+function sortValue(row, key) {
+  const value = row[key]
+  if (value == null || value === '-') return ''
+  if (key.toLowerCase().includes('date') || key.endsWith('At')) return new Date(value).getTime() || 0
+  if (typeof value === 'number') return value
+  if (!Number.isNaN(Number(value)) && value !== '') return Number(value)
+  return String(value).toLowerCase()
+}
+
+function sortRows(rows) {
+  if (!state.sortKey) return rows
+  return [...rows].sort((a, b) => {
+    const aValue = sortValue(a, state.sortKey)
+    const bValue = sortValue(b, state.sortKey)
+    if (aValue < bValue) return state.sortOrder === 'asc' ? -1 : 1
+    if (aValue > bValue) return state.sortOrder === 'asc' ? 1 : -1
+    return 0
+  })
+}
+
+function sortableHeader(label, key) {
+  const mark = state.sortKey === key
+    ? state.sortOrder === 'asc' ? '↑' : '↓'
+    : '↕'
+  return `<button class="sort-button" data-sort="${key}" type="button">${label} <span class="sort-mark">${mark}</span></button>`
+}
+
 function tablePage({ title, rows, columns, searchPlaceholder, filters = '', actions = '' }) {
   const PAGE_SIZE = 10
-  const totalPages = Math.max(1, Math.ceil(rows.length / PAGE_SIZE))
+  const sortedRows = sortRows(rows)
+  const totalPages = Math.max(1, Math.ceil(sortedRows.length / PAGE_SIZE))
   if (state.currentPage > totalPages) state.currentPage = totalPages
   const pageStart = (state.currentPage - 1) * PAGE_SIZE
-  const pagedRows = rows.slice(pageStart, pageStart + PAGE_SIZE)
+  const pagedRows = sortedRows.slice(pageStart, pageStart + PAGE_SIZE)
 
   const paginationButtons = Array.from({ length: totalPages }, (_, i) => {
     const p = i + 1
@@ -577,6 +681,18 @@ function tablePage({ title, rows, columns, searchPlaceholder, filters = '', acti
   document.querySelectorAll('[data-action]').forEach((button) => {
     button.addEventListener('click', () => handleAction(button.dataset.action, button.dataset.id))
   })
+  document.querySelectorAll('[data-sort]').forEach((button) => {
+    button.addEventListener('click', () => {
+      if (state.sortKey === button.dataset.sort) {
+        state.sortOrder = state.sortOrder === 'asc' ? 'desc' : 'asc'
+      } else {
+        state.sortKey = button.dataset.sort
+        state.sortOrder = 'asc'
+      }
+      state.currentPage = 1
+      render()
+    })
+  })
   document.querySelectorAll('.page-btn').forEach((button) => {
     button.addEventListener('click', () => {
       state.currentPage = Number(button.dataset.p)
@@ -608,14 +724,14 @@ function renderAdmins() {
     `,
     columns: [
       { header: '<input class="row-check" type="checkbox" />', cell: () => '<input class="row-check" type="checkbox" />' },
-      { header: 'ID', cell: (row) => row.adminId },
-      { header: '이름 <span class="sort-mark">⌄</span>', cell: (row) => row.name },
-      { header: '이메일 <span class="sort-mark">⌄</span>', cell: (row) => row.email },
+      { header: sortableHeader('ID', 'adminId'), cell: (row) => row.adminId },
+      { header: sortableHeader('이름', 'name'), cell: (row) => row.name },
+      { header: sortableHeader('이메일', 'email'), cell: (row) => row.email },
       { header: '전화번호', cell: (row) => row.phone },
-      { header: '역할 <span class="sort-mark">⌄</span>', cell: (row) => roleBadge(row.role) },
-      { header: '상태 <span class="sort-mark">⌄</span>', cell: (row) => statusBadge(row.status, 'admin') },
-      { header: '가입일 <span class="sort-mark">⌄</span>', cell: (row) => formatDate(row.createdAt) },
-      { header: '승인일 <span class="sort-mark">⌄</span>', cell: (row) => row.approvedAt ? formatDate(row.approvedAt) : '-' },
+      { header: sortableHeader('역할', 'role'), cell: (row) => roleBadge(row.role) },
+      { header: sortableHeader('상태', 'status'), cell: (row) => statusBadge(row.status, 'admin') },
+      { header: sortableHeader('가입일', 'createdAt'), cell: (row) => formatDate(row.createdAt) },
+      { header: sortableHeader('승인일', 'approvedAt'), cell: (row) => row.approvedAt ? formatDate(row.approvedAt) : '-' },
       { header: '작업', cell: (row) => adminActions(row) },
     ],
   })
@@ -662,14 +778,14 @@ function renderCustomers() {
     filters: `<div class="filter-bar"><span class="filter-label">▽ 필터</span><select data-filter="status"><option value="">모든 상태</option>${Object.entries(labels.customerStatus).map(([value, label]) => `<option value="${value}" ${state.status === value ? 'selected' : ''}>${label}</option>`).join('')}</select></div>`,
     columns: [
       { header: '<input class="row-check" type="checkbox" />', cell: () => '<input class="row-check" type="checkbox" />' },
-      { header: 'ID', cell: (row) => row.customerId },
-      { header: '이름 <span class="sort-mark">⌄</span>', cell: (row) => row.name },
-      { header: '이메일 <span class="sort-mark">⌄</span>', cell: (row) => row.email },
+      { header: sortableHeader('ID', 'customerId'), cell: (row) => row.customerId },
+      { header: sortableHeader('이름', 'name'), cell: (row) => row.name },
+      { header: sortableHeader('이메일', 'email'), cell: (row) => row.email },
       { header: '전화번호', cell: (row) => row.phoneNumber },
-      { header: '상태 <span class="sort-mark">⌄</span>', cell: (row) => statusBadge(row.status, 'customer') },
-      { header: '총 주문수 <span class="sort-mark">⌄</span>', cell: (row) => Number(row.totalOrderCount || 0).toLocaleString('ko-KR') },
-      { header: '총 구매금액 <span class="sort-mark">⌄</span>', cell: (row) => formatPrice(row.totalPurchaseAmount) },
-      { header: '가입일 <span class="sort-mark">⌄</span>', cell: (row) => formatDate(row.createdAt) },
+      { header: sortableHeader('상태', 'status'), cell: (row) => statusBadge(row.status, 'customer') },
+      { header: sortableHeader('총 주문수', 'totalOrderCount'), cell: (row) => Number(row.totalOrderCount || 0).toLocaleString('ko-KR') },
+      { header: sortableHeader('총 구매금액', 'totalPurchaseAmount'), cell: (row) => formatPrice(row.totalPurchaseAmount) },
+      { header: sortableHeader('가입일', 'createdAt'), cell: (row) => formatDate(row.createdAt) },
       { header: '작업', cell: (row) => customerActions(row) },
     ],
   })
@@ -700,14 +816,14 @@ function renderProducts() {
     `,
     columns: [
       { header: '<input class="row-check" type="checkbox" />', cell: () => '<input class="row-check" type="checkbox" />' },
-      { header: 'ID', cell: (row) => row.productId },
-      { header: '상품명 <span class="sort-mark">⌄</span>', cell: (row) => row.name },
-      { header: '카테고리 <span class="sort-mark">⌄</span>', cell: (row) => badge(row.category, 'blue') },
-      { header: '가격 <span class="sort-mark">⌄</span>', cell: (row) => formatPrice(row.price) },
-      { header: '재고 <span class="sort-mark">⌄</span>', cell: (row) => row.stock },
-      { header: '상태 <span class="sort-mark">⌄</span>', cell: (row) => statusBadge(row.status, 'product') },
-      { header: '등록일 <span class="sort-mark">⌄</span>', cell: (row) => formatDate(row.createdAt) },
-      { header: '등록 관리자 <span class="sort-mark">⌄</span>', cell: (row) => row.adminName },
+      { header: sortableHeader('ID', 'productId'), cell: (row) => row.productId },
+      { header: sortableHeader('상품명', 'name'), cell: (row) => row.name },
+      { header: sortableHeader('카테고리', 'category'), cell: (row) => badge(row.category, 'blue') },
+      { header: sortableHeader('가격', 'price'), cell: (row) => formatPrice(row.price) },
+      { header: sortableHeader('재고', 'stock'), cell: (row) => row.stock },
+      { header: sortableHeader('상태', 'status'), cell: (row) => statusBadge(row.status, 'product') },
+      { header: sortableHeader('등록일', 'createdAt'), cell: (row) => formatDate(row.createdAt) },
+      { header: sortableHeader('등록 관리자', 'adminName'), cell: (row) => row.adminName },
       { header: '작업', cell: (row) => productActions(row) },
     ],
   })
@@ -731,15 +847,15 @@ function renderOrders() {
     filters: `<div class="filter-bar"><span class="filter-label">▽ 필터</span><select data-filter="status"><option value="">전체 상태</option>${Object.entries(labels.orderStatus).map(([value, label]) => `<option value="${value}" ${state.status === value ? 'selected' : ''}>${label}</option>`).join('')}</select></div>`,
     columns: [
       { header: '<input class="row-check" type="checkbox" />', cell: () => '<input class="row-check" type="checkbox" />' },
-      { header: 'ID', cell: (row) => row.id },
-      { header: '주문번호 <span class="sort-mark">⌄</span>', cell: (row) => row.orderNumber },
-      { header: '고객명 <span class="sort-mark">⌄</span>', cell: (row) => row.customerName },
+      { header: sortableHeader('ID', 'id'), cell: (row) => row.id },
+      { header: sortableHeader('주문번호', 'orderNumber'), cell: (row) => row.orderNumber },
+      { header: sortableHeader('고객명', 'customerName'), cell: (row) => row.customerName },
       { header: '상품명', cell: (row) => row.productName },
       { header: '수량', cell: (row) => row.quantity },
-      { header: '총금액 <span class="sort-mark">⌄</span>', cell: (row) => formatPrice(row.totalPrice) },
-      { header: '상태 <span class="sort-mark">⌄</span>', cell: (row) => statusBadge(row.status, 'order') },
+      { header: sortableHeader('총금액', 'totalPrice'), cell: (row) => formatPrice(row.totalPrice) },
+      { header: sortableHeader('상태', 'status'), cell: (row) => statusBadge(row.status, 'order') },
       { header: '담당자', cell: (row) => row.adminName },
-      { header: '주문일 <span class="sort-mark">⌄</span>', cell: (row) => formatDate(row.createdAt) },
+      { header: sortableHeader('주문일', 'createdAt'), cell: (row) => formatDate(row.createdAt) },
       { header: '작업', cell: (row) => orderActions(row) },
     ],
   })
@@ -1424,8 +1540,10 @@ function render() {
   if (!state.synced && !state.syncing) {
     state.syncing = true
     syncFromBackend().finally(() => {
+      if (!state.admin) return
       state.synced = true
       state.syncing = false
+      startSessionCheck()
       render()
     })
   }

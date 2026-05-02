@@ -467,6 +467,21 @@ th {
   font-weight: 700;
 }
 
+.sort-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-weight: 800;
+}
+
+.sort-button:hover {
+  color: #ffffff;
+}
+
 td {
   color: #d9dee7;
   font-size: 15px;
