@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -58,10 +59,14 @@ public class OrderService {
 
         // 요청이 들어온 주문을 주문 레포에 저장
         Order savedOrder = orderRepository.save(order);
+        // 비관적 락을 하기위해 원본 데이터를 productId를 기준으로 오름차순으로 정렬하기
+        List<OrderProductCreateRequest> sortedProductRequest = request.getProducts().stream()
+                .sorted(Comparator.comparing(OrderProductCreateRequest::getProductId))
+                .toList();
 
         List<OrderProduct> orderProducts = new ArrayList<>();
         // 요청에 들어온 상품들 하나씩 꺼내서 검증
-        for (OrderProductCreateRequest productRequest : request.getProducts()) {
+        for (OrderProductCreateRequest productRequest : sortedProductRequest) {
             Product product = productRepository.findById(productRequest.getProductId()).orElseThrow(
                     () -> new ProductNotFoundException()
             );
