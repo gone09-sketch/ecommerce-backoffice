@@ -2,12 +2,16 @@ package com.ecommercebackoffice.product.repository;
 
 import com.ecommercebackoffice.product.entity.Product;
 import com.ecommercebackoffice.product.enums.ProductStatus;
+import jakarta.persistence.LockModeType;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import java.util.Optional;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
     boolean existsByName(@NotBlank String name);
@@ -27,4 +31,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             @Param("status") ProductStatus status,
             Pageable pageable
     );
+
+    // 주문 생성 시 재고 차감 동시성 제어를 위한 비관적 락 조회
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT p FROM Product p WHERE p.id = :productId")
+    Optional<Product> findByIdWithPessimisticLock(@Param("productId") Long productId);
 }
