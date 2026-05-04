@@ -30,16 +30,16 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins(
-                        "http://localhost:5500",
-                        "http://127.0.0.1:5500",
-                        "http://localhost:63342",  // IntelliJ 내장 서버
-                        "null"
+                .allowedOriginPatterns(
+                        "http://localhost:*",
+                        "http://127.0.0.1:*",
+                        "https://backoffice-front-two.vercel.app",
+                        "https://*.vercel.app"
                 )
-                // OPTIONS 메서드를 명시적으로 허용
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
                 .allowedHeaders("*")
-                .allowCredentials(true); // 🔥 핵심
+                .allowCredentials(true)
+                .maxAge(3600);
     }
 
 }
